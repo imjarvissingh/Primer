@@ -21,6 +21,10 @@ npm run dev          # then open http://localhost:3000/block-builder
 
 Tap the 5 blocks (or modules) to put them on the bridge (or station), pick how many are left in the pile (or supply), and press "Check my answer". The answer buttons unlock once exactly 5 are placed. Answers are scored by the server (`/api/practice/mission`), which keeps short-lived in-memory sessions, so the demo needs `next dev` or `next start` (not a static export) and runs as a single instance. See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the client/server boundary and limitations.
 
+### Independent check and demo summary
+
+`/assessment` is a short independent check (four draft questions, no hints, no right-or-wrong feedback, skippable). When it ends, "Summary for a grown-up" opens `/demo-progress?session=...`, which shows what the server recorded for that check: counts, each question's outcome, skills sampled and where the data came from. It says plainly that mastery is not awarded and that the data is synthetic. Opening `/demo-progress` with no session shows only guidance. Both are unauthenticated, in-memory, single-instance demos; see [ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Getting started
 
 Prerequisites: Node.js 20.9 or newer (developed on 24.16) and npm. Git is needed to clone.

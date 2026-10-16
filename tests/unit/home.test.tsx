@@ -21,12 +21,14 @@ describe("Home page", () => {
     items.forEach((item) => expect(item).toHaveTextContent("Draft demo"));
   });
 
-  it("links only to the two demos and has no forms (no data collection)", () => {
+  it("links only to the two missions, the check and the demo summary, and has no forms (no data collection)", () => {
     render(<Home />);
     const links = screen.getAllByRole("link");
     expect(links.map((l) => l.getAttribute("href"))).toEqual([
       "/block-builder",
       "/space-construction",
+      "/assessment",
+      "/demo-progress",
     ]);
     expect(screen.queryByRole("button")).toBeNull();
     expect(screen.queryByRole("textbox")).toBeNull();

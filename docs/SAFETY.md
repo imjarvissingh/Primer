@@ -9,3 +9,6 @@ Adult-operated fictional-data demos can precede live-child readiness. Do not rep
 
 ## Block Builder demo (Phase 3)
 The mission is a draft, adult-operated demonstration: no accounts, no stored or logged learner data, no analytics, and feedback is neutral with no streaks, points or time pressure. Its hints and wording are unreviewed. The API is unauthenticated and in-memory and is **not** secure assessment infrastructure; see ARCHITECTURE.md. Guided practice is never reported as mastery.
+
+## Independent check and demo summary (Phase 5)
+Adult-operated, synthetic-data demonstration only. No accounts, names, emails, dates of birth, analytics or stored records; answers are not logged; sessions are in memory and expire. The check shows no timers, streaks, scores or per-answer correctness to the learner. The summary page is **unauthenticated** (anyone holding a session id can open it), is labelled synthetic, and states that mastery is not awarded. It must not be shown as a real child's result, a diagnosis or evidence of effectiveness. Real use needs verified parent authority, consent, authorization and deletion first (see release blockers above).

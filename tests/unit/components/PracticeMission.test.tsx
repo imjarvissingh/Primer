@@ -417,6 +417,9 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       ).toBeInTheDocument();
       expect(screen.getByText(/does not measure mastery/)).toBeInTheDocument();
       expect(
+        screen.getByRole("link", { name: /Independent check/ }),
+      ).toHaveAttribute("href", "/assessment");
+      expect(
         screen.queryByText(/streak|points|score|level|stars|mastered/i),
       ).toBeNull();
     });
@@ -466,6 +469,7 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       await build(user);
       await submit(user, 9);
       await screen.findByRole("heading", { name: /a little easier/i });
+      expect(screen.queryByRole("link")).toBeNull();
       expect(screen.getByText(/does not have that yet/)).toBeInTheDocument();
     });
   });

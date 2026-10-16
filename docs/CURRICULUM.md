@@ -40,3 +40,6 @@ The documents do not say how many correct answers, or what delay, confirm master
 
 ### Other open educator questions
 Whether baseline-only correctness should ever lift a skill above "emerging"; how many practice attempts and hints are appropriate for ages 6–9; whether the fallback and stop thresholds (5 wrong tries) are right; whether independent/delayed banks should also cover S01–S02.
+
+## Independent check status (Phase 5, 2026-10-16)
+The check uses the four **draft, educator-unreviewed** items of the independent bank (16 − 5, 19 − 7, 14 − 6, 17 − 9; S03 x2, S04 x2) in that fixed order. It measures only whether a learner answered those four unseen subtraction items correctly on one occasion with no hints. It does not measure S01 or S02, retention (the delayed bank is not used), transfer beyond these items, or mastery: no thresholds are approved, so none is awarded. Open for the educator: whether four items suffice, whether the order or item mix is right, and whether skipped items should be followed up.

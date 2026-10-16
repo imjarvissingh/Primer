@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { THEMES } from "@/themes";
 
@@ -34,10 +35,31 @@ export default function Home() {
         </p>
       </section>
 
+      <section aria-labelledby="check" className="mt-10">
+        <h2 id="check" className="text-2xl font-semibold">
+          Independent check
+        </h2>
+        <p className="mt-2 text-muted">
+          A short check with no hints and no right-or-wrong feedback, and a
+          summary for a grown-up that shows what was answered independently. It
+          uses made-up demo sessions only and does not award mastery.
+        </p>
+        <p className="mt-3 font-medium">
+          Draft demo &mdash;{" "}
+          <Link href="/assessment" className="underline">
+            Try the independent check
+          </Link>{" "}
+          &middot;{" "}
+          <Link href="/demo-progress" className="underline">
+            See the demo summary page
+          </Link>
+        </p>
+      </section>
+
       <p className="mt-10 border-t border-border pt-6 text-sm text-muted">
-        Primer is in early development. Both playable missions are draft
-        demonstrations that has not been reviewed by an educator. This site
-        collects no information.
+        Primer is in early development. The playable missions and the check are
+        draft demonstrations that has not been reviewed by an educator. This
+        site collects no information.
       </p>
     </main>
   );

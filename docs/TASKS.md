@@ -22,3 +22,8 @@ Not done / next: Phase 4 Space Construction on the shared engine; the prerequisi
 Done: shared mission engine with two themes (Block Builder, Space Construction), theme contract and tests, themed hint wording with equivalence tests, construction-readiness gate, both journeys covered in Playwright (desktop/tablet/small mobile, keyboard, reduced motion, double submit, answer isolation).
 
 Still open: educator review of the item, hints and theme wording (including "modules" for the space theme); the prerequisite "easier practice" activity; persistence/authentication before any pilot; Phase 5 (independent assessment and parent-facing evidence demo).
+
+## Phase 5 status (2026-10-16)
+Done: independent check at `/assessment` (independent bank, one question at a time, neutral replies, one scored answer per item, skip and stop), server-derived evidence through the Phase 2 interpreter, adult demo summary at `/demo-progress`, unit/server/component/browser tests including answer-isolation checks.
+
+Still open: educator review of the independent items and all wording; approved mastery thresholds (none exist, so none is awarded); delayed check and persistence (need identity, consent and storage); rate limiting and authentication before any real use; Phase 6 demo stabilisation.

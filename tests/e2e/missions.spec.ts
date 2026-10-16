@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
+import { FORBIDDEN, walk } from "./helpers";
 
 const API = "/api/practice/mission";
 
@@ -337,28 +338,6 @@ test("the two themes look different but share the same layout and mathematics", 
 });
 
 // ---- Answer isolation and API behaviour -----------------------------------
-
-const FORBIDDEN = [
-  "expectedAnswer",
-  "eligibleBank",
-  "reviewStatus",
-  "curriculumVersion",
-  "contentVersion",
-  "subtract-cross-ten",
-  "subtract-take-away",
-  "GUIDED_PRACTICE",
-  "GP-0",
-  "BL-0",
-  "IN-0",
-  "DL-0",
-];
-
-function walk(dir: string): string[] {
-  return readdirSync(dir).flatMap((n) => {
-    const f = path.join(dir, n);
-    return statSync(f).isDirectory() ? walk(f) : [f];
-  });
-}
 
 test("static client chunks on disk contain no answer keys or bank content", () => {
   const chunks = walk(path.resolve(".next/static")).filter((f) =>

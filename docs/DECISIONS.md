@@ -47,3 +47,12 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Readiness gate in the UI, not the server.** The picker unlocks only when the built quantity matches the story. Scoring rules unchanged.
 - **Colors via CSS variables on a theme class**, not per-theme components; only the two scenes differ in markup.
 - **Defect fixed:** `.gitignore`'s Python-template `lib/` rule hid `src/lib/practice-protocol.ts`, so Phase 3 commit `395727f` failed CI typecheck until `68eefb2`. `!src/lib/` now un-ignores it. Lesson: after committing, check CI or typecheck a clean clone, not just the working tree.
+
+## Phase 5 decisions (2026-10-16)
+- **Separate assessment endpoint, shared machinery.** `/api/assessment` has its own parser, state and service, but reuses `TtlStore`, the bounded body reader, `evaluateResponse` and tutoring `step` (independent phase). Rejected: adding an `assessment` mode to the practice API, which would put hint and feedback code on the same path as scored independent work.
+- **Neutral replies by construction:** the reply never contains a correctness field during the check, so no UI can leak it.
+- **Unreadable answers do not consume the scored try** (practice and assessment already treat them as "ask again"); a skip is recorded but is not evidence.
+- **Summary keyed by an opaque session id in the URL**, not browser storage, so it survives refresh and cannot be forged: the browser sends an id, never a number. No fixture or sample profile exists; with no session the page shows only guidance.
+- **No link between practice and check state.** Rejected: carrying a practice session id into the check, which would need a server-verified link and an identity concept we do not have.
+- **Version labels are shown to adults as provenance**, so they are no longer in the browser-exposure token list; answer keys, item ids and bank names still are.
+- **Descriptive labels only:** "Correct in this short check", "Needs more evidence", "Not yet assessed". No percentage-as-mastery, trend or prediction.

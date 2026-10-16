@@ -109,3 +109,40 @@ Item labels use the theme's noun and place ("Module 3, in the supply. Press to p
 
 ### Navigation and sessions
 Each page creates its own server session on Start; sessions are never shared between themes. Next's Cache Components may keep a previously visited route's UI state alive in the background when navigating client-side, so returning to an earlier mission can show where you left off (its server session is unaffected, and expires after 30 minutes). Nothing is persisted.
+
+## Implementation status (Phase 5, 2026-10-16): independent check and evidence summary
+Demonstration journey: guided practice (`/block-builder`, `/space-construction`) -> independent check (`/assessment`) -> adult summary (`/demo-progress?session=<id>`). All three are **draft, synthetic-data demonstrations**.
+
+```
+src/lib/assessment-protocol.ts    wire types only
+src/server/ttl-store.ts           shared TTL/cap session store (practice and assessment each own an instance)
+src/server/http.ts                bounded request-body reader (shared)
+src/server/assessment/
+  items.ts                        independent bank, fixed order; answer-free question projection
+  validate.ts                     exact-key request parsing (start|answer|skip|stop|summary)
+  sessions.ts                     AssessmentSession: items, index, tutor state, seq, first outcome per item
+  service.ts                      evaluateResponse + tutoring step (phase "independent")
+  summary.ts                      EvidenceRecords -> interpretSkillEvidence -> adult summary
+src/app/api/assessment/route.ts   the only assessment endpoint (POST)
+src/components/assessment/        AssessmentCheck, ProgressSummary (client), api.ts
+```
+
+### Check rules
+- **Items:** the four draft items of the independent bank, in bank order (S03, S03, S04, S04). No client input names, reorders or skips ahead to an item; `start` accepts no fields. Guided-practice, baseline and delayed items are never read.
+- **One question at a time.** The reply carries only the displayed numbers (`position`, `total`, `start`, `takeAway`, `maxAnswer`): no item id, skill, bank, version or answer.
+- **Neutral replies.** The tutoring policy's independent phase returns the same acknowledgement for right and wrong answers; the HTTP reply has an identical shape and content (tested byte for byte). No hints, no prerequisite remediation, no per-item correctness.
+- **One scored answer per item.** The first valid answer is recorded and the item advances. A replay quotes a stale `seq` and gets 409; events after the end get 409. An unreadable answer (string, decimal, negative, out of range, null, missing) is not scored, records nothing, and asks again on the same item. A skip records "skipped", which is not evidence. Stop ends the check; unfinished items are "not reached".
+- **Sessions** are in memory with the practice limits (30 minute sliding TTL, 500 cap), a separate store from practice, no persistence, single instance only.
+- **A retake** is a new `start`, hence a new session; it cannot add evidence to an earlier one.
+
+### Evidence and provenance
+The server builds `EvidenceRecord`s only from answers it evaluated: phase `independent`, `hintsUsed` 0, the problem's own curriculum and content versions, order, time. They go through the Phase 2 `interpretSkillEvidence` under `DRAFT_EVIDENCE_POLICY`, which cannot award mastery. The summary is available only after the check ends and is built from the session, never from browser-supplied numbers; there is no endpoint that accepts scores. The summary shows counts, a per-question outcome (after the check, so no live feedback leaks), skills sampled with the label "Needs more evidence" or "Not yet assessed", `mastery.awarded: false`, and provenance (draft content, version labels, zero hints). It never contains an answer, item id or bank metadata.
+
+### Practice and check are deliberately not linked
+Nothing ties a practice session to a check, so no practice claim ("used no hints", "completed Block Builder") is, or could be, treated as evidence. The practice completion screen only links to the check as ordinary navigation.
+
+### Demo limitations (not production claims)
+- Unauthenticated: anyone can start sessions and read a summary whose opaque session id they hold (the id is in the URL, so treat it like a short-lived capability; it is not a login). Do not describe this as secure, cheat-proof or suitable for high-stakes testing or real children.
+- A user can learn answers by running many fresh sessions, or by finishing a check and reading its summary's right/not-correct column. No rate limiting beyond input validation and the session cap.
+- Learner answers are not logged. Sessions vanish on restart; the summary then says so.
+- Four questions on one occasion is not enough evidence for any mastery claim; the draft policy would not make one regardless.

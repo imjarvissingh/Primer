@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import type { ThemeConfig } from "@/themes";
 
@@ -73,6 +74,15 @@ export function MissionOutcome({
         This is practice with help. It is not a test and does not measure
         mastery.
       </p>
+      {kind === "correct" && (
+        <p className="mt-3">
+          Want to try some on your own?{" "}
+          <Link href="/assessment" className="underline">
+            Independent check
+          </Link>{" "}
+          (separate from this practice).
+        </p>
+      )}
       <button
         type="button"
         onClick={onRestart}
