@@ -5,7 +5,7 @@ import {
   INDEPENDENT_BANK,
   BASELINE_BANK,
 } from "@/domain/assessment";
-import { POST } from "@/app/api/practice/bridge/route";
+import { POST } from "@/app/api/practice/mission/route";
 import type {
   PracticeFeedback,
   PracticeRequest,
@@ -31,7 +31,7 @@ function run(req: PracticeRequest, now = T0) {
   return handlePracticeRequest(store, req, now, newId);
 }
 function begin() {
-  const r = run({ action: "start", missionId: "broken-bridge" });
+  const r = run({ action: "start", missionId: "subtract-practice" });
   if (!r.body.ok || !("sessionId" in r.body)) throw new Error("start failed");
   return { id: r.body.sessionId, seq: r.body.seq, challenge: r.body.challenge };
 }
@@ -59,7 +59,9 @@ beforeEach(() => {
 describe("parseRequest", () => {
   const ok = (o: unknown) => parseRequest(JSON.stringify(o));
   it("accepts well-formed requests", () => {
-    expect(ok({ action: "start", missionId: "broken-bridge" }).ok).toBe(true);
+    expect(ok({ action: "start", missionId: "subtract-practice" }).ok).toBe(
+      true,
+    );
     expect(ok({ action: "attempt", sessionId: ID, seq: 0, answer: 8 }).ok).toBe(
       true,
     );
@@ -82,7 +84,7 @@ describe("parseRequest", () => {
       "extra key",
       JSON.stringify({
         action: "start",
-        missionId: "broken-bridge",
+        missionId: "subtract-practice",
         itemId: "IN-01",
       }),
     ],
@@ -140,10 +142,10 @@ describe("parseRequest", () => {
 
 describe("mission selection", () => {
   it("resolves only the guided-practice 13 - 5 item and exposes just its numbers", () => {
-    const mission = getMission("broken-bridge");
+    const mission = getMission("subtract-practice");
     expect(mission?.problem.id).toBe("GP-07");
     expect(mission?.challenge).toEqual({
-      missionId: "broken-bridge",
+      missionId: "subtract-practice",
       start: 13,
       takeAway: 5,
       maxAnswer: 20,
@@ -155,7 +157,7 @@ describe("mission selection", () => {
       ...INDEPENDENT_BANK.items,
       ...DELAYED_BANK.items,
     ].map((p) => p.id);
-    expect(reserved).not.toContain(getMission("broken-bridge")?.problem.id);
+    expect(reserved).not.toContain(getMission("subtract-practice")?.problem.id);
     for (const id of [
       ...reserved,
       "GP-01",
@@ -171,7 +173,7 @@ describe("mission selection", () => {
 
 describe("start", () => {
   it("returns an opaque session id and the public challenge with no answer", () => {
-    const r = run({ action: "start", missionId: "broken-bridge" });
+    const r = run({ action: "start", missionId: "subtract-practice" });
     expect(r.status).toBe(200);
     const text = JSON.stringify(r.body);
     expect(Object.keys(r.body).sort()).toEqual([
@@ -355,7 +357,7 @@ describe("session integrity", () => {
       feedbackOf(run({ action: "attempt", sessionId: b.id, seq: 0, answer: 5 }))
         .kind,
     ).toBe("neutral-feedback");
-    expect(getMission("broken-bridge")?.problem.id).toBe("GP-07");
+    expect(getMission("subtract-practice")?.problem.id).toBe("GP-07");
   });
 
   it("caps stored sessions and evicts the oldest", () => {
@@ -374,7 +376,7 @@ describe("route handler", () => {
     headers: Record<string, string> = { "content-type": "application/json" },
   ) =>
     POST(
-      new Request("http://localhost/api/practice/bridge", {
+      new Request("http://localhost/api/practice/mission", {
         method: "POST",
         body,
         headers,
@@ -383,7 +385,7 @@ describe("route handler", () => {
 
   it("starts a session and sets no-store", async () => {
     const res = await call(
-      JSON.stringify({ action: "start", missionId: "broken-bridge" }),
+      JSON.stringify({ action: "start", missionId: "subtract-practice" }),
     );
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("no-store");
@@ -394,7 +396,7 @@ describe("route handler", () => {
   it("completes a correct attempt end to end", async () => {
     const start = (await (
       await call(
-        JSON.stringify({ action: "start", missionId: "broken-bridge" }),
+        JSON.stringify({ action: "start", missionId: "subtract-practice" }),
       )
     ).json()) as { sessionId: string };
     const res = await call(
@@ -422,5 +424,53 @@ describe("route handler", () => {
       415,
     );
     expect((await call("")).status).toBe(400);
+  });
+});
+
+describe("themes have no say on the server", () => {
+  it("rejects theme names as missions and as extra fields", () => {
+    for (const missionId of ["block-builder", "space-construction"]) {
+      expect(
+        parseRequest(JSON.stringify({ action: "start", missionId })),
+      ).toEqual({
+        ok: false,
+        error: "unknown-mission",
+      });
+    }
+    for (const theme of ["block-builder", "space-construction"]) {
+      expect(
+        parseRequest(
+          JSON.stringify({
+            action: "start",
+            missionId: "subtract-practice",
+            theme,
+          }),
+        ).ok,
+      ).toBe(false);
+      expect(
+        parseRequest(
+          JSON.stringify({
+            action: "attempt",
+            sessionId: ID,
+            seq: 0,
+            answer: 8,
+            theme,
+          }),
+        ).ok,
+      ).toBe(false);
+    }
+  });
+
+  it("gives identical responses to identical answer sequences in separate sessions", () => {
+    const script = [1, "x", 1, 1, 8];
+    const play = () => {
+      const s = begin();
+      const ref = { seq: s.seq };
+      return script.map((a) => {
+        const r = answer(s, ref, a);
+        return { status: r.status, body: r.body };
+      });
+    };
+    expect(play()).toEqual(play());
   });
 });

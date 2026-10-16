@@ -1,17 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import {
-  BRIDGE_MISSION_ID,
+  PRACTICE_MISSION_ID,
   type PracticeFeedback,
   type PublicChallenge,
 } from "@/lib/practice-protocol";
 import { AnswerPicker } from "./AnswerPicker";
-import { BlockField } from "./BlockField";
-import { BridgeScene } from "./BridgeScene";
+import { ConstructionField } from "./ConstructionField";
 import { FeedbackPanel } from "./FeedbackPanel";
 import { MissionOutcome, type OutcomeKind } from "./MissionOutcome";
 import { presentHint } from "./hints";
+import { capitalize, countOf, fillStory, type ThemeConfig } from "@/themes";
 import { sendPractice } from "./api";
 
 interface Session {
@@ -26,16 +26,31 @@ type Screen =
   | { name: "outcome"; kind: OutcomeKind };
 
 const primaryButton =
-  "min-h-12 rounded-md bg-sky-800 px-6 text-lg font-semibold text-white aria-disabled:opacity-60";
+  "min-h-12 rounded-md bg-(--accent) px-6 text-lg font-semibold text-(--accent-fg) aria-disabled:opacity-60";
 const secondaryButton =
   "min-h-12 rounded-md border-2 border-border px-4 font-semibold";
+
+interface PracticeMissionProps {
+  theme: ThemeConfig;
+  /** Decorative artwork for this theme (hidden from assistive tech). */
+  scene: ReactNode;
+}
+
+/** One shared mission for every theme; the theme only changes words and looks. */
+export function PracticeMission(props: PracticeMissionProps) {
+  return (
+    <div className={`${props.theme.className} mission-panel`}>
+      <MissionBody {...props} />
+    </div>
+  );
+}
 
 /**
  * Owns what the learner sees: which screen, which blocks are on the bridge,
  * and the latest feedback. It decides nothing about correctness. Every answer
  * is sent to the server, which scores it and says what feedback to show.
  */
-export function BridgeMission() {
+function MissionBody({ theme, scene }: PracticeMissionProps) {
   const [screen, setScreen] = useState<Screen>({ name: "intro" });
   const [used, setUsed] = useState<ReadonlySet<number>>(new Set());
   const [selected, setSelected] = useState<number | null>(null);
@@ -74,7 +89,7 @@ export function BridgeMission() {
       resetLocal();
       const res = await sendPractice({
         action: "start",
-        missionId: BRIDGE_MISSION_ID,
+        missionId: PRACTICE_MISSION_ID,
       });
       if (mine !== generation.current) return;
       if (res.ok && "sessionId" in res) {
@@ -141,14 +156,11 @@ export function BridgeMission() {
   if (screen.name === "intro") {
     return (
       <section aria-labelledby="intro-heading" className="grid gap-4">
-        <BridgeScene />
+        {scene}
         <h2 id="intro-heading" className="text-2xl font-bold">
-          The Broken Bridge
+          {theme.missionTitle}
         </h2>
-        <p className="text-lg">
-          Oh no! The bridge has a gap in it. Help the builder fix it with
-          blocks.
-        </p>
+        <p className="text-lg">{theme.intro}</p>
         <div role="status" aria-live="polite">
           {networkProblem && (
             <p className="rounded-lg border-2 border-border p-3">
@@ -163,7 +175,7 @@ export function BridgeMission() {
             onClick={() => (busy ? undefined : begin())}
             className={primaryButton}
           >
-            Start building
+            {theme.startLabel}
           </button>
         </div>
       </section>
@@ -173,6 +185,7 @@ export function BridgeMission() {
   if (screen.name === "outcome") {
     return (
       <MissionOutcome
+        theme={theme}
         kind={screen.kind}
         answer={submitted}
         onRestart={restart}
@@ -181,37 +194,44 @@ export function BridgeMission() {
   }
 
   const { session } = screen;
+  const v = theme.vocabulary;
   const { challenge } = session;
+  const ready = used.size === challenge.takeAway;
   const hintCue =
     feedback?.kind === "hint"
-      ? presentHint(feedback.hintId, feedback.steps, challenge.start)
+      ? presentHint(feedback.hintId, feedback.steps, challenge.start, v)
           .highlightAbove
       : null;
 
   return (
     <section aria-labelledby="play-heading" className="grid gap-5">
-      <BridgeScene />
+      {scene}
       <div>
         <h2 id="play-heading" className="text-2xl font-bold">
-          Fix the bridge
+          {theme.playHeading}
         </h2>
         <p className="mt-2 text-lg">
-          The builder has {challenge.start} blocks. The team uses{" "}
-          {challenge.takeAway} of them on the bridge. Tap {challenge.takeAway}{" "}
-          blocks to put them on the bridge.
+          {fillStory(theme.story, challenge)} Tap{" "}
+          {countOf(challenge.takeAway, v)} to put them {v.builtPlace}.
         </p>
       </div>
 
-      <BlockField
+      <ConstructionField
+        vocabulary={v}
         total={challenge.start}
         used={used}
         onToggle={toggle}
         highlightAbove={hintCue}
         disabled={busy}
       />
-      <p role="status" aria-live="polite" className="font-semibold">
-        Blocks on the bridge: {used.size}
-      </p>
+      <div role="status" aria-live="polite">
+        <p className="font-semibold">
+          {capitalize(v.plural)} {v.builtPlace}: {used.size}
+        </p>
+        <p className="mt-1">
+          {readinessMessage(used.size, challenge.takeAway, v)}
+        </p>
+      </div>
       {used.size > 0 && (
         <div>
           <button
@@ -219,7 +239,7 @@ export function BridgeMission() {
             onClick={() => setUsed(new Set())}
             className={secondaryButton}
           >
-            Put all blocks back
+            Put all {v.plural} back
           </button>
         </div>
       )}
@@ -228,19 +248,20 @@ export function BridgeMission() {
         className="grid gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          if (selected !== null && !busy) void act(session, "attempt");
+          if (ready && selected !== null && !busy) void act(session, "attempt");
         }}
       >
         <AnswerPicker
+          legend={`How many ${v.plural} are left ${v.supplyPlace}?`}
           max={challenge.maxAnswer}
           value={selected}
           onChange={setSelected}
-          disabled={busy}
+          disabled={busy || !ready}
         />
         <div>
           <button
             type="submit"
-            aria-disabled={selected === null || busy}
+            aria-disabled={!ready || selected === null || busy}
             className={primaryButton}
           >
             Check my answer
@@ -249,6 +270,7 @@ export function BridgeMission() {
       </form>
 
       <FeedbackPanel
+        vocabulary={v}
         feedback={feedback}
         start={challenge.start}
         networkProblem={networkProblem}
@@ -285,4 +307,23 @@ function outcomeFor(feedback: PracticeFeedback): OutcomeKind {
       // The server only finishes a session with one of the kinds above.
       return "learner-stopped";
   }
+}
+
+/**
+ * Keeps the picture consistent with the story: the answer picker unlocks only
+ * when exactly `takeAway` items are in the construction area. This is a
+ * presentation gate, not a scoring rule; the server never sees it.
+ */
+function readinessMessage(
+  used: number,
+  takeAway: number,
+  v: ThemeConfig["vocabulary"],
+): string {
+  if (used < takeAway) {
+    return `Put ${countOf(takeAway - used, v)} more ${v.builtPlace} to continue.`;
+  }
+  if (used > takeAway) {
+    return `That is more than ${takeAway}. Put ${countOf(used - takeAway, v)} back ${v.supplyPlace}.`;
+  }
+  return `${countOf(takeAway, v)} ${v.builtPlace}. Now count the ones left ${v.supplyPlace}.`;
 }

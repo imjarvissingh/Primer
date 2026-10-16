@@ -52,12 +52,12 @@ One playable guided-practice mission at `/block-builder`. **It is a draft demons
 ```
 src/lib/practice-protocol.ts      wire types only (no runtime imports): shared by client and server
 src/server/practice/              server-only (import "server-only")
-  missions.ts                     allowlist: "broken-bridge" -> fixed item GP-07 (13 - 5, guided-practice bank)
+  missions.ts                     allowlist: "subtract-practice" -> fixed item GP-07 (13 - 5, guided-practice bank)
   validate.ts                     bounded, strict parsing of untrusted request bodies
   sessions.ts                     short-lived in-memory sessions
   service.ts                      evaluateResponse + tutoring step -> controlled feedback
-src/app/api/practice/bridge/      the only Route Handler (POST)
-src/components/block-builder/     client UI: BridgeMission, BlockField, AnswerPicker, FeedbackPanel, MissionOutcome, BridgeScene, hints.ts
+src/app/api/practice/mission/     the only Route Handler (POST)
+src/components/practice/          client UI (see Phase 4)
 ```
 
 ### Client / server boundary
@@ -68,7 +68,7 @@ src/components/block-builder/     client UI: BridgeMission, BlockField, AnswerPi
 - The missing "easier practice" (prerequisite) activity is not built: that policy action ends the mission with an honest message.
 
 ### Session state and request validation
-- `POST /api/practice/bridge` with `start | attempt | skip | stop`. Bodies are capped at 1 KB (checked on `content-length` and while reading), must be `application/json`, and must have exactly the expected keys. Unknown missions (including `IN-01`, `GP-07`, any item id), extra fields such as a client `expectedAnswer`, bad session ids and non-integer `seq` get 400/413/415.
+- `POST /api/practice/mission` with `start | attempt | skip | stop`. Bodies are capped at 1 KB (checked on `content-length` and while reading), must be `application/json`, and must have exactly the expected keys. Unknown missions (including `IN-01`, `GP-07`, any item id), extra fields such as a client `expectedAnswer`, bad session ids and non-integer `seq` get 400/413/415.
 - The learner's `answer` is passed untouched to `evaluateResponse`; strings, decimals, negatives, out-of-range, null and missing are *invalid* and never scored.
 - **Session choice:** an in-memory `Map` of opaque UUID -> `{tutor state, seq, expiry}` in the Node process. Chosen over a signed-token cookie because the server then, not the client, is the authority on attempt and hint counts (a signed token can be replayed to rewind hints), and over a database/Redis as unjustified for one demo. Sessions expire 30 minutes after last use; at most 500 are kept (oldest evicted).
 - `seq` counts accepted events. A request that quotes any other value gets 409 `stale` and changes nothing, which makes double-clicks and replays harmless. Events after a finished item get 409 `session-closed`. The client also blocks a second request while one is in flight, and ignores replies for an abandoned session.
@@ -79,3 +79,33 @@ src/components/block-builder/     client UI: BridgeMission, BlockField, AnswerPi
 - State is per process: a restart, redeploy, serverless cold start or multiple instances lose sessions (the client restarts cleanly). A page refresh also starts a new session. Not suitable for multi-instance hosting as-is.
 - No rate limiting or CSRF protection beyond input validation (no cookies or accounts exist to abuse). Nothing is stored beyond the in-memory session; learner responses are not logged.
 - "Practice complete" is never mastery or evidence, and nothing here feeds `evidence`.
+
+## Implementation status (Phase 4, 2026-10-16): shared mission engine, two themes
+Block Builder (`/block-builder`, "The Broken Bridge") and Space Construction (`/space-construction`, "The Space Station Mission") are one mission engine with two presentations. Both are **draft demonstrations**, unreviewed by an educator.
+
+```
+src/themes/index.ts               ThemeConfig contract + the two themes (frozen, string-only data, no imports)
+src/components/practice/
+  PracticeMission.tsx             THE state machine: intro -> play -> outcome, session, requests, double-submit guard
+  ConstructionField.tsx           supply / construction area; every item is a button in exactly one place
+  AnswerPicker.tsx, FeedbackPanel.tsx, MissionOutcome.tsx, hints.ts   shared; themes supply nouns only
+  MissionPage.tsx                 page frame (server component)
+  scenes/BridgeScene.tsx, scenes/SpaceScene.tsx   the only theme-specific components (decorative SVG)
+src/app/block-builder/page.tsx, src/app/space-construction/page.tsx   ~10 lines each: theme + scene
+```
+Dependency path, unchanged by theming: page -> `PracticeMission` -> `fetch` -> `/api/practice/mission` -> `parseRequest` -> `handlePracticeRequest` -> `getMission` (GP-07) + `evaluateResponse` + tutoring `step`.
+
+### What a theme is, and is not
+A theme is presentation: display and mission names, story and intro wording, one vocabulary (item noun, supply/construction headings and places), outcome wording, a CSS class that sets color variables and item shape (squares vs circles), and a scene. The story uses only the placeholders `{start}` and `{takeAway}`, filled from the server's challenge, so a theme contains **no numbers** (tested). It has no answer, problem parameter, score, tutoring or assessment field (tested by scanning every key and value), and it is **never sent to the server**: requests contain no theme field, and the API rejects theme names as missions and extra fields. Both themes therefore get identical scoring, tutoring and session behaviour by construction; a test plays the same learner actions in both and asserts byte-identical requests, and another asserts identical server replies to identical answer sequences.
+
+### Hints
+One shared template per hint id (`presentHint`); the server supplies the id and the make-ten step numbers, a theme supplies only nouns. Tests assert, for every id in the S04 ladder, that both themes give the same numbers and highlighted items and the same sentence once nouns are neutralised, and that no hint states the final answer.
+
+### Construction readiness (story/picture consistency)
+The story says 5 items are used. The answer picker therefore stays locked until exactly `takeAway` items are in the construction area, with a plain message ("Put 2 more blocks on the bridge to continue", "That is more than 5. Put 1 back"). Stop and Start over stay available. This is a presentation gate only: the server neither knows nor checks it, scoring is unchanged, and a hand-made request can still submit an answer. Identical in both themes (one component).
+
+### Accessibility notes
+Item labels use the theme's noun and place ("Module 3, in the supply. Press to put it on the station."), so a screen reader never hears "block" in the space theme. Focus rings use a theme variable (yellow on the dark space panel for contrast). Used items differ from supply items by position and a striped pattern, not color alone; hint cues are dashed outlines. Motion is opt-in (`prefers-reduced-motion`) and tested in a real browser.
+
+### Navigation and sessions
+Each page creates its own server session on Start; sessions are never shared between themes. Next's Cache Components may keep a previously visited route's UI state alive in the background when navigating client-side, so returning to an earlier mission can show where you left off (its server session is unaffected, and expires after 30 minutes). Nothing is persisted.

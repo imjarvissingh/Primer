@@ -31,10 +31,14 @@ test("keyboard Tab reaches the demo link, does not trap focus, and page has a ma
 }) => {
   await page.goto("/");
   await expect(page.getByRole("main")).toBeVisible();
-  // The only interactive element is the demo link; one more Tab leaves the page.
+  // The only interactive elements are the two demo links; one more Tab leaves the page.
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Try The Broken Bridge" }),
+  ).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("link", { name: "Try The Space Station Mission" }),
   ).toBeFocused();
   await page.keyboard.press("Tab");
   const focusedTag = await page.evaluate(() => document.activeElement?.tagName);

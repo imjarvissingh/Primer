@@ -39,3 +39,11 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Hint wording is client-side draft presentation** keyed by the server's hint id; make-ten numbers come from the evaluator's strategy.
 - **No `easier-practice` activity.** The policy's prerequisite fallback ends the mission with an honest message because new curriculum content is out of scope.
 - `server-only` is used without installing the package (Next resolves it); Vitest stubs it. No dependencies were added.
+
+## Phase 4 decisions (2026-10-16)
+- **Theme is presentation-only and never sent to the server.** Rejected: a `theme` request field (adds an allowlist and a place for theme to leak into logic) and a second route (duplicate code). Consequence: the server cannot tell the themes apart, which is the intended proof that they share one engine.
+- **Neutral mission id and path.** `broken-bridge` / `/api/practice/bridge` became `subtract-practice` / `/api/practice/mission` because the server mission is not bridge-specific.
+- **`ThemeConfig` is string-only, frozen data, no functions.** Story text uses two validated placeholders; hints use a typed vocabulary instead of string replacement over whole sentences. Validated by `tests/unit/themes.test.ts`.
+- **Readiness gate in the UI, not the server.** The picker unlocks only when the built quantity matches the story. Scoring rules unchanged.
+- **Colors via CSS variables on a theme class**, not per-theme components; only the two scenes differ in markup.
+- **Defect fixed:** `.gitignore`'s Python-template `lib/` rule hid `src/lib/practice-protocol.ts`, so Phase 3 commit `395727f` failed CI typecheck until `68eefb2`. `!src/lib/` now un-ignores it. Lesson: after committing, check CI or typecheck a clean clone, not just the working tree.

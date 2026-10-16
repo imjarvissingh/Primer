@@ -2,7 +2,7 @@ import "server-only";
 import { GUIDED_PRACTICE_BANK, toLearnerView } from "@/domain/assessment";
 import { MAX_QUANTITY, type ValidatedProblem } from "@/domain/math";
 import {
-  BRIDGE_MISSION_ID,
+  PRACTICE_MISSION_ID,
   type PublicChallenge,
 } from "@/lib/practice-protocol";
 
@@ -12,7 +12,7 @@ import {
  * assessment items (baseline / independent / delayed) cannot be reached.
  */
 const MISSION_ITEM_IDS: Readonly<Record<string, string>> = Object.freeze({
-  [BRIDGE_MISSION_ID]: "GP-07",
+  [PRACTICE_MISSION_ID]: "GP-07",
 });
 
 export interface Mission {
@@ -38,7 +38,7 @@ export function getMission(missionId: unknown): Mission | null {
   return {
     problem,
     challenge: {
-      missionId: BRIDGE_MISSION_ID,
+      missionId: PRACTICE_MISSION_ID,
       start: stimulus.start,
       takeAway: stimulus.takeAway,
       maxAnswer: MAX_QUANTITY,

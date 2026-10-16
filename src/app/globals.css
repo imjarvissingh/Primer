@@ -36,22 +36,101 @@ body {
     sans-serif;
 }
 
+/*
+ * Mission themes. A theme is only a set of colors and an item shape; the
+ * markup and behaviour are shared. Pairs below were chosen for >= 4.5:1 text
+ * contrast (3:1 for outlines).
+ */
+.mission-panel,
+.theme-bridge {
+  --accent: #075985;
+  --accent-fg: #ffffff;
+  --focus: #a21caf;
+  --cue: #a21caf;
+  --supply-bg: #fcd34d;
+  --supply-border: #78350f;
+  --supply-fg: #111827;
+  --built-bg: #7dd3fc;
+  --built-border: #0c4a6e;
+  --built-fg: #111827;
+  --item-radius: 0.375rem;
+  border-radius: 0.75rem;
+}
+
+.theme-space {
+  --background: #0b1437;
+  --foreground: #f1f5ff;
+  --muted: #c7d2fe;
+  --border: #818cf8;
+  --accent: #fde047;
+  --accent-fg: #1e1b4b;
+  --focus: #fde047;
+  --cue: #fb923c;
+  --supply-bg: #a5b4fc;
+  --supply-border: #e0e7ff;
+  --supply-fg: #111827;
+  --built-bg: #5eead4;
+  --built-border: #ccfbf1;
+  --built-fg: #042f2e;
+  --item-radius: 9999px;
+  background: var(--background);
+  color: var(--foreground);
+  padding: 1rem;
+}
+
 :focus-visible {
-  outline: 3px solid #a21caf;
+  outline: 3px solid var(--focus, #a21caf);
   outline-offset: 2px;
 }
 
-.block-btn,
-.block-slot {
+.item {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--item-radius);
+  border: 2px solid transparent;
+  font-size: 0.875rem;
+  font-weight: 700;
   touch-action: manipulation;
 }
+@media (min-width: 40rem) {
+  .item {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+.item-supply {
+  background: var(--supply-bg);
+  border-color: var(--supply-border);
+  color: var(--supply-fg);
+}
+/* Used items are striped, so they differ from supply items by pattern as well as place. */
+.item-built {
+  background-color: var(--built-bg);
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 8px,
+    rgb(0 0 0 / 0.3) 8px 10px
+  );
+  border-color: var(--built-border);
+  color: var(--built-fg);
+}
+.item-slot {
+  border: 2px dashed var(--border);
+}
+.item-cue {
+  outline: 4px dashed var(--cue);
+  outline-offset: 2px;
+}
 
-/* Motion is opt-in: nothing animates unless the person has not asked for less. */
 @media (prefers-reduced-motion: no-preference) {
-  .block-btn {
+  button.item {
     transition: transform 120ms ease-out;
   }
-  .block-btn:active {
+  button.item:active {
     transform: scale(0.94);
   }
 }

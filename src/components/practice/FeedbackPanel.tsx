@@ -1,7 +1,9 @@
 import type { PracticeFeedback } from "@/lib/practice-protocol";
+import type { ThemeVocabulary } from "@/themes";
 import { presentHint } from "./hints";
 
 interface FeedbackPanelProps {
+  vocabulary: ThemeVocabulary;
   feedback: PracticeFeedback | null;
   start: number;
   networkProblem: boolean;
@@ -14,6 +16,7 @@ interface FeedbackPanelProps {
  * changes inside it.
  */
 export function FeedbackPanel({
+  vocabulary,
   feedback,
   start,
   networkProblem,
@@ -27,7 +30,12 @@ export function FeedbackPanel({
         </p>
       ) : feedback === null ? null : (
         <div className="rounded-lg border-2 border-sky-900 bg-sky-50 p-3 text-gray-900">
-          <Message feedback={feedback} start={start} onSkip={onSkip} />
+          <Message
+            feedback={feedback}
+            start={start}
+            vocabulary={vocabulary}
+            onSkip={onSkip}
+          />
         </div>
       )}
     </div>
@@ -37,22 +45,29 @@ export function FeedbackPanel({
 function Message({
   feedback,
   start,
+  vocabulary,
   onSkip,
 }: {
   feedback: PracticeFeedback;
   start: number;
+  vocabulary: ThemeVocabulary;
   onSkip: () => void;
 }) {
   switch (feedback.kind) {
     case "neutral-feedback":
       return (
         <p>
-          Not quite yet. Look at the blocks in the pile and try again. There is
-          no rush.
+          Not quite yet. Look at the {vocabulary.plural}{" "}
+          {vocabulary.supplyPlace} and try again. There is no rush.
         </p>
       );
     case "hint": {
-      const hint = presentHint(feedback.hintId, feedback.steps, start);
+      const hint = presentHint(
+        feedback.hintId,
+        feedback.steps,
+        start,
+        vocabulary,
+      );
       return (
         <>
           <p className="font-semibold">Hint {feedback.hintNumber}</p>
@@ -74,7 +89,7 @@ function Message({
             onClick={onSkip}
             className="mt-2 min-h-12 rounded-md border-2 border-sky-900 px-4 font-semibold"
           >
-            Skip this bridge
+            Skip this challenge
           </button>
         </>
       );

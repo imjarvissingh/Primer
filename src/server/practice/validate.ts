@@ -1,6 +1,6 @@
 import "server-only";
 import {
-  BRIDGE_MISSION_ID,
+  PRACTICE_MISSION_ID,
   MAX_REQUEST_BYTES,
   type PracticeErrorCode,
   type PracticeRequest,
@@ -41,14 +41,14 @@ export function parseRequest(raw: string): ParseResult {
 
   if (body.action === "start") {
     if (!hasOnlyKeys(body, ["action", "missionId"])) return bad;
-    if (body.missionId !== BRIDGE_MISSION_ID) {
+    if (body.missionId !== PRACTICE_MISSION_ID) {
       return typeof body.missionId === "string"
         ? { ok: false, error: "unknown-mission" }
         : bad;
     }
     return {
       ok: true,
-      request: { action: "start", missionId: BRIDGE_MISSION_ID },
+      request: { action: "start", missionId: PRACTICE_MISSION_ID },
     };
   }
 

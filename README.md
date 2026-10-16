@@ -16,9 +16,10 @@ Two themed experiences are planned, sharing one curriculum and one learning engi
 ```bash
 npm install
 npm run dev          # then open http://localhost:3000/block-builder
+                     # or http://localhost:3000/space-construction
 ```
 
-Tap blocks to put them on the bridge, pick how many are left in the pile, and press "Check my answer". Answers are scored by the server (`/api/practice/bridge`), which keeps short-lived in-memory sessions, so the demo needs `next dev` or `next start` (not a static export) and runs as a single instance. See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the client/server boundary and limitations.
+Tap the 5 blocks (or modules) to put them on the bridge (or station), pick how many are left in the pile (or supply), and press "Check my answer". The answer buttons unlock once exactly 5 are placed. Answers are scored by the server (`/api/practice/mission`), which keeps short-lived in-memory sessions, so the demo needs `next dev` or `next start` (not a static export) and runs as a single instance. See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the client/server boundary and limitations.
 
 ## Getting started
 

@@ -11,22 +11,23 @@ describe("Home page", () => {
     ).toEqual(["Primer"]);
   });
 
-  it("lists both experiences: Block Builder as a draft demo, Space Construction as planned", () => {
+  it("lists both experiences, each a draft demo linking to its own route", () => {
     render(<Home />);
     const list = screen.getByRole("list");
     const items = within(list).getAllByRole("listitem");
     expect(items).toHaveLength(2);
     expect(items[0]).toHaveTextContent("Block Builder");
-    expect(items[0]).toHaveTextContent("Draft demo");
     expect(items[1]).toHaveTextContent("Space Construction");
-    expect(items[1]).toHaveTextContent("Planned — not yet available");
+    items.forEach((item) => expect(item).toHaveTextContent("Draft demo"));
   });
 
-  it("links only to the Block Builder demo and has no forms (no data collection)", () => {
+  it("links only to the two demos and has no forms (no data collection)", () => {
     render(<Home />);
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(1);
-    expect(links[0]).toHaveAttribute("href", "/block-builder");
+    expect(links.map((l) => l.getAttribute("href"))).toEqual([
+      "/block-builder",
+      "/space-construction",
+    ]);
     expect(screen.queryByRole("button")).toBeNull();
     expect(screen.queryByRole("textbox")).toBeNull();
   });

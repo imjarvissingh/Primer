@@ -67,4 +67,22 @@ describe("client/server boundary", () => {
       );
     }
   });
+
+  it("keeps theme definitions free of imports (presentation data only)", () => {
+    const themes = all.filter((f) => f.rel.startsWith("themes/"));
+    expect(themes.length).toBeGreaterThan(0);
+    for (const { rel, text } of themes) {
+      expect(runtimeImports(text), rel).toEqual([]);
+    }
+  });
+
+  it("keeps the evaluator and tutoring policy out of components and themes", () => {
+    for (const { rel, text } of all) {
+      if (!rel.startsWith("components/") && !rel.startsWith("themes/"))
+        continue;
+      expect(text, rel).not.toMatch(
+        /evaluateResponse|computeAnswer|step\(|startItem/,
+      );
+    }
+  });
 });

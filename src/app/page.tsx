@@ -1,4 +1,5 @@
 import { ExperienceCard } from "@/components/ExperienceCard";
+import { THEMES } from "@/themes";
 
 export default function Home() {
   return (
@@ -18,25 +19,24 @@ export default function Home() {
           Experiences
         </h2>
         <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-          <ExperienceCard
-            name="Block Builder"
-            description="Build bridges and structures while practicing subtraction."
-            href="/block-builder"
-            linkLabel="Try The Broken Bridge"
-          />
-          <ExperienceCard
-            name="Space Construction"
-            description="Assemble a space station while practicing subtraction."
-          />
+          {THEMES.map((theme) => (
+            <ExperienceCard
+              key={theme.id}
+              name={theme.displayName}
+              description={theme.cardDescription}
+              href={theme.href}
+              linkLabel={theme.cardLinkLabel}
+            />
+          ))}
         </ul>
         <p className="mt-4 text-muted">
-          Both experiences will share one curriculum and one learning engine.
+          Both experiences share one curriculum and one learning engine.
         </p>
       </section>
 
       <p className="mt-10 border-t border-border pt-6 text-sm text-muted">
-        Primer is in early development. The first playable mission is a draft
-        demonstration that has not been reviewed by an educator. This site
+        Primer is in early development. Both playable missions are draft
+        demonstrations that has not been reviewed by an educator. This site
         collects no information.
       </p>
     </main>

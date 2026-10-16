@@ -4,20 +4,20 @@
  * Nothing here can carry an answer key; a response never contains an answer field.
  */
 
-export const BRIDGE_MISSION_ID = "broken-bridge";
-export const PRACTICE_API_PATH = "/api/practice/bridge";
+export const PRACTICE_MISSION_ID = "subtract-practice";
+export const PRACTICE_API_PATH = "/api/practice/mission";
 /** Requests larger than this are rejected before parsing. */
 export const MAX_REQUEST_BYTES = 1024;
 
 export type PracticeRequest =
-  | { action: "start"; missionId: typeof BRIDGE_MISSION_ID }
+  | { action: "start"; missionId: typeof PRACTICE_MISSION_ID }
   | { action: "attempt"; sessionId: string; seq: number; answer: unknown }
   | { action: "skip"; sessionId: string; seq: number }
   | { action: "stop"; sessionId: string; seq: number };
 
 /** The question itself, as the story states it. Not an answer. */
 export interface PublicChallenge {
-  missionId: typeof BRIDGE_MISSION_ID;
+  missionId: typeof PRACTICE_MISSION_ID;
   start: number;
   takeAway: number;
   /** Largest whole number the answer picker should offer. */
