@@ -30,7 +30,7 @@ export function AnswerPicker({
               onChange={() => onChange(n)}
               className="peer sr-only"
             />
-            <span className="answer-chip flex size-12 cursor-pointer items-center justify-center rounded-md border-2 border-border text-lg font-bold peer-checked:border-(--accent) peer-checked:bg-(--accent) peer-checked:text-(--accent-fg) peer-disabled:cursor-not-allowed peer-disabled:opacity-60 peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--focus)">
+            <span className="answer-chip flex size-14 cursor-pointer items-center justify-center rounded-xl border-2 border-border text-xl font-bold peer-checked:border-(--accent) peer-checked:bg-(--accent) peer-checked:text-(--accent-fg) peer-disabled:cursor-not-allowed peer-disabled:opacity-60 peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--focus)">
               {n}
             </span>
           </label>

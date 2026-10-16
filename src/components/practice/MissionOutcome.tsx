@@ -39,6 +39,32 @@ function copyFor(kind: OutcomeKind, theme: ThemeConfig, answer: number | null) {
   }
 }
 
+/** A still, decorative badge. It claims nothing; the heading says what happened. */
+function Celebration() {
+  return (
+    <svg
+      viewBox="0 0 120 60"
+      aria-hidden="true"
+      focusable="false"
+      className="mb-3 h-14 w-auto"
+    >
+      <circle cx="60" cy="30" r="24" fill="var(--accent)" />
+      <path
+        d="M48 31 l9 9 l17 -19"
+        fill="none"
+        stroke="var(--accent-fg)"
+        strokeWidth="6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16 20 l3 7 l7 1 l-5 5 l1 7 l-6 -4 l-6 4 l1 -7 l-5 -5 l7 -1z M104 14 l2 5 l5 1 l-4 4 l1 5 l-4 -3 l-4 3 l1 -5 l-4 -4 l5 -1z"
+        fill="var(--highlight)"
+      />
+    </svg>
+  );
+}
+
 interface MissionOutcomeProps {
   theme: ThemeConfig;
   kind: OutcomeKind;
@@ -60,13 +86,14 @@ export function MissionOutcome({
   return (
     <section
       aria-labelledby="outcome-heading"
-      className="rounded-lg border-2 border-border p-5"
+      className="card scene-enter p-5 sm:p-7"
     >
+      {kind === "correct" && <Celebration />}
       <h2
         id="outcome-heading"
         ref={heading}
         tabIndex={-1}
-        className="text-2xl font-bold"
+        className="text-2xl font-extrabold sm:text-3xl"
       >
         {copy.title}
       </h2>
@@ -96,7 +123,7 @@ export function MissionOutcome({
       <button
         type="button"
         onClick={onRestart}
-        className="mt-5 min-h-12 rounded-md bg-(--accent) px-6 text-lg font-semibold text-(--accent-fg)"
+        className="btn btn-primary mt-5"
       >
         Start over
       </button>

@@ -38,6 +38,8 @@ export interface ThemeConfig {
   readonly cardDescription: string;
   readonly cardLinkLabel: string;
   readonly intro: string;
+  /** One friendly sentence naming what the learner is building toward. */
+  readonly goal: string;
   readonly startLabel: string;
   readonly playHeading: string;
   /** Contains {start} and {takeAway}. */
@@ -57,6 +59,7 @@ export const BLOCK_BUILDER_THEME: ThemeConfig = Object.freeze({
   cardLinkLabel: "Try The Broken Bridge",
   intro:
     "Oh no! The bridge has a gap in it. Help the builder fix it with blocks.",
+  goal: "Your goal: fill the gap in the bridge so everyone can cross the river.",
   startLabel: "Start building",
   playHeading: "Fix the bridge",
   story:
@@ -84,6 +87,7 @@ export const SPACE_CONSTRUCTION_THEME: ThemeConfig = Object.freeze({
   cardLinkLabel: "Try The Space Station Mission",
   intro:
     "The space station is only half built! Help the space engineer finish it with modules.",
+  goal: "Your goal: add the missing modules so the space station is complete.",
   startLabel: "Start the mission",
   playHeading: "Build the station",
   story:

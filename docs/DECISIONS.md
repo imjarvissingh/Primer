@@ -65,3 +65,12 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Bare summary link removed from the home page.** It was a dead end without a session id, and the id should only travel from the finished check. The summary page still explains itself when opened bare.
 - **5xx is retryable.** Previously any non-network error returned the learner to the start; a transient server error now keeps their question.
 - **Copy:** fixed one grammar error on the home page, softened "planned" in page metadata, added refresh behavior to the intro text. No mathematical values, hint policy or feedback semantics changed. Wording still needs educator review.
+
+## Phase 8A decisions (2026-10-16)
+- **No UI framework or fonts.** Identity is CSS variables in `globals.css` (cream/navy/teal, amber highlight), a few shared classes (`.btn`, `.card`, `.notice`, `.field-panel`) and inline SVG. System font stack, zero new dependencies.
+- **Theme = palette + artwork + strings.** Each world sets CSS variables on its theme class (`--panel-bg`, `--accent`, item colors and shape); scenes are SVG components passed to the shared mission. A new presentation-only `goal` string was added to the theme contract (no digits, no authority).
+- **Worlds keep their own palette in dark mode** (self-contained panels); the page chrome follows `prefers-color-scheme`.
+- **Assessment is deliberately plainer** (`.calm-panel`, no world art). Its progress bar is decorative; the heading carries the text.
+- **Progress pips duplicate text** ("Blocks on the bridge: N (goal: M)") and are `aria-hidden`; they do not change placement behavior (that is Phase 8B).
+- **Motion** lives only inside `prefers-reduced-motion: no-preference` (enforced by a unit test): scene entrance, block placement pop, button press.
+- Summary visuals show counts and per-question outcomes only; no rates, scores or confidence.

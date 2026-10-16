@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SiteHeader } from "@/components/brand/SiteHeader";
 import { AssessmentCheck } from "@/components/assessment/AssessmentCheck";
 
 export const metadata: Metadata = {
@@ -14,20 +14,16 @@ export default function AssessmentPage() {
       id="main"
       className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6"
     >
-      <p>
-        <Link href="/" className="underline">
-          Back to Primer home
-        </Link>
-      </p>
-      <h1 className="mt-4 text-3xl font-bold tracking-tight">
+      <SiteHeader />
+      <h1 className="mt-6 text-3xl font-extrabold tracking-tight sm:text-4xl">
         Independent check
       </h1>
-      <p className="mt-3 rounded-lg border-2 border-border p-3 text-sm">
+      <p className="notice mt-3 text-sm">
         Draft demonstration. These questions have not been reviewed by an
         educator, and this is not a tested assessment. It collects no
         information and saves nothing beyond a short-lived in-memory session.
       </p>
-      <div className="mission-panel mt-6">
+      <div className="calm-panel mt-6">
         <AssessmentCheck />
       </div>
     </main>

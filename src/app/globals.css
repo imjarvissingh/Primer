@@ -1,10 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --muted: #4b5563;
-  --border: #d1d5db;
+  /* Primer brand tokens. Text pairs are >= 4.5:1; outlines >= 3:1 on --surface. */
+  --background: #fffaf0;
+  --foreground: #1b2540;
+  --muted: #475569;
+  --border: #8b94a8;
+  --surface: #ffffff;
+  --brand: #0f766e;
+  --brand-fg: #ffffff;
+  --brand-soft: #ccfbf1;
+  --highlight: #f59e0b;
+  --radius: 1rem;
+  --shadow: 0 1px 2px rgb(27 37 64 / 0.08), 0 6px 18px rgb(27 37 64 / 0.08);
+  --accent: var(--brand);
+  --accent-fg: var(--brand-fg);
+  --focus: #a21caf;
 }
 
 @theme inline {
@@ -12,14 +23,23 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --muted: #a3a3a3;
-    --border: #404040;
+    --background: #0f1526;
+    --foreground: #eef2ff;
+    --muted: #b6c0d8;
+    --border: #6b7691;
+    --surface: #18203a;
+    --brand: #5eead4;
+    --brand-fg: #042f2e;
+    --brand-soft: #134e4a;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 18px rgb(0 0 0 / 0.3);
+    --focus: #f0abfc;
   }
 }
 
@@ -37,13 +57,31 @@ body {
 }
 
 /*
- * Mission themes. A theme is only a set of colors and an item shape; the
- * markup and behaviour are shared. Pairs below were chosen for >= 4.5:1 text
- * contrast (3:1 for outlines).
+ * Mission themes. A theme is only a set of colors, an item shape and artwork;
+ * the markup and behaviour are shared. Pairs were chosen for >= 4.5:1 text
+ * contrast (3:1 for outlines). Each world is a self-contained panel, so it
+ * keeps its own palette in light and dark mode.
  */
-.mission-panel,
+.mission-panel {
+  padding: 1rem;
+  border-radius: var(--radius);
+  background: var(--panel-bg);
+  color: var(--foreground);
+  box-shadow: var(--shadow);
+}
+@media (min-width: 40rem) {
+  .mission-panel {
+    padding: 1.5rem;
+  }
+}
+
 .theme-bridge {
-  --accent: #075985;
+  --panel-bg: #fff3d6;
+  --foreground: #2a1f12;
+  --muted: #5b4630;
+  --border: #8a5a2b;
+  --surface: #fffaf0;
+  --accent: #0b5d73;
   --accent-fg: #ffffff;
   --focus: #a21caf;
   --cue: #a21caf;
@@ -53,15 +91,17 @@ body {
   --built-bg: #7dd3fc;
   --built-border: #0c4a6e;
   --built-fg: #111827;
+  --field-supply-bg: #f7e3b5;
+  --field-built-bg: #dff1fb;
   --item-radius: 0.375rem;
-  border-radius: 0.75rem;
 }
 
 .theme-space {
-  --background: #0b1437;
+  --panel-bg: #0b1437;
   --foreground: #f1f5ff;
   --muted: #c7d2fe;
   --border: #818cf8;
+  --surface: #131d4f;
   --accent: #fde047;
   --accent-fg: #1e1b4b;
   --focus: #fde047;
@@ -72,15 +112,104 @@ body {
   --built-bg: #5eead4;
   --built-border: #ccfbf1;
   --built-fg: #042f2e;
+  --field-supply-bg: #16215c;
+  --field-built-bg: #0e2f4a;
   --item-radius: 9999px;
-  background: var(--background);
-  color: var(--foreground);
+}
+
+/* The independent check is calmer: plain surface, brand color, no world art. */
+.calm-panel {
   padding: 1rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+@media (min-width: 40rem) {
+  .calm-panel {
+    padding: 2rem;
+  }
 }
 
 :focus-visible {
   outline: 3px solid var(--focus, #a21caf);
   outline-offset: 2px;
+}
+
+/* ---- Shared controls --------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.25rem;
+  border-radius: 0.75rem;
+  border: 2px solid transparent;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: 1.125rem;
+  padding: 0 1.5rem;
+  box-shadow: 0 3px 0 rgb(0 0 0 / 0.28);
+}
+.btn-secondary {
+  border-color: var(--border);
+  background: transparent;
+  color: inherit;
+}
+.btn[aria-disabled="true"],
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn {
+    transition:
+      transform 120ms ease-out,
+      box-shadow 120ms ease-out;
+  }
+  .btn:not([aria-disabled="true"]):hover {
+    transform: translateY(-1px);
+  }
+  .btn:not([aria-disabled="true"]):active {
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+}
+
+.card {
+  border-radius: var(--radius);
+  border: 2px solid color-mix(in srgb, var(--border) 40%, transparent);
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: var(--shadow);
+}
+.notice {
+  border-radius: 0.75rem;
+  border: 2px solid color-mix(in srgb, var(--border) 40%, transparent);
+  border-left: 6px solid var(--accent);
+  background: var(--surface);
+  color: var(--foreground);
+  padding: 0.75rem 1rem;
+}
+
+/* ---- Manipulatives ------------------------------------------------------ */
+.field-panel {
+  border-radius: 0.75rem;
+  border: 2px solid var(--border);
+  padding: 0.75rem;
+}
+.field-supply {
+  background: var(--field-supply-bg);
+}
+.field-built {
+  background: var(--field-built-bg);
 }
 
 .item {
@@ -98,14 +227,15 @@ body {
 }
 @media (min-width: 40rem) {
   .item {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 3.25rem;
+    height: 3.25rem;
   }
 }
 .item-supply {
   background: var(--supply-bg);
   border-color: var(--supply-border);
   color: var(--supply-fg);
+  box-shadow: 0 3px 0 var(--supply-border);
 }
 /* Used items are striped, so they differ from supply items by pattern as well as place. */
 .item-built {
@@ -117,6 +247,7 @@ body {
   );
   border-color: var(--built-border);
   color: var(--built-fg);
+  box-shadow: 0 3px 0 var(--built-border);
 }
 .item-slot {
   border: 2px dashed var(--border);
@@ -126,7 +257,43 @@ body {
   outline-offset: 2px;
 }
 
+/* Progress pips: one per item to place. A text count always sits beside them. */
+.pip {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--item-radius);
+  border: 2px solid var(--border);
+}
+.pip-filled {
+  background: var(--built-bg);
+  border-color: var(--built-border);
+}
+
+/* Answer choices */
+.answer-chip {
+  background: var(--surface);
+}
+
+/* ---- Motion: short, purposeful, and off when the user asks for none ----- */
+@keyframes scene-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes place {
+  from {
+    transform: scale(0.7);
+  }
+}
 @media (prefers-reduced-motion: no-preference) {
+  .scene-enter {
+    animation: scene-in 400ms ease-out;
+  }
+  .item-built {
+    animation: place 160ms ease-out;
+  }
   button.item {
     transition: transform 120ms ease-out;
   }

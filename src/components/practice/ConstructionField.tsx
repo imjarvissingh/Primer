@@ -41,9 +41,9 @@ export function ConstructionField({
     <div className="grid gap-4 sm:grid-cols-2">
       <section
         aria-labelledby="supply-heading"
-        className="rounded-lg border-2 border-border p-3"
+        className="field-panel field-supply"
       >
-        <h3 id="supply-heading" className="mb-2 text-base font-semibold">
+        <h3 id="supply-heading" className="mb-2 text-lg font-bold">
           {v.supplyHeading}
         </h3>
         <div
@@ -80,9 +80,9 @@ export function ConstructionField({
 
       <section
         aria-labelledby="built-heading"
-        className="rounded-lg border-2 border-border p-3"
+        className="field-panel field-built"
       >
-        <h3 id="built-heading" className="mb-2 text-base font-semibold">
+        <h3 id="built-heading" className="mb-2 text-lg font-bold">
           {v.builtHeading}
         </h3>
         <div

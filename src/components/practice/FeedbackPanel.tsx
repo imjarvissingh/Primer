@@ -25,11 +25,11 @@ export function FeedbackPanel({
   return (
     <div role="status" aria-live="polite" className="min-h-16">
       {networkProblem ? (
-        <p className="rounded-lg border-2 border-border p-3">
+        <p className="notice">
           We could not reach the activity. Check the connection and try again.
         </p>
       ) : feedback === null ? null : (
-        <div className="rounded-lg border-2 border-sky-900 bg-sky-50 p-3 text-gray-900">
+        <div className="notice">
           <Message
             feedback={feedback}
             start={start}
@@ -87,7 +87,7 @@ function Message({
           <button
             type="button"
             onClick={onSkip}
-            className="mt-2 min-h-12 rounded-md border-2 border-sky-900 px-4 font-semibold"
+            className="btn btn-secondary mt-2"
           >
             Skip this challenge
           </button>

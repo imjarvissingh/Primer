@@ -20,6 +20,13 @@ const OUTCOME: Record<SummaryItemOutcome, string> = {
   skipped: "Skipped",
   "not-reached": "Not reached",
 };
+/** Shape + word, never color alone. Decorative: the table says the same. */
+const OUTCOME_MARK: Record<SummaryItemOutcome, string> = {
+  correct: "●",
+  incorrect: "○",
+  skipped: "↷",
+  "not-reached": "–",
+};
 const STATE_LABEL: Record<string, string> = {
   "not-assessed": "Not yet assessed",
   emerging: "Needs more evidence",
@@ -60,10 +67,10 @@ export function ProgressSummary() {
 
   return (
     <div className="grid gap-6">
-      <p
-        className="rounded-lg border-2 border-border p-3 font-semibold"
-        role="note"
-      >
+      <p className="notice font-semibold" role="note">
+        <span className="mr-2 rounded-full bg-foreground px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-background">
+          Synthetic data
+        </span>
         Synthetic demonstration data. No real child&rsquo;s information is shown
         or collected. This page is not a parent account and has no sign-in.
       </p>
@@ -104,18 +111,34 @@ function Body({ state }: { state: State }) {
         <h2 id="counts-heading" className="text-xl font-semibold">
           This short check{s.status === "stopped" ? " (stopped early)" : ""}
         </h2>
-        <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 text-lg">
-          <dt>Questions in the check</dt>
-          <dd className="font-bold">{s.counts.total}</dd>
-          <dt>Answered independently</dt>
-          <dd className="font-bold">{s.counts.answered}</dd>
-          <dt>Correct in this short check</dt>
-          <dd className="font-bold">{s.counts.correct}</dd>
-          <dt>Skipped</dt>
-          <dd className="font-bold">{s.counts.skipped}</dd>
-          <dt>Not reached</dt>
-          <dd className="font-bold">{s.counts.notReached}</dd>
+        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+          {(
+            [
+              ["Questions in the check", s.counts.total],
+              ["Answered independently", s.counts.answered],
+              ["Correct in this short check", s.counts.correct],
+              ["Skipped", s.counts.skipped],
+              ["Not reached", s.counts.notReached],
+            ] as const
+          ).map(([label, n]) => (
+            <div key={label} className="card flex flex-col-reverse p-3">
+              <dt className="text-sm text-muted">{label}</dt>
+              <dd className="text-3xl font-extrabold">{n}</dd>
+            </div>
+          ))}
         </dl>
+        {/* The same four outcomes, in order. No total, rate or score is computed. */}
+        <div aria-hidden="true" className="flex gap-2">
+          {s.items.map((item) => (
+            <span
+              key={item.position}
+              className="card flex-1 px-2 py-1.5 text-center text-sm font-semibold"
+            >
+              {item.position} {OUTCOME_MARK[item.outcome]}{" "}
+              {OUTCOME[item.outcome]}
+            </span>
+          ))}
+        </div>
       </section>
 
       <section aria-labelledby="items-heading" className="grid gap-3">
@@ -165,7 +188,7 @@ function Body({ state }: { state: State }) {
         </h2>
         <ul className="grid gap-2">
           {s.skills.map((k) => (
-            <li key={k.id} className="rounded-lg border border-border p-3">
+            <li key={k.id} className="card p-3">
               <p className="font-semibold">
                 {k.id}: {k.title}
               </p>

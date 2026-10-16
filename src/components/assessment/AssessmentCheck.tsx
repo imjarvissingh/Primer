@@ -23,10 +23,8 @@ type Screen =
       status: Exclude<AssessmentStatus, "in-progress">;
     };
 
-const primary =
-  "min-h-12 rounded-md bg-(--accent) px-6 text-lg font-semibold text-(--accent-fg) aria-disabled:opacity-60";
-const secondary =
-  "min-h-12 rounded-md border-2 border-border px-4 font-semibold";
+const primary = "btn btn-primary";
+const secondary = "btn btn-secondary";
 
 /**
  * The independent check, one question at a time. It decides nothing: every
@@ -156,7 +154,7 @@ export function AssessmentCheck() {
   if (screen.name === "intro") {
     return (
       <section aria-labelledby="intro-heading" className="grid gap-4">
-        <h2 id="intro-heading" className="text-2xl font-bold">
+        <h2 id="intro-heading" className="text-2xl font-extrabold">
           Try some on your own
         </h2>
         <p className="text-lg">
@@ -166,9 +164,7 @@ export function AssessmentCheck() {
           this page, the check starts over.
         </p>
         <div role="status" aria-live="polite">
-          {notice && (
-            <p className="rounded-lg border-2 border-border p-3">{notice}</p>
-          )}
+          {notice && <p className="notice">{notice}</p>}
         </div>
         <div>
           <button
@@ -203,7 +199,7 @@ export function AssessmentCheck() {
         <p>
           <Link
             href={`/demo-progress?session=${screen.sessionId}`}
-            className="underline"
+            className="btn btn-secondary"
           >
             Summary for a grown-up (demo)
           </Link>
@@ -220,19 +216,32 @@ export function AssessmentCheck() {
   const { question } = screen;
   return (
     <section aria-labelledby="question-heading" className="grid gap-5">
-      <h2
-        id="question-heading"
-        ref={heading}
-        tabIndex={-1}
-        className="text-2xl font-bold"
-      >
-        Question {question.position} of {question.total}
-      </h2>
       <div>
-        <p className="text-4xl font-bold" aria-hidden="true">
+        {/* Position only: the heading below says the same in words. */}
+        <div aria-hidden="true" className="flex gap-1.5">
+          {Array.from({ length: question.total }, (_, i) => (
+            <span
+              key={i}
+              className={`h-2 flex-1 rounded-full ${
+                i < question.position ? "bg-brand" : "bg-border/40"
+              }`}
+            />
+          ))}
+        </div>
+        <h2
+          id="question-heading"
+          ref={heading}
+          tabIndex={-1}
+          className="mt-3 text-xl font-bold text-muted"
+        >
+          Question {question.position} of {question.total}
+        </h2>
+      </div>
+      <div className="rounded-2xl bg-background px-5 py-6 text-center sm:py-8">
+        <p className="text-5xl font-extrabold sm:text-6xl" aria-hidden="true">
           {question.start} − {question.takeAway}
         </p>
-        <p className="mt-2 text-lg">
+        <p className="mt-3 text-lg">
           Start with {question.start}. Take away {question.takeAway}. How many
           are left?
         </p>

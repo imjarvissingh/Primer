@@ -37,3 +37,8 @@ Follow-up (not started): Phase 7 YC narrative, demo recording and founder video.
 Done: YC requirements checked against official pages (Winter 2027 batch, Nov 2 8pm PT; founder video rules; application questions are behind login and were not seen), and public-safe drafts: [YC-APPLICATION.md](YC-APPLICATION.md), [YC-DEMO-STORYBOARD.md](YC-DEMO-STORYBOARD.md), [YC-FOUNDER-VIDEO.md](YC-FOUNDER-VIDEO.md), [YC-VALIDATION-PLAN.md](YC-VALIDATION-PLAN.md), [YC-SUBMISSION-CHECKLIST.md](YC-SUBMISSION-CHECKLIST.md). No application code changed.
 
 Founder responsibilities: log in and copy the real questions; supply all personal facts; record the demo and founder video; run parent and educator conversations; write and submit the application privately.
+
+## Phase 8A status (2026-10-16)
+Done: original Primer visual identity (wordmark, tokens, shared button/card/notice styles), redesigned home page, richer Block Builder and Space Construction scenes with a visible goal, mission framing (goal line, "on the bridge: N (goal: M)" progress with pips, themed feedback and outcome), calmer assessment with a position bar, clearer adult summary (stat cards, per-question marks, prominent synthetic-data label). No engine, scoring, hint or assessment-logic changes. Visual QA done with Playwright screenshots at 375, 768 and 1440 px (light, plus dark at 768).
+
+Not started: Phase 8B (construction interaction and visual progression), educator review, persistence/authentication/consent.

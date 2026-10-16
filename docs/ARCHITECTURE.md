@@ -160,3 +160,10 @@ Nothing ties a practice session to a check, so no practice claim ("used no hints
 - Session starts are capped per flow at 120/minute per server process (`src/server/rate-limit.ts`), so a flood cannot churn the 500-slot store and evict live sessions. It reads no IP, header or identifier, and is not effective across multiple instances. Running sessions are never throttled. Over the cap, the API returns 429 `rate-limited`.
 - CSRF: assessed, no change. There are no cookies or ambient credentials; the APIs require `application/json` (not a CORS-simple type) and send no CORS headers, so a cross-site page cannot make a credentialed state change. A CSRF token would add nothing.
 - The session id in the summary URL is an unguessable capability (UUID v4), not authentication. Anyone holding the URL can see that one synthetic summary until it expires.
+
+## Implementation status (Phase 8A, 2026-10-16): visual identity
+Presentation only; the domain, server, protocol, tutoring and assessment code are untouched.
+- `src/app/globals.css`: brand tokens, theme classes (`theme-bridge`, `theme-space`), `calm-panel`, shared controls, manipulatives, motion.
+- `src/components/brand/`: `Wordmark` and `SiteHeader` (all pages except Home, which has its own hero).
+- `src/components/practice/scenes/`: decorative SVG per theme; `ExperienceCard` reuses them on the home page.
+- Decorative SVG is `aria-hidden`; every meaning it carries (goal, counts) also exists as text.

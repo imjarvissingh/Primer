@@ -25,10 +25,8 @@ type Screen =
   | { name: "playing"; session: Session }
   | { name: "outcome"; kind: OutcomeKind };
 
-const primaryButton =
-  "min-h-12 rounded-md bg-(--accent) px-6 text-lg font-semibold text-(--accent-fg) aria-disabled:opacity-60";
-const secondaryButton =
-  "min-h-12 rounded-md border-2 border-border px-4 font-semibold";
+const primaryButton = "btn btn-primary";
+const secondaryButton = "btn btn-secondary";
 
 interface PracticeMissionProps {
   theme: ThemeConfig;
@@ -179,17 +177,24 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
     });
   }
 
+  const framedScene = (
+    <div className="scene-enter overflow-hidden rounded-xl border-2 border-border">
+      {scene}
+    </div>
+  );
+
   if (screen.name === "intro") {
     return (
       <section aria-labelledby="intro-heading" className="grid gap-4">
-        {scene}
-        <h2 id="intro-heading" className="text-2xl font-bold">
+        {framedScene}
+        <h2 id="intro-heading" className="text-2xl font-extrabold sm:text-3xl">
           {theme.missionTitle}
         </h2>
         <p className="text-lg">{theme.intro}</p>
+        <p className="notice font-semibold">{theme.goal}</p>
         <div role="status" aria-live="polite">
           {(networkProblem || sessionLost) && (
-            <p className="rounded-lg border-2 border-border p-3">
+            <p className="notice">
               {sessionLost
                 ? "That practice is no longer available, so it could not be continued. Press the button to begin a new one."
                 : rateLimited
@@ -235,9 +240,9 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
 
   return (
     <section aria-labelledby="play-heading" className="grid gap-5">
-      {scene}
+      {framedScene}
       <div>
-        <h2 id="play-heading" className="text-2xl font-bold">
+        <h2 id="play-heading" className="text-2xl font-extrabold">
           {theme.playHeading}
         </h2>
         <p className="mt-2 text-lg">
@@ -254,10 +259,24 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
         highlightAbove={hintCue}
         disabled={busy}
       />
-      <div role="status" aria-live="polite">
-        <p className="font-semibold">
-          {capitalize(v.plural)} {v.builtPlace}: {used.size}
-        </p>
+      <div role="status" aria-live="polite" className="card p-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <p className="font-bold">
+            {capitalize(v.plural)} {v.builtPlace}: {used.size}
+          </p>
+          <span className="text-sm text-muted">
+            (goal: {challenge.takeAway})
+          </span>
+          {/* Same information as the text beside it, drawn: decorative. */}
+          <span aria-hidden="true" className="flex flex-wrap gap-1">
+            {Array.from({ length: challenge.takeAway }, (_, i) => (
+              <span
+                key={i}
+                className={`pip ${i < used.size ? "pip-filled" : ""}`}
+              />
+            ))}
+          </span>
+        </div>
         <p className="mt-1">
           {readinessMessage(used.size, challenge.takeAway, v)}
         </p>
@@ -275,7 +294,7 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
       )}
 
       <form
-        className="grid gap-4"
+        className="card grid gap-4 p-4"
         onSubmit={(e) => {
           e.preventDefault();
           if (ready && selected !== null && !busy) void act(session, "attempt");

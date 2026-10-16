@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SiteHeader } from "@/components/brand/SiteHeader";
 import { ProgressSummary } from "@/components/assessment/ProgressSummary";
 
 export const metadata: Metadata = {
@@ -17,12 +17,8 @@ export default function DemoProgressPage() {
       id="main"
       className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6"
     >
-      <p>
-        <Link href="/" className="underline">
-          Back to Primer home
-        </Link>
-      </p>
-      <h1 className="mt-4 text-3xl font-bold tracking-tight">
+      <SiteHeader />
+      <h1 className="mt-6 text-3xl font-extrabold tracking-tight sm:text-4xl">
         Learning evidence summary (demo)
       </h1>
       <div className="mt-6">
