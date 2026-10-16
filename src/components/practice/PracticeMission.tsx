@@ -9,7 +9,7 @@ import {
 } from "@/lib/practice-protocol";
 import { AnswerPicker } from "./AnswerPicker";
 import { ConstructionField } from "./ConstructionField";
-import { FeedbackPanel } from "./FeedbackPanel";
+import { FEEDBACK_ID, FeedbackPanel, takesFocus } from "./FeedbackPanel";
 import { MissionOutcome, type OutcomeKind } from "./MissionOutcome";
 import { presentHint } from "./hints";
 import { capitalize, countOf, fillStory, type ThemeConfig } from "@/themes";
@@ -67,7 +67,15 @@ function MissionBody({ theme }: PracticeMissionProps) {
   // Set when the screen changes between mission, offer and warm-up, so focus
   // moves to the new heading once (and never on ordinary re-renders).
   const needsFocus = useRef(false);
+  // Set when the server answers a "Check my answer" press with help. The help
+  // can render far below the fold on a phone, so focus moves to it once.
+  const focusFeedback = useRef(false);
   useEffect(() => {
+    if (focusFeedback.current) {
+      focusFeedback.current = false;
+      document.getElementById(FEEDBACK_ID)?.focus();
+      return;
+    }
     if (!needsFocus.current) return;
     needsFocus.current = false;
     for (const id of ["offer-heading", "play-heading", "intro-heading"]) {
@@ -213,6 +221,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
         setScreen({ name: "playing", session: { ...advanced, support: null } });
         return;
       }
+      focusFeedback.current = request === "attempt" && takesFocus(next);
       setScreen({ name: "playing", session: advanced });
       setFeedback(next);
       if (next.kind !== "ask-again") setSelected(null);

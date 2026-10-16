@@ -63,7 +63,7 @@ In a mission, answer wrongly four times: wrong 1 gives a neutral note; hint 1 an
 ## Phase 8D audit notes for the recording
 
 - **Fresh build, fresh port.** Rehearsed on a production build; use the same path as above. After accepting the warm-up (10 − 6, answer 4) place 5 blocks again before answering 8.
-- **Phone width:** the hint panel sits below the answer picker; scroll down after a wrong answer to show it (ACCESSIBILITY-AUDIT A11Y-07).
+- **Phone width:** after a wrong answer, keyboard focus moves to the new feedback or hint and the page scrolls it into view (Phase 8E, ACCESSIBILITY-AUDIT A11Y-07). No manual scrolling is needed, but the hint heading shows a focus ring only when a keyboard is in use.
 - **Say on camera** what the educator packet flags: hints are draft, Hint 1 may disclose too much, the warm-up choice is unreviewed, and the pictures do not follow the learner's own taps.
 - **"Not now"** on the warm-up ends the mission with a "try something easier" screen (it does not return to the question). Use "Try the warm-up" for the recorded path.
 - **Summary URL** contains the session id: crop it. The browser console shows one expected 404 for an unknown-session summary; it is not an error in the product.

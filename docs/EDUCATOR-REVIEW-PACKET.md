@@ -1,6 +1,6 @@
 # Primer — Educator Review Packet (DRAFT, awaiting a qualified reviewer)
 
-Prepared 2026-10-16 (Phase 8D) from the code at commit `78575b5`. **Status: NOT reviewed. Nothing here is educator-approved.** All pedagogical comments in section 5 are the implementer's provisional observations, offered as questions for a reviewer; they are not findings of an educator and must not be quoted as such.
+Prepared 2026-10-16 (Phase 8D) from the code at commit `78575b5`; refreshed 2026-10-17 (Phase 8E) for the focus/visibility change described below (the instructional wording, hint order and warm-up policy are unchanged). **All content in this packet and in the application is DRAFT and unreviewed. Status: NOT reviewed. Nothing here is educator-approved.** All pedagogical comments in section 5 are the implementer's provisional observations, offered as questions for a reviewer; they are not findings of an educator and must not be quoted as such.
 
 All wording below is copied from the running application (Block Builder theme unless noted; Space Construction swaps nouns only: "module", "supply", "station").
 
@@ -81,7 +81,7 @@ Risks for review:
 4. **Meaning of crossing ten.** Nothing in the wording explains _why_ one makes ten (the benefit of working with a friendly number). The strategy is stated procedurally.
 5. **Decomposing the subtrahend.** The decomposition 5 = 3 + 2 is never shown as a part-whole picture; the learner sees only 3 (Hint 1) and 2 (Hint 2) as instructions.
 6. **Symbol meaning.** ✕ is used for "take now" and "take next" in two stages with a changed caption. Whether 6–9-year-olds read a hollow circle with ✕ versus a dashed circle as intended has not been tested with children.
-7. **Reading load.** Hint text is 2–3 sentences plus a caption plus a "Draft demo hint" note (reading level not measured). Hints appear _below_ the answer picker (on a 390 px phone the panel is about 1,700 px below the top of the page), so a child may not see them without scrolling.
+7. **Reading load.** Hint text is 2–3 sentences plus a caption plus a "Draft demo hint" note (reading level not measured). Hints appear _below_ the answer picker. Before Phase 8E, on a 390 px phone the panel started at the bottom edge of the screen (about 1,760 px below the top of the page) and a child could miss it. Since Phase 8E, keyboard focus moves to the new help once, which scrolls it into view (see section 6A). Whether children notice and read it has **not** been tested with children.
 
 ## 6. Review questions
 
@@ -102,6 +102,36 @@ Please answer on the record in section 8. Mark each: _appropriate / needs change
 13. **Evidence labels:** are "Answered independently", "Correct in this short check", "Skipped", "Not reached", "Needs more evidence", "Mastery: not awarded" understandable and appropriately cautious for a parent?
 14. **Physical manipulatives / audio / other accessibility alternatives** needed for learners who cannot use the screen interaction?
 15. **Mastery rules:** what independent and delayed evidence would you require (minimum correct, maximum incorrect, delay)? These are blank in the product by design.
+
+## 6A. Where to see each stage, and what the reviewer must decide
+
+**Routes (adult-operated, synthetic data):** `/block-builder` (bridge) and `/space-construction` (station) are the same lesson with different nouns; `/assessment` is the separate no-hint check; `/demo-progress` is the synthetic adult summary. Use a phone-width window (about 390 px) at least once.
+
+**Reproduction guide (Block Builder; the other world is identical with "module", "supply", "station"):**
+
+1. Open `/block-builder`, press **Start building**.
+2. Tap blocks 1–5 (the answer picker unlocks).
+3. Pick **9**, press **Check my answer** → _neutral feedback_ ("Not quite yet…"). Focus moves to this message.
+4. Pick 9 again → **Hint 1** (with ten-frame). Focus moves to the "Hint 1" heading; the hint is scrolled into view.
+5. Pick 9 again → **Hint 2**.
+6. Pick 9 again → **warm-up offer** ("Want a short warm-up first?").
+7. **Try the warm-up** (tap 6 blocks, pick 4) → back at the mission; or **Not now** → the mission ends. Wording of every stage is quoted verbatim in section 2.
+
+**What is unchanged since the last packet:** hint text, hint order, ten-frame pictures, the warm-up (10 − 6), the "Not now" outcome and the fixed ladder (neutral → Hint 1 → Hint 2 → offer). Only the _delivery_ changed (focus and scroll position); nothing about _what_ is said.
+
+**Construction-versus-ten-frame mismatch, in plain words.** The learner first taps any 5 of 13 blocks (they choose which). Hint 1 then shows a ten-frame that says "take 3 first" and outlines blocks 11–13, as if the learner had not yet acted; the ten-frame counters are not the learner's blocks. A learner who tapped blocks 1–5 sees a picture of a different action from the one they performed. Hint 1 also states the first step ("take 3") before the learner has been asked to find it. These are the issues in sections 3 and 5 (risk 1). **They are deliberately not fixed**; the choice between telling, asking, or matching the picture to the learner's taps is a policy decision for the reviewer.
+
+**Decision table (blank). Do not fill in without a real reviewer; do not record names or contact details here.**
+
+| # | Decision | Current behaviour (draft) | Options raised so far | Reviewer decision |
+| --- | --- | --- | --- | --- |
+| 1 | Hint 1 disclosure | Says "take 3 blocks first" after one wrong follow-up | Section 3, alternatives 1–4 | |
+| 2 | Ten-frame stage interpretation | Hint 1: 10 counters + 3 ✕ in an "Extra" frame; Hint 2: 8 counters + 2 ✕, 3 dashed | Matching counters to the learner's blocks; one frame; no ✕ | |
+| 3 | Construction versus strategy explanation | Learner taps 5 first; the hint then describes "take 3 first" | Explain the link; ask the learner to find 3; reorder the steps | |
+| 4 | Choice of prerequisite warm-up | 10 − 6 (take-away within ten, S03) | Part-whole (S02), both, or none | |
+| 5 | Declining the warm-up | "Not now" ends the mission with the "something easier" screen | Return to the question; offer once more; only stop on "Stop for now" | |
+| 6 | Age appropriateness | Targeted at ages 6–9 | Narrower band; reading level; audio | |
+| 7 | Clarity of assisted vs independent learning | Practice says it is "not a test"; check shows no hints and no correctness | Wording; parent explanation; labels | |
 
 ## 7. How to run it yourself (adult, synthetic data only)
 

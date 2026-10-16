@@ -356,10 +356,69 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       expect(text).toHaveTextContent(
         `Look at the ${v.plural} ${v.supplyPlace}`,
       );
-      expect(text.closest("[role=status]")).toBeInTheDocument();
+      // Help is a focused, labelled region, not a live region: read once.
+      expect(text.closest("[role=status]")).toBeNull();
       expect(screen.getByRole("radio", { name: "9" })).not.toBeChecked();
       expect(built()).toHaveLength(5);
       expect(screen.queryByText(/wrong|bad|fail/i)).toBeNull();
+    });
+
+    it("moves focus to the feedback region once, named by its text", async () => {
+      const user = await start();
+      await build(user);
+      await submit(user, 9);
+      const region = await screen.findByRole("region", {
+        name: /Not quite yet/,
+      });
+      await waitFor(() => expect(region).toHaveFocus());
+      expect(screen.getAllByText(/Not quite yet/)).toHaveLength(1);
+    });
+
+    it.each([1, 2])(
+      "Hint %i is a focused, titled region that appears once, with the same words",
+      async (hintNumber) => {
+        mockServer((r) =>
+          r.action === "start"
+            ? started
+            : reply(1, {
+                kind: "hint",
+                hintId:
+                  hintNumber === 1
+                    ? "hint.make-ten.fill-to-ten"
+                    : "hint.make-ten.take-rest-from-ten",
+                hintNumber: hintNumber as 1 | 2,
+                steps:
+                  hintNumber === 1
+                    ? { takeToTen: 3, takeFromTen: null }
+                    : { takeToTen: 3, takeFromTen: 2 },
+              }),
+        );
+        const user = await start();
+        await build(user);
+        await submit(user, 9);
+        const region = await screen.findByRole("region", {
+          name: `Hint ${hintNumber}`,
+        });
+        await waitFor(() => expect(region).toHaveFocus());
+        expect(region).toHaveAccessibleDescription(/\w/);
+        expect(region.querySelector("h3")).toHaveTextContent(
+          `Hint ${hintNumber}`,
+        );
+        expect(region.closest("[role=status]")).toBeNull();
+        expect(screen.getAllByText(`Hint ${hintNumber}`)).toHaveLength(1);
+        expect(screen.getAllByText(/Draft demo hint/)).toHaveLength(1);
+      },
+    );
+
+    it("has no feedback region, and takes no focus, before an answer is checked", async () => {
+      await start();
+      expect(
+        screen.queryByRole("region", { name: /Hint|Not quite/ }),
+      ).toBeNull();
+      expect(document.getElementById("feedback-panel")).toBeNull();
+      expect(
+        screen.getByRole("heading", { name: theme.playHeading }),
+      ).toHaveFocus();
     });
 
     it("sends the next request with the seq the server returned", async () => {

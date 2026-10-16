@@ -95,3 +95,11 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **A bare ten-frame is only part-whole.** The make-ten label is used only when the second removal step is shown (hint 2 / "from-ten" stage). Ineligible numbers draw nothing.
 - **Neutral feedback (wrong answer 1) gets no picture.** Stage A of the candidate ladder maps to it unchanged.
 - **Playwright:** `reuseExistingServer` is now opt-in (`PRIMER_E2E_REUSE=1`); the port is overridable with `PRIMER_E2E_PORT`.
+
+## Phase 8E decisions (2026-10-17)
+
+- **Move focus to the help; do not move the help.** Feedback stays under the answer form (reading order: question, answer, response). After a key press that returns help, focus goes once to a labelled `tabindex="-1"` region, and the browser's native focus scroll brings it into view. Rejected: placing feedback above the form (it would push the "Check my answer" button down as the hint grows), a modal or floating overlay (intrusive), and custom smooth scrolling (disorienting, and slower under reduced motion).
+- **Help region is not a live region.** The old `role="status"` wrapper plus focus would announce the hint twice. Focus plus accessible name (title) and description (text) gives one announcement. Connection problems and "back at the mission" keep the polite live region because they arrive without a key press.
+- **Only the learner's own action steals focus.** Focus moves only for responses to "Check my answer", never for passive updates or while typing elsewhere.
+- **Instruction content untouched.** The educator-flagged issues (Hint 1 disclosure, picture vs the learner's taps, warm-up choice, "Not now" ending the mission) are documented in the educator packet, not changed.
+

@@ -380,3 +380,8 @@ body {
   stroke-width: 1.5;
   stroke-dasharray: 3 3;
 }
+
+/* Help the learner asked for is focused once; keep it clear of the screen edge. */
+.feedback-region {
+  scroll-margin-block: 1rem;
+}

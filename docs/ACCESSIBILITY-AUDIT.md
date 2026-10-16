@@ -108,3 +108,48 @@ Real screen readers (VoiceOver, NVDA, JAWS, TalkBack); Safari, Firefox, Edge; re
 ## 7. Limitations
 
 Automated tools check a subset of criteria. Contrast was computed from resolved CSS backgrounds and does not account for gradients or images. The keyboard journey and focus checks were scripted in Chromium on macOS only. Findings reflect one audit by the implementer; they should be re-checked by an independent accessibility specialist before any claim about accessibility is made externally.
+
+---
+
+## Verification update — Phase 8E (2026-10-17)
+
+**Scope:** the A11Y-07 fix (hint discoverability on phones) and its focus and announcement behaviour. Developer checks only: not a conformance claim, no assistive technology. The sections above are the Phase 8D record and are unchanged, except that the A11Y-07 row there is superseded by this section.
+
+### Change under test
+
+After "Check my answer" returns neutral feedback, Hint 1, Hint 2, "ask again" or "skip offer", keyboard focus moves **once** to a labelled `<section id="feedback-panel" tabindex="-1">` (accessible name from its title, e.g. "Hint 2"; description from the hint text). Focus scrolls it into view; the browser's own focus scroll is used (no custom scrolling), which is instant under reduced motion in the tested build. The region is deliberately **not** a live region, so the hint is not read twice. Connection problems and "You are back at the mission" remain in the polite `role="status"` region. The warm-up offer, warm-up, return-to-mission, outcome, Start and Start over keep the Phase 8D heading focus. The hint text, order and policy are unchanged.
+
+### Root cause of A11Y-07 (reproduced 2026-10-17, Chromium, 760 px tall viewport)
+
+Feedback renders below the answer form. The learner's viewport sits at the "Check my answer" button, so the new panel's top edge was at y = 730 (390 px wide) or 731 (320 px) in a 760 px viewport: about 30 px visible, the hint and ten-frame below the fold, about 1,760–1,860 px from the top of the page. Focus stayed on the button and nothing scrolled.
+
+### Checks performed
+
+| Check | Tool / viewport | Result |
+| --- | --- | --- |
+| Reproduced the defect before the fix | Playwright script, Chromium; 320, 390, 768 px × 760 | Confirmed (numbers above). |
+| New Playwright regression tests fail on the old code | Same suite against the stashed old build | 22 of 22 failed (focus never moved). Pass on the fix. |
+| Feedback focused, visible and in view for neutral, Hint 1, Hint 2; offer heading focused with the "Try the warm-up" button on screen | Playwright; 320×640, 360×740, 390×844, 768×1024, 1440×900; both worlds; reduced motion on and off | Pass (22 tests). Region top is inside the viewport and its first line is fully visible; the ten-frame may continue below the fold on the smallest phones. |
+| Not a live region; text appears once | Playwright + Vitest (both themes) | Pass. |
+| Accessible name and description of the hint | Playwright (`toHaveAccessibleName` / `Description`) and Chromium accessibility-tree dump | Pass: `region "Hint 2"` → heading level 3, paragraph, figure, note. |
+| Keyboard: Shift+Tab from the hint returns to "Check my answer"; Tab from the offer heading reaches "Try the warm-up" | Playwright | Pass. |
+| axe-core 4.10.2 (wcag2a/aa, 21a/aa, 22aa, best-practice; installed in a scratch folder outside the repo) | Chromium 320, 390, 768, 1440 (light), 390 forced-colors, 390 dark, 390 at 200% root font, 320 with the WCAG 1.4.12 text-spacing override; neutral, Hint 1, Hint 2, offer; both worlds | **0 violations** in every checked state. |
+| Horizontal overflow | Same sweep | 0 px at every viewport and mode above **except** the 200% text case below. |
+| Text spacing override at 320 px | Same sweep | No overflow; hint fully readable. |
+| Forced colors (emulated) at 390 px | Same sweep | No overflow; focus still moves to the hint; axe clean. Real Windows High Contrast untested. |
+| Contrast | axe in light, dark, forced colors | No contrast violation in the checked states (the hint reuses the existing `.notice` colours). |
+
+### Findings
+
+| ID | Severity | Finding | Status |
+| --- | --- | --- | --- |
+| A11Y-07 | Medium (usability) | Hint below the fold on phones. | **Fixed** by focus movement (this phase). Untested with children or a screen reader. |
+| A11Y-11 | Medium | **Pre-existing, found this phase.** At 390 px with the root font at 200%, the page scrolls sideways by about 238 px. The scene artwork ("scene-enter" frame, SVG) is wider than the viewport. It is present on the mission start screen before any feedback, so it is not caused by the feedback change. | **Open, not fixed** (outside this milestone). Needs a reflow fix for the scene panel under large text. |
+| — | Info | The focus ring on the hint is a keyboard-modality ring (`:focus-visible`); a touch or mouse user sees the scrolled hint but no ring. This matches the existing heading focus behaviour. | Accepted. |
+
+### Not tested (unchanged unknowns)
+
+- **No screen reader was used** (VoiceOver, NVDA, JAWS, TalkBack). Whether "Hint 1, region" followed by its description is announced well, once, is **unverified**. The name/description wiring is verified only in the accessibility tree.
+- No physical phone or tablet; no Safari or Firefox; no real Windows High Contrast; no switch, voice-control or eye-gaze use.
+- No children observed. Whether children notice, read and understand the hint is unknown.
+- An independent accessibility specialist has not reviewed this.
