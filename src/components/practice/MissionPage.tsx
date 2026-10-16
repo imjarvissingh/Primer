@@ -1,16 +1,9 @@
-import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/brand/SiteHeader";
 import type { ThemeConfig } from "@/themes";
 import { PracticeMission } from "./PracticeMission";
 
 /** Page frame shared by every themed mission route. A server component. */
-export function MissionPage({
-  theme,
-  scene,
-}: {
-  theme: ThemeConfig;
-  scene: ReactNode;
-}) {
+export function MissionPage({ theme }: { theme: ThemeConfig }) {
   return (
     <main
       id="main"
@@ -27,7 +20,7 @@ export function MissionPage({
         this page, begins a new practice session; each mission has its own.
       </p>
       <div className="mt-6">
-        <PracticeMission theme={theme} scene={scene} />
+        <PracticeMission theme={theme} />
       </div>
     </main>
   );

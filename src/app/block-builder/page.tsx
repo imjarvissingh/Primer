@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { MissionPage } from "@/components/practice/MissionPage";
-import { BridgeScene } from "@/components/practice/scenes/BridgeScene";
 import { BLOCK_BUILDER_THEME } from "@/themes";
 
 export const metadata: Metadata = {
@@ -10,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function BlockBuilderPage() {
-  return <MissionPage theme={BLOCK_BUILDER_THEME} scene={<BridgeScene />} />;
+  return <MissionPage theme={BLOCK_BUILDER_THEME} />;
 }

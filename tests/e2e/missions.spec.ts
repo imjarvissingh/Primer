@@ -68,6 +68,13 @@ async function buildFive(page: Page, t: Theme) {
     ),
   ).toBeVisible();
 }
+/** Built / empty construction slots drawn in the decorative scene. */
+const slotCount = (page: Page, kind: "built" | "empty") =>
+  page.locator(`svg[data-scene] [data-slot="${kind}"]`);
+async function expectSlots(page: Page, built: number, required = 5) {
+  await expect(slotCount(page, "built")).toHaveCount(built);
+  await expect(slotCount(page, "empty")).toHaveCount(required - built);
+}
 async function answer(page: Page, n: number) {
   // Wait out any in-flight request: controls are inert until the server replies.
   await expect(pick(page, n)).toBeEnabled();
@@ -139,6 +146,57 @@ for (const t of THEMES) {
         page.getByRole("heading", { name: /a little easier/i }),
       ).toBeVisible();
       await expect(page.getByText(/fail|wrong/i)).toHaveCount(0);
+    });
+
+    test("the scene builds up with each placed item and mirrors returns", async ({
+      page,
+    }) => {
+      await page.goto(t.route);
+      // Before the mission: a goal outline, but no per-item slots yet.
+      await expectSlots(page, 0, 0);
+      await page.getByRole("button", { name: t.start }).click();
+      await expect(
+        page.getByRole("heading", { name: t.playHeading }),
+      ).toBeVisible();
+      await expectSlots(page, 0);
+
+      await supplyItem(page, t, 1).click();
+      await expectSlots(page, 1);
+      for (let n = 2; n <= 4; n++) await supplyItem(page, t, n).click();
+      await expectSlots(page, 4);
+
+      // Return one: one slot empties, and the supply regains an item.
+      await page
+        .getByRole("button", {
+          name: new RegExp(`^${t.Item} 4, ${t.builtPlace}`),
+        })
+        .click();
+      await expectSlots(page, 3);
+      await expect(anySupply(page, t)).toHaveCount(10);
+
+      await supplyItem(page, t, 4).click();
+      await supplyItem(page, t, 5).click();
+      await expectSlots(page, 5);
+      await expect(pick(page, 8)).toBeEnabled();
+
+      // A building that looks finished is not a correct answer.
+      await expect(page.getByRole("heading", { name: t.done })).toHaveCount(0);
+
+      // An incorrect answer leaves the construction exactly as it was.
+      await answer(page, 9);
+      await expect(page.getByText(/Not quite yet/)).toBeVisible();
+      await expectSlots(page, 5);
+      await expect(anySupply(page, t)).toHaveCount(8);
+
+      await answer(page, 8);
+      await expect(page.getByRole("heading", { name: t.done })).toBeVisible();
+
+      await page.getByRole("button", { name: "Start over" }).click();
+      await page.getByRole("button", { name: t.start }).click();
+      await expect(
+        page.getByRole("heading", { name: t.playHeading }),
+      ).toBeVisible();
+      await expectSlots(page, 0);
     });
 
     test("stop for now ends the mission and can be restarted", async ({
@@ -232,6 +290,24 @@ for (const t of THEMES) {
         await buildFive(page, t);
         await answer(page, 8);
         await expect(page.getByRole("heading", { name: t.done })).toBeVisible();
+      });
+    }
+
+    for (const [pref, expected] of [
+      ["reduce", "none"],
+      ["no-preference", "slot-in"],
+    ] as const) {
+      test(`a new scene slot animates only when motion is allowed (${pref}), but always appears`, async ({
+        page,
+      }) => {
+        await page.emulateMedia({ reducedMotion: pref });
+        await startMission(page, t);
+        await supplyItem(page, t, 1).click();
+        await expectSlots(page, 1);
+        const name = await slotCount(page, "built")
+          .first()
+          .evaluate((el) => getComputedStyle(el).animationName);
+        expect(name).toBe(expected);
       });
     }
 

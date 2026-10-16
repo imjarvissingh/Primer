@@ -287,7 +287,19 @@ body {
     transform: scale(0.7);
   }
 }
+@keyframes slot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
 @media (prefers-reduced-motion: no-preference) {
+  /* A newly built scene slot settles into place once. State never depends on it. */
+  .slot-built {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: slot-in 220ms ease-out;
+  }
   .scene-enter {
     animation: scene-in 400ms ease-out;
   }

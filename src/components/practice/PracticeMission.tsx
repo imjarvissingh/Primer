@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   PRACTICE_MISSION_ID,
   type PracticeFeedback,
@@ -13,6 +13,8 @@ import { MissionOutcome, type OutcomeKind } from "./MissionOutcome";
 import { presentHint } from "./hints";
 import { capitalize, countOf, fillStory, type ThemeConfig } from "@/themes";
 import { sendPractice } from "./api";
+import { Scene } from "./scenes";
+import { NOT_STARTED, type ConstructionProgress } from "./scenes/progress";
 
 interface Session {
   id: string;
@@ -30,8 +32,6 @@ const secondaryButton = "btn btn-secondary";
 
 interface PracticeMissionProps {
   theme: ThemeConfig;
-  /** Decorative artwork for this theme (hidden from assistive tech). */
-  scene: ReactNode;
 }
 
 /** One shared mission for every theme; the theme only changes words and looks. */
@@ -48,7 +48,7 @@ export function PracticeMission(props: PracticeMissionProps) {
  * and the latest feedback. It decides nothing about correctness. Every answer
  * is sent to the server, which scores it and says what feedback to show.
  */
-function MissionBody({ theme, scene }: PracticeMissionProps) {
+function MissionBody({ theme }: PracticeMissionProps) {
   const [screen, setScreen] = useState<Screen>({ name: "intro" });
   const [used, setUsed] = useState<ReadonlySet<number>>(new Set());
   const [selected, setSelected] = useState<number | null>(null);
@@ -177,16 +177,18 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
     });
   }
 
-  const framedScene = (
+  // The artwork shows the same selection the resource field shows. It only
+  // reads it: `placed` is derived from `used`, never stored separately.
+  const framedScene = (progress: ConstructionProgress) => (
     <div className="scene-enter overflow-hidden rounded-xl border-2 border-border">
-      {scene}
+      <Scene themeId={theme.id} progress={progress} />
     </div>
   );
 
   if (screen.name === "intro") {
     return (
       <section aria-labelledby="intro-heading" className="grid gap-4">
-        {framedScene}
+        {framedScene(NOT_STARTED)}
         <h2 id="intro-heading" className="text-2xl font-extrabold sm:text-3xl">
           {theme.missionTitle}
         </h2>
@@ -240,7 +242,7 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
 
   return (
     <section aria-labelledby="play-heading" className="grid gap-5">
-      {framedScene}
+      {framedScene({ placed: used.size, required: challenge.takeAway })}
       <div>
         <h2 id="play-heading" className="text-2xl font-extrabold">
           {theme.playHeading}

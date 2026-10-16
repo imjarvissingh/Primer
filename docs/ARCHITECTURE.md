@@ -167,3 +167,28 @@ Presentation only; the domain, server, protocol, tutoring and assessment code ar
 - `src/components/brand/`: `Wordmark` and `SiteHeader` (all pages except Home, which has its own hero).
 - `src/components/practice/scenes/`: decorative SVG per theme; `ExperienceCard` reuses them on the home page.
 - Decorative SVG is `aria-hidden`; every meaning it carries (goal, counts) also exists as text.
+
+## Implementation status (Phase 8B, 2026-10-16): construction shown in the scene
+
+### Selection-to-scene data flow
+`PracticeMission` still owns the one selection set (`used`). Everything below is derived from it on each render; nothing is stored twice:
+
+```
+used (Set of item numbers)  --owner: PracticeMission
+   |-- ConstructionField      supply buttons / built buttons
+   |-- readiness gate         used.size === challenge.takeAway
+   |-- progress text + pips   "Blocks on the bridge: N (goal: M)"
+   `-- ConstructionProgress { placed: used.size, required: challenge.takeAway }
+         `-- Scene (picked by theme.id) -> BridgeScene / SpaceScene
+```
+
+- `scenes/progress.ts` holds the tiny shared contract: `slotStates()` returns one boolean per required slot (`min(placed, required)` built, filled first to last, so returning any item empties the last built slot) and `slotLayout()` spaces slots evenly. Both scenes use it, so they have identical placement semantics. They read props only; they cannot change selection, scoring or hints.
+- Slot count equals `takeAway` from the server's challenge; theme config holds no quantities. The slots show the items **used** (13 − 5 draws five), never the remaining eight, and never the answer. Before a mission starts (and on the home page) a scene has no per-item slots, only the goal outline.
+- The `scene` prop on `MissionPage`/`PracticeMission` was removed: a server page cannot pass a component function to a client component, and the scene now needs live props, so the client picks the scene from `theme.id`.
+- Test hooks: `data-scene` on the svg and `data-slot="built|empty"` on slots (the scene is `aria-hidden`).
+
+### Construction readiness is not correctness
+A finished-looking scene (and a green outline around it) only means "the right number of items are placed", which unlocks the answer picker. It shows no success badge. Success appears only after the server scores the answer; a wrong answer leaves the scene and selection unchanged.
+
+### Motion and accessibility
+A new built slot plays a 220 ms `slot-in` settle, only inside `prefers-reduced-motion: no-preference`. With reduced motion the slot simply appears. Accessible state is unchanged: native item buttons and the existing polite status text (count, goal, readiness). The scene adds no live region.

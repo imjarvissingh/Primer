@@ -41,4 +41,9 @@ Founder responsibilities: log in and copy the real questions; supply all persona
 ## Phase 8A status (2026-10-16)
 Done: original Primer visual identity (wordmark, tokens, shared button/card/notice styles), redesigned home page, richer Block Builder and Space Construction scenes with a visible goal, mission framing (goal line, "on the bridge: N (goal: M)" progress with pips, themed feedback and outcome), calmer assessment with a position bar, clearer adult summary (stat cards, per-question marks, prominent synthetic-data label). No engine, scoring, hint or assessment-logic changes. Visual QA done with Playwright screenshots at 375, 768 and 1440 px (light, plus dark at 768).
 
-Not started: Phase 8B (construction interaction and visual progression), educator review, persistence/authentication/consent.
+Not started: educator review, persistence/authentication/consent.
+
+## Phase 8B status (2026-10-16)
+Done: bridge and station scenes show one built slot per placed item (derived from the single selection set), returns empty slots, restart/put-all-back clears them; slot-in motion honoring reduced motion; home card pill alignment; contrast measured (no fixes needed). No math, tutoring, API, schema or assessment changes. Tests: shared-state, slot-mapping, restart and incorrect-answer unit tests, plus per-theme Playwright journey and reduced-motion checks.
+
+Not started: Phase 8C (instructional feedback, make-ten visualization, prerequisite remediation).

@@ -74,10 +74,23 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
   const checkButton = () =>
     screen.getByRole("button", { name: "Check my answer" });
 
+  // The artwork is decorative (aria-hidden), so tests read its narrow data hooks.
+  const sceneEl = () =>
+    document.querySelector<SVGElement>(
+      `[data-scene="${theme.id === "space-construction" ? "space" : "bridge"}"]`,
+    ) as SVGElement;
+  const slots = (kind: "built" | "empty") =>
+    sceneEl().querySelectorAll(`[data-slot="${kind}"]`);
+  const expectScene = (built: number, required = challenge.takeAway) => {
+    expect(slots("built")).toHaveLength(built);
+    expect(slots("empty")).toHaveLength(required - built);
+    // placed + available = total, and built slots = placed (capped at required).
+    expect(this_built()).toBe(built);
+  };
+  const this_built = () => built().length;
+
   function view() {
-    return render(
-      <PracticeMission theme={theme} scene={<svg data-testid="scene" />} />,
-    );
+    return render(<PracticeMission theme={theme} />);
   }
   async function start() {
     const user = userEvent.setup();
@@ -103,7 +116,9 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
         screen.getByRole("heading", { name: theme.missionTitle }),
       ).toBeInTheDocument();
       expect(screen.getByText(theme.intro)).toBeInTheDocument();
-      expect(screen.getByTestId("scene")).toBeInTheDocument();
+      expect(sceneEl()).toBeInTheDocument();
+      expect(slots("built")).toHaveLength(0);
+      expect(slots("empty")).toHaveLength(0);
       expect(screen.queryByRole("radio")).toBeNull();
       expect(fetch).not.toHaveBeenCalled();
     });
@@ -130,6 +145,69 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       expect(
         screen.getByRole("button", { name: theme.startLabel }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("scene mirrors the selection", () => {
+    it("shows required empty slots at the start, none built", async () => {
+      await start();
+      expectScene(0);
+      expect(sceneEl()).toBeInTheDocument();
+    });
+
+    it("builds one slot per placed item and keeps supply + built = total", async () => {
+      const user = await start();
+      for (let n = 1; n <= 5; n++) {
+        await user.click(item(n, "supply"));
+        expectScene(n);
+        expect(supply().length + built().length).toBe(challenge.start);
+      }
+    });
+
+    it("removes a slot when an item is returned", async () => {
+      const user = await start();
+      await build(user);
+      await user.click(item(3, "built"));
+      expectScene(4);
+      expect(counter(4)).toBeInTheDocument();
+    });
+
+    it("never shows more built slots than required, and recovers when items go back", async () => {
+      const user = await start();
+      await build(user, 7);
+      expect(slots("built")).toHaveLength(5);
+      expect(slots("empty")).toHaveLength(0);
+      await user.click(item(7, "built"));
+      await user.click(item(6, "built"));
+      expectScene(5);
+    });
+
+    it("clears every slot on 'put all back'", async () => {
+      const user = await start();
+      await build(user);
+      await user.click(screen.getByRole("button", { name: /put all/i }));
+      expectScene(0);
+    });
+
+    it("keeps the scene intact after an incorrect answer, and empties it on restart", async () => {
+      const user = await start();
+      await build(user);
+      await submit(user, 9);
+      await waitFor(() => expect(seen).toHaveLength(2));
+      expectScene(5);
+      await user.click(screen.getByRole("button", { name: "Start over" }));
+      expect(slots("built")).toHaveLength(0);
+      expect(slots("empty")).toHaveLength(0);
+      await user.click(screen.getByRole("button", { name: theme.startLabel }));
+      await screen.findByRole("heading", { name: theme.playHeading });
+      expectScene(0);
+    });
+
+    it("does not change what is sent to the server", async () => {
+      const user = await start();
+      await build(user);
+      await submit(user, 8);
+      expect(seen.map((r) => r.action)).toEqual(["start", "attempt"]);
     });
   });
 
@@ -367,7 +445,7 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
     it("says so when starts are rate limited", async () => {
       mockServer(() => ({ ok: false, error: "rate-limited" }));
       const user = userEvent.setup();
-      render(<PracticeMission theme={theme} scene={null} />);
+      render(<PracticeMission theme={theme} />);
       await user.click(screen.getByRole("button", { name: theme.startLabel }));
       expect(await screen.findByText(/wait a minute/)).toBeVisible();
     });
@@ -488,7 +566,7 @@ describe("cross-theme equivalence", () => {
   async function playScript(theme: ThemeConfig) {
     mockServer(neutralServer);
     const user = userEvent.setup();
-    const { unmount } = render(<PracticeMission theme={theme} scene={null} />);
+    const { unmount } = render(<PracticeMission theme={theme} />);
     await user.click(screen.getByRole("button", { name: theme.startLabel }));
     await screen.findByRole("heading", { name: theme.playHeading });
     const Name = capitalize(theme.vocabulary.singular);

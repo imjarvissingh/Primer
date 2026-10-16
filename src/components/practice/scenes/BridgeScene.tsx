@@ -1,10 +1,26 @@
+import {
+  slotLayout,
+  slotStates,
+  NOT_STARTED,
+  type ConstructionProgress,
+} from "./progress";
+
 /**
- * Decorative, original artwork. Hidden from assistive tech: the blocks and the
- * story text carry the meaning. The dashed span in the middle is the goal.
+ * Decorative, original artwork. Hidden from assistive tech: the blocks, the
+ * story and the progress text carry the meaning. The dashed span in the middle
+ * is the goal; each placed block turns one dashed slot into a plank.
  */
-export function BridgeScene() {
+export function BridgeScene({
+  progress = NOT_STARTED,
+}: {
+  progress?: ConstructionProgress;
+}) {
+  const states = slotStates(progress);
+  const slots = slotLayout(states.length, 224, 152, 3);
+  const complete = states.length > 0 && states.every(Boolean);
   return (
     <svg
+      data-scene="bridge"
       viewBox="0 0 600 220"
       aria-hidden="true"
       focusable="false"
@@ -50,24 +66,70 @@ export function BridgeScene() {
       <rect x="382" y="130" width="26" height="12" rx="2" fill="#c4863f" />
       <rect x="198" y="100" width="6" height="30" fill="#6b4423" />
       <rect x="396" y="100" width="6" height="30" fill="#6b4423" />
-      {/* Goal: the missing span, outlined */}
-      <rect
-        x="224"
-        y="126"
-        width="152"
-        height="14"
-        rx="3"
-        fill="rgb(255 255 255 / 0.35)"
-        stroke="#b45309"
-        strokeWidth="3"
-        strokeDasharray="8 6"
-      />
-      <path
-        d="M262 128 V138 M300 128 V138 M338 128 V138"
-        stroke="#b45309"
-        strokeWidth="2"
-        strokeDasharray="3 3"
-      />
+      {/* The missing span. Before a mission starts: one outline. After: one slot per block to place. */}
+      {states.length === 0 ? (
+        <rect
+          x="224"
+          y="126"
+          width="152"
+          height="14"
+          rx="3"
+          fill="rgb(255 255 255 / 0.35)"
+          stroke="#b45309"
+          strokeWidth="3"
+          strokeDasharray="8 6"
+        />
+      ) : (
+        <>
+          {complete && (
+            <rect
+              x="220"
+              y="122"
+              width="160"
+              height="22"
+              rx="5"
+              fill="none"
+              stroke="#15803d"
+              strokeWidth="3"
+            />
+          )}
+          {slots.map((slot, i) =>
+            states[i] ? (
+              <g key={`${i}-built`} data-slot="built" className="slot-built">
+                <rect
+                  x={slot.x}
+                  y="126"
+                  width={slot.w}
+                  height="14"
+                  rx="2"
+                  fill="#c4863f"
+                  stroke="#6b4423"
+                  strokeWidth="2"
+                />
+                <path
+                  d={`M${slot.x + slot.w / 2} 129 V137`}
+                  stroke="#6b4423"
+                  strokeWidth="1.5"
+                />
+              </g>
+            ) : (
+              <rect
+                key={`${i}-empty`}
+                data-slot="empty"
+                x={slot.x}
+                y="126"
+                width={slot.w}
+                height="14"
+                rx="2"
+                fill="rgb(255 255 255 / 0.35)"
+                stroke="#b45309"
+                strokeWidth="2"
+                strokeDasharray="4 3"
+              />
+            ),
+          )}
+        </>
+      )}
       {/* Flag on the far bank: where the bridge leads */}
       <rect x="440" y="76" width="4" height="42" fill="#6b4423" />
       <path d="M444 78 H478 L468 88 L478 98 H444Z" fill="#ef4444" />

@@ -74,3 +74,12 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Progress pips duplicate text** ("Blocks on the bridge: N (goal: M)") and are `aria-hidden`; they do not change placement behavior (that is Phase 8B).
 - **Motion** lives only inside `prefers-reduced-motion: no-preference` (enforced by a unit test): scene entrance, block placement pop, button press.
 - Summary visuals show counts and per-question outcomes only; no rates, scores or confidence.
+
+## Phase 8B decisions (2026-10-16)
+- **Count-based slot mapping, not identity-based.** Scene slots are interchangeable, so the scene needs only `placed` and `required`. Mapping item ids to slots would add state with no visible benefit and would make returns look inconsistent. Rejected: a second construction array or counter.
+- **Placed is derived (`used.size`), never stored**; built slots are clamped to `required` so over-placement can never draw extra slots (the existing text still tells the learner to put extras back).
+- **Scene chosen by `theme.id` inside the client**, removing the `scene` prop. Rejected: making scenes client components and passing references through server pages (more indirection for the same result).
+- **Static completion outline instead of a celebratory animation**: visible under reduced motion, no flashing, and does not imply a correct answer.
+- **Space planet moved down ~16 px** to make room for up to nine module cells (takeAway can be 1–9 in the cross-ten family).
+- **Home cards:** the "Draft demo" pill moved beside the card title so the action button no longer wraps differently per card.
+- **Contrast review:** Space theme token pairs (text, muted, buttons, item numbers, borders, focus, cue) all measured at or above their WCAG AA targets (lowest: field-built border 4.62:1 vs 3:1 required), so no colors were changed.

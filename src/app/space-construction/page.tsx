@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { MissionPage } from "@/components/practice/MissionPage";
-import { SpaceScene } from "@/components/practice/scenes/SpaceScene";
 import { SPACE_CONSTRUCTION_THEME } from "@/themes";
 
 export const metadata: Metadata = {
@@ -10,7 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function SpaceConstructionPage() {
-  return (
-    <MissionPage theme={SPACE_CONSTRUCTION_THEME} scene={<SpaceScene />} />
-  );
+  return <MissionPage theme={SPACE_CONSTRUCTION_THEME} />;
 }

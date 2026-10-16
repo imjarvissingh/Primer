@@ -1,8 +1,23 @@
+import {
+  slotLayout,
+  slotStates,
+  NOT_STARTED,
+  type ConstructionProgress,
+} from "./progress";
+
 /**
- * Decorative, original artwork. Hidden from assistive tech: the modules and the
- * story text carry the meaning. The dashed cells on the right arm are the goal.
+ * Decorative, original artwork. Hidden from assistive tech: the modules, the
+ * story and the progress text carry the meaning. The dashed cells on the right
+ * arm are the goal; each placed module turns one cell into an installed module.
  */
-export function SpaceScene() {
+export function SpaceScene({
+  progress = NOT_STARTED,
+}: {
+  progress?: ConstructionProgress;
+}) {
+  const states = slotStates(progress);
+  const slots = slotLayout(states.length, 392, 176, 4);
+  const complete = states.length > 0 && states.every(Boolean);
   const stars: [number, number, number][] = [
     [40, 30, 1.5],
     [110, 74, 1],
@@ -20,6 +35,7 @@ export function SpaceScene() {
   ];
   return (
     <svg
+      data-scene="space"
       viewBox="0 0 600 220"
       aria-hidden="true"
       focusable="false"
@@ -30,20 +46,20 @@ export function SpaceScene() {
         <circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill="#f8fafc" />
       ))}
       {/* Planet with a ring, and a small moon */}
-      <circle cx="520" cy="156" r="44" fill="#f472b6" />
+      <circle cx="520" cy="172" r="44" fill="#f472b6" />
       <path
-        d="M486 138 a44 44 0 0 1 68 -8 a50 50 0 0 0 -68 8z"
+        d="M486 154 a44 44 0 0 1 68 -8 a50 50 0 0 0 -68 8z"
         fill="#db2777"
       />
       <ellipse
         cx="520"
-        cy="156"
+        cy="172"
         rx="70"
         ry="13"
         fill="none"
         stroke="#fde68a"
         strokeWidth="4"
-        transform="rotate(-18 520 156)"
+        transform="rotate(-18 520 172)"
       />
       <circle cx="430" cy="40" r="12" fill="#cbd5e1" />
       <circle cx="426" cy="36" r="3" fill="#94a3b8" />
@@ -78,11 +94,64 @@ export function SpaceScene() {
         stroke="#93c5fd"
         strokeWidth="1.5"
       />
-      {/* Goal: the missing modules, outlined */}
-      <g fill="none" stroke="#fde047" strokeWidth="3" strokeDasharray="6 5">
-        <rect x="398" y="92" width="34" height="28" rx="5" />
-        <rect x="438" y="92" width="34" height="28" rx="5" />
-      </g>
+      {/* The missing arm. Before a mission starts: two outlined cells. After: one cell per module to place. */}
+      {states.length === 0 ? (
+        <g fill="none" stroke="#fde047" strokeWidth="3" strokeDasharray="6 5">
+          <rect x="398" y="92" width="34" height="28" rx="5" />
+          <rect x="438" y="92" width="34" height="28" rx="5" />
+        </g>
+      ) : (
+        <>
+          {complete && (
+            <rect
+              x="388"
+              y="86"
+              width="188"
+              height="40"
+              rx="8"
+              fill="none"
+              stroke="#86efac"
+              strokeWidth="3"
+            />
+          )}
+          {slots.map((slot, i) =>
+            states[i] ? (
+              <g key={`${i}-built`} data-slot="built" className="slot-built">
+                <rect
+                  x={slot.x}
+                  y="92"
+                  width={slot.w}
+                  height="28"
+                  rx="5"
+                  fill="#cbd5e1"
+                  stroke="#64748b"
+                  strokeWidth="2.5"
+                />
+                <circle
+                  cx={slot.x + slot.w / 2}
+                  cy="106"
+                  r={Math.min(5, slot.w / 4)}
+                  fill="#38bdf8"
+                />
+              </g>
+            ) : (
+              <rect
+                key={`${i}-empty`}
+                data-slot="empty"
+                x={slot.x}
+                y="92"
+                width={slot.w}
+                height="28"
+                rx="5"
+                fill="none"
+                stroke="#fde047"
+                strokeWidth="2.5"
+                strokeDasharray="5 4"
+              />
+            ),
+          )}
+        </>
+      )}
       {/* Space engineer */}
       <g transform="translate(74 74)">
         <rect x="-16" y="22" width="32" height="38" rx="10" fill="#f8fafc" />

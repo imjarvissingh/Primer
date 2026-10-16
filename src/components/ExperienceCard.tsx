@@ -25,20 +25,24 @@ export function ExperienceCard({
     <li className={`${themeClass} card flex flex-col overflow-hidden`}>
       {art !== undefined && <div className="overflow-hidden">{art}</div>}
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-xl font-bold">{name}</h3>
+        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+          <h3 className="text-xl font-bold">{name}</h3>
+          {href !== undefined && (
+            <span className="rounded-full border-2 border-current px-3 py-0.5 text-sm font-semibold whitespace-nowrap">
+              Draft demo
+            </span>
+          )}
+        </div>
         <p className="mt-2 flex-1 text-muted">{description}</p>
         {href === undefined ? (
           <p className="mt-4 text-sm font-medium">
             Planned — not yet available
           </p>
         ) : (
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className="mt-4">
             <Link href={href} className="btn btn-primary">
               {linkLabel ?? "Try it"}
             </Link>
-            <span className="rounded-full border-2 border-current px-3 py-0.5 text-sm font-semibold">
-              Draft demo
-            </span>
           </div>
         )}
       </div>
