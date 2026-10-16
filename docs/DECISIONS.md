@@ -14,3 +14,18 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 
 **CI hardening.** `actions/checkout` and `actions/setup-node` are pinned to full commit SHAs (the commits behind their v4 tags). The gitleaks tarball is verified against a pinned SHA-256 before use; bump version and hash together. Pins do not update themselves, so review them periodically.
 
+
+## Phase 2 domain decisions (2026-10-16)
+**Design choices**
+- S05 is modelled as an `assessment-objective` with an `assesses` list, not a prerequisite, so transfer evidence cannot distort progression.
+- Problems carry only an instructional skill (S01–S04). S05 evidence comes from which bank an item sits in (independent, delayed).
+- The stored answer key is cross-checked against a recomputation from the parameters; a mismatch rejects the problem. Unknown fields (including any theme field) are rejected.
+- Learner responses are never coerced: only a whole-number `number` from 0 to 20 is scorable.
+- Hints are not part of banks. Only tutoring holds hint ladders (controlled ids), so assessment items cannot carry hints.
+- Assessment feedback is one identical neutral action for right and wrong answers; unreadable answers are re-asked and not scored.
+- Exact duplicates across banks are errors; equivalent number facts are warnings.
+- Whether work was independent is derived (assessment phase and zero hints), never stored. Repeated attempts at the same assessment item count once. Skips are not evidence.
+- Mastery is behind an explicit policy type. The only existing policy is the draft one, which cannot award mastery.
+- No dependency was added. Plain TypeScript validation replaced a schema library to keep the surface small.
+
+**Implementation assumptions awaiting educator review** (not approved decisions): the prerequisite edges, bank contents, hint wording ids, the practice sequence (neutral feedback, hint 1, hint 2, prerequisite fallback or skip offer, stop after 5 wrong), and the 3-unreadable-answers skip offer.

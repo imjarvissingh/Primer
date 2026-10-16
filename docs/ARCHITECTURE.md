@@ -17,3 +17,31 @@ Single Next.js 16.4.2 App Router app in the repository root (no nested project),
 ## Environment notes (Phase 1.5)
 Playwright browsers are cached in `~/Library/Caches/ms-playwright`; each Playwright upgrade needs `npx playwright install chromium` again and leaves old revisions behind. Keep at least 10 GB free on the development Mac: `node_modules`, builds and browser downloads fail with ENOSPC otherwise. Safe regenerable caches to clear when space is low: `.next`, `~/.npm/_npx`, Homebrew (`brew cleanup`), Xcode DerivedData.
 
+
+## Implementation status (Phase 2, 2026-10-16): domain engine
+`src/domain/` is plain TypeScript with no React, Next.js, browser, database or network dependency. Dependencies only point downward, enforced by `tests/unit/domain/architecture.test.ts`:
+
+```
+shared  <-  curriculum  <-  math  <-  assessment
+                 ^            ^
+                 |            +----  tutoring
+                 +-----------------  evidence
+```
+
+| Module | Purpose |
+| --- | --- |
+| `shared` | `ValidationIssue`/`ValidationResult` and `deepFreeze`. |
+| `curriculum` | Versioned S01–S05 definitions, typed edges, graph validation, lookups. |
+| `math` | Five problem types, `validateProblem` (branded `ValidatedProblem`), pure `evaluateResponse`. |
+| `assessment` | Four draft banks, duplicate/equivalence checks, answer-free `LearnerItemView` projection. |
+| `tutoring` | Pure `startItem`/`step` policy returning controlled actions and hint ids. |
+| `evidence` | `EvidenceRecord`, conservative `interpretSkillEvidence`, draft vs approved policy. |
+
+Themes are not part of the domain. A problem has no theme field (unknown fields are rejected), so a future theme pack can change only presentation.
+
+### Required server-side boundary (Phase 3 onward)
+Keeping answer keys out of the domain's learner-facing types does **not** by itself keep them out of the browser. `ValidatedProblem` and `EvaluationResult` contain the answer. When this code is connected to Next.js:
+- Import `@/domain/assessment` banks, `@/domain/math` evaluation and `@/domain/evidence` only from server code (Route Handlers, Server Actions, server-only modules). Add `import "server-only"` wrappers at that point.
+- Never pass a `ValidatedProblem`, `QuestionBank` or `EvaluationResult` to a Client Component or serialize it into a response. Send only `toLearnerView(...)` output and the tutoring action.
+- Evaluate on the server; the client submits a bare number and receives only the tutoring action (for assessments, always the neutral acknowledgement).
+- Do not log learner responses.
