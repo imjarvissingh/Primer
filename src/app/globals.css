@@ -75,6 +75,21 @@ body {
   }
 }
 
+/*
+ * Reflow at 320 CSS px (WCAG 1.4.10): a row of five 3rem items plus panel
+ * padding and gaps is wider than the page leaves at that width. Below 360px
+ * the panels give back some padding (and the item rows use a 4px gap), so the
+ * five-per-row grouping and the 48px targets survive. Nothing is hidden.
+ */
+@media (max-width: 22.5rem) {
+  .mission-panel {
+    padding: 0.5rem;
+  }
+  .field-panel {
+    padding: 0.5rem;
+  }
+}
+
 .theme-bridge {
   --panel-bg: #fff3d6;
   --foreground: #2a1f12;

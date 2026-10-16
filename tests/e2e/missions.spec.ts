@@ -286,6 +286,8 @@ for (const t of THEMES) {
     });
 
     for (const [name, width, height] of [
+      // 320px is the WCAG 1.4.10 reflow width (Phase 8D audit found overflow here).
+      ["very small mobile", 320, 640],
       ["small mobile", 360, 740],
       ["tablet", 768, 1024],
       ["desktop", 1440, 900],
@@ -456,6 +458,14 @@ for (const t of THEMES) {
         await answer(page, 9);
         await expect(page.getByText(/Not quite yet/)).toBeVisible();
         expect(await overflow()).toBeLessThanOrEqual(0);
+        // Both ten-frame hints must also fit without sideways scrolling.
+        for (const n of [1, 2]) {
+          await answer(page, 9);
+          await expect(
+            page.getByText(`Hint ${n}`, { exact: true }),
+          ).toBeVisible();
+          expect(await overflow()).toBeLessThanOrEqual(0);
+        }
 
         for (const target of [
           supplyItem(page, t, 6),
@@ -471,6 +481,60 @@ for (const t of THEMES) {
         expect(await overflow()).toBeLessThanOrEqual(0);
       });
     }
+
+    test("the hint's outlined items are also named for assistive technology", async ({
+      page,
+    }) => {
+      await startMission(page, t);
+      await buildFive(page, t);
+      const cued = page.getByRole("button", { name: /outlined by the hint/ });
+      await expect(cued).toHaveCount(0);
+      await answer(page, 9);
+      await answer(page, 9);
+      await expect(page.getByText("Hint 1", { exact: true })).toBeVisible();
+      // "Take 3 first": exactly the three items numbered 11-13 carry the cue.
+      await expect(cued).toHaveCount(3);
+      await expect(
+        supplyItem(page, t, 11).and(
+          page.getByRole("button", { name: /outlined by the hint/ }),
+        ),
+      ).toHaveCount(1);
+      await expect(supplyItem(page, t, 6)).not.toHaveAccessibleName(/outlined/);
+    });
+
+    // Phase 8D audit: between 640 and ~720px the two-column layout pushed the
+    // fifth item of each row outside its panel (200% zoom on a 1280px screen).
+    for (const width of [640, 700, 768]) {
+      test(`every pile item stays inside its panel at ${width}px`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await startMission(page, t);
+        const outside = await page.evaluate(() => {
+          const panel = document.querySelector(".field-supply");
+          if (panel === null) return -1;
+          const right = panel.getBoundingClientRect().right;
+          return [...panel.querySelectorAll(".item")].filter(
+            (el) => el.getBoundingClientRect().right > right,
+          ).length;
+        });
+        expect(outside).toBe(0);
+      });
+    }
+
+    test("keyboard focus moves to the mission heading after Start and to the title after Start over", async ({
+      page,
+    }) => {
+      await page.goto(t.route);
+      const start = page.getByRole("button", { name: t.start });
+      await start.focus();
+      await page.keyboard.press("Enter");
+      await expect(
+        page.getByRole("heading", { name: t.playHeading }),
+      ).toBeFocused();
+      await page.getByRole("button", { name: "Start over" }).click();
+      await expect(page.getByRole("heading", { name: t.title })).toBeFocused();
+    });
 
     for (const [pref, expected] of [
       ["reduce", "0s"],

@@ -59,3 +59,13 @@ Abandoned sessions stay in memory until their 30-minute expiry (or until the 500
 In a mission, answer wrongly four times: wrong 1 gives a neutral note; hint 1 and hint 2 show a ten-frame; the fourth offers a short warm-up ("Try the warm-up" / "Not now" / "Stop for now"). After the warm-up (answer 4) you return to 13 − 5 (answer 8).
 
 **Clean browser verification of the current code:** `PRIMER_E2E_PORT=3217 npm run test:e2e` (builds, then starts a fresh server). Playwright will not reuse a running server unless you set `PRIMER_E2E_REUSE=1`; if the port is busy it fails loudly. Do not trust screenshots unless the server was started from the build you just made.
+
+## Phase 8D audit notes for the recording
+
+- **Fresh build, fresh port.** Rehearsed on a production build; use the same path as above. After accepting the warm-up (10 − 6, answer 4) place 5 blocks again before answering 8.
+- **Phone width:** the hint panel sits below the answer picker; scroll down after a wrong answer to show it (ACCESSIBILITY-AUDIT A11Y-07).
+- **Say on camera** what the educator packet flags: hints are draft, Hint 1 may disclose too much, the warm-up choice is unreviewed, and the pictures do not follow the learner's own taps.
+- **"Not now"** on the warm-up ends the mission with a "try something easier" screen (it does not return to the question). Use "Try the warm-up" for the recorded path.
+- **Summary URL** contains the session id: crop it. The browser console shows one expected 404 for an unknown-session summary; it is not an error in the product.
+- **Do not start more than 120 sessions a minute** (limiter); restarting the server resets every session and the limiter.
+- Practice and the check are separate sessions; theme switching persists no account. Nothing was recorded or uploaded in Phase 8D. Status of every claim: [MVP-READINESS.md](MVP-READINESS.md).

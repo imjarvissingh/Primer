@@ -37,8 +37,10 @@ export function ConstructionField({
   }
   const name = capitalize(v.singular);
 
+  // Two columns only when each column fits a row of five items (about 736px up).
+  // 200% zoom on a 1280px screen is a 640px page, which must stay stacked.
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-4 min-[47rem]:grid-cols-2">
       <section
         aria-labelledby="supply-heading"
         className="field-panel field-supply"
@@ -52,9 +54,10 @@ export function ConstructionField({
           aria-labelledby="supply-heading"
         >
           {rows.map((row) => (
-            <div key={row[0]} className="flex gap-2">
-              {row.map((b) =>
-                used.has(b) ? (
+            <div key={row[0]} className="flex gap-1 sm:gap-2">
+              {row.map((b) => {
+                const cued = highlightAbove !== null && b > highlightAbove;
+                return used.has(b) ? (
                   <span key={b} aria-hidden="true" className="item item-slot" />
                 ) : (
                   <button
@@ -62,17 +65,13 @@ export function ConstructionField({
                     type="button"
                     disabled={disabled}
                     onClick={() => onToggle(b)}
-                    aria-label={`${name} ${b}, ${v.supplyPlace}. Press to put it ${v.builtPlace}.`}
-                    className={`item item-supply ${
-                      highlightAbove !== null && b > highlightAbove
-                        ? "item-cue"
-                        : ""
-                    }`}
+                    aria-label={`${name} ${b}, ${v.supplyPlace}${cued ? ", outlined by the hint" : ""}. Press to put it ${v.builtPlace}.`}
+                    className={`item item-supply ${cued ? "item-cue" : ""}`}
                   >
                     <span aria-hidden="true">{b}</span>
                   </button>
-                ),
-              )}
+                );
+              })}
             </div>
           ))}
         </div>

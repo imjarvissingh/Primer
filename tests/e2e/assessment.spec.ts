@@ -169,6 +169,8 @@ test("keyboard-only journey from start to the summary", async ({ page }) => {
 });
 
 for (const [name, width, height] of [
+  // 320px is the WCAG 1.4.10 reflow width (Phase 8D audit: the summary overflowed here).
+  ["very small mobile", 320, 640],
   ["small mobile", 360, 740],
   ["tablet", 768, 1024],
   ["desktop", 1440, 900],

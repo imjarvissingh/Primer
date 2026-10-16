@@ -128,11 +128,14 @@ function Body({ state }: { state: State }) {
           ))}
         </dl>
         {/* The same four outcomes, in order. No total, rate or score is computed. */}
-        <div aria-hidden="true" className="flex gap-2">
+        <div
+          aria-hidden="true"
+          className="grid grid-cols-2 gap-2 min-[22.5rem]:grid-cols-4"
+        >
           {s.items.map((item) => (
             <span
               key={item.position}
-              className="card flex-1 px-2 py-1.5 text-center text-sm font-semibold"
+              className="card px-2 py-1.5 text-center text-sm font-semibold"
             >
               {item.position} {OUTCOME_MARK[item.outcome]}{" "}
               {OUTCOME[item.outcome]}

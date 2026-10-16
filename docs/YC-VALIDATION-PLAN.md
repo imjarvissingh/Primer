@@ -43,3 +43,21 @@ Columns: ID, date, type (parent/educator/desk), source category, child age band,
 ## 6. What this does not do
 
 No pilot, no consent flow, no data collection from children, no outreach tool, no surveys with personal data. Those are separate workstreams behind the safety gates.
+
+## Phase 8D addendum — logging discipline, educator criteria, falsification
+
+(Additions only; sections 1–6 above remain the plan. Nothing here has been done.)
+
+**Observed fact vs opinion.** In the private tracker keep two columns: _Observed_ (what the person did or said, or what happened: "paid $X last year for app Y", "could not tell which group to count") and _Interpretation_ (the founder's reading). Quote only what was said, never paraphrase into stronger claims. Mark each entry with who said it (parent/educator code), whether it is past behaviour or a hypothetical, and a confidence note. Public documents may contain only de-identified counts and themes.
+
+**Recruiting educators (criteria).** Hold or have held a K–3 teaching credential, or work as an elementary math specialist/coach, with recent classroom experience at the 6–9 age band; ideally one reviewer with early-numeracy (subtraction/make-ten) experience and one with accessibility or special-education experience. No financial or personal relationship that would compromise candour. Agree up front whether the review is paid or credited; do not imply endorsement. Send them [EDUCATOR-REVIEW-PACKET.md](EDUCATOR-REVIEW-PACKET.md) and keep their completed record (section 8 of the packet) private unless they agree in writing to anonymised publication.
+
+**Recruiting parents.** Own network and parent communities, one-to-one asks, no incentives that bias answers, no children present, demo shown only as synthetic. Do not contact anyone through automated tools.
+
+**What would falsify the hypotheses (proposed; the founder should set the thresholds before interviewing — the "about a third" below is only a placeholder).**
+
+- _Problem:_ fewer than about a third of interviewed parents describe a recent, unprompted difficulty knowing whether their child understands math (versus got help), or none have paid or tried anything to address it.
+- _Theme (H1):_ educators or parents see no instructional value in interest-matched themes beyond decoration, or consider them a distraction.
+- _Evidence (H3):_ parents do not distinguish independent from assisted evidence, or do not trust or act on a report of this kind.
+- _Product validity:_ a qualified educator judges the make-ten sequence, hint disclosure or warm-up selection unsound and requires changes that remove the product's core flow.
+- Treat a handful of interviews as signals, not proof; do not state demand from compliments.

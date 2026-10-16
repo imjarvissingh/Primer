@@ -70,9 +70,9 @@ function MissionBody({ theme }: PracticeMissionProps) {
   useEffect(() => {
     if (!needsFocus.current) return;
     needsFocus.current = false;
-    document.getElementById("offer-heading")?.focus();
-    if (document.activeElement?.id !== "offer-heading") {
-      document.getElementById("play-heading")?.focus();
+    for (const id of ["offer-heading", "play-heading", "intro-heading"]) {
+      document.getElementById(id)?.focus();
+      if (document.activeElement?.id === id) break;
     }
   });
   // Bumped on restart so a late reply for an abandoned session is ignored.
@@ -129,6 +129,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
       });
       if (mine !== generation.current) return;
       if (res.ok && "sessionId" in res) {
+        needsFocus.current = true;
         setScreen({
           name: "playing",
           session: {
@@ -149,6 +150,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
     generation.current += 1;
     resetLocal();
     setSessionLost(sessionEnded);
+    needsFocus.current = true;
     setScreen({ name: "intro" });
   }
 
@@ -238,7 +240,11 @@ function MissionBody({ theme }: PracticeMissionProps) {
     return (
       <section aria-labelledby="intro-heading" className="grid gap-4">
         {framedScene(NOT_STARTED)}
-        <h2 id="intro-heading" className="text-2xl font-extrabold sm:text-3xl">
+        <h2
+          id="intro-heading"
+          tabIndex={-1}
+          className="text-2xl font-extrabold sm:text-3xl"
+        >
           {theme.missionTitle}
         </h2>
         <p className="text-lg">{theme.intro}</p>
