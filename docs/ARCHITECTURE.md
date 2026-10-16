@@ -45,3 +45,37 @@ Keeping answer keys out of the domain's learner-facing types does **not** by its
 - Never pass a `ValidatedProblem`, `QuestionBank` or `EvaluationResult` to a Client Component or serialize it into a response. Send only `toLearnerView(...)` output and the tutoring action.
 - Evaluate on the server; the client submits a bare number and receives only the tutoring action (for assessments, always the neutral acknowledgement).
 - Do not log learner responses.
+
+## Implementation status (Phase 3, 2026-10-16): Block Builder "The Broken Bridge"
+One playable guided-practice mission at `/block-builder`. **It is a draft demonstration**: its item, hints and wording are unreviewed by an educator, and it is not a secure assessment system.
+
+```
+src/lib/practice-protocol.ts      wire types only (no runtime imports): shared by client and server
+src/server/practice/              server-only (import "server-only")
+  missions.ts                     allowlist: "broken-bridge" -> fixed item GP-07 (13 - 5, guided-practice bank)
+  validate.ts                     bounded, strict parsing of untrusted request bodies
+  sessions.ts                     short-lived in-memory sessions
+  service.ts                      evaluateResponse + tutoring step -> controlled feedback
+src/app/api/practice/bridge/      the only Route Handler (POST)
+src/components/block-builder/     client UI: BridgeMission, BlockField, AnswerPicker, FeedbackPanel, MissionOutcome, BridgeScene, hints.ts
+```
+
+### Client / server boundary
+- **Server owns** the validated problem (with its answer key), scoring, and every tutoring transition (Phase 2 `startItem`/`step`).
+- **Client owns** only presentation: which screen, which blocks are on the bridge, the picked number, the latest feedback.
+- Client code imports nothing from `@/domain` or `@/server` at runtime (enforced by `tests/unit/boundary.test.ts`). The challenge numbers (13 and 5) reach the client because they are the question; `maxAnswer` is sent too so the client needs no domain constant. Blocks drawn = `challenge.start`; the story text uses `challenge.takeAway`.
+- Responses are a closed set: `correct`, `neutral-feedback`, `hint` (controlled hint id, 1-based number, make-ten step numbers), `easier-practice`, `offer-skip`, `ask-again`, `skipped`, `ended`. They never contain an answer field, problem object, skill, bank, review status or other item. Hint text and cues are client-side draft presentations keyed by hint id; their numbers come from the server's `strategy`, not constants.
+- The missing "easier practice" (prerequisite) activity is not built: that policy action ends the mission with an honest message.
+
+### Session state and request validation
+- `POST /api/practice/bridge` with `start | attempt | skip | stop`. Bodies are capped at 1 KB (checked on `content-length` and while reading), must be `application/json`, and must have exactly the expected keys. Unknown missions (including `IN-01`, `GP-07`, any item id), extra fields such as a client `expectedAnswer`, bad session ids and non-integer `seq` get 400/413/415.
+- The learner's `answer` is passed untouched to `evaluateResponse`; strings, decimals, negatives, out-of-range, null and missing are *invalid* and never scored.
+- **Session choice:** an in-memory `Map` of opaque UUID -> `{tutor state, seq, expiry}` in the Node process. Chosen over a signed-token cookie because the server then, not the client, is the authority on attempt and hint counts (a signed token can be replayed to rewind hints), and over a database/Redis as unjustified for one demo. Sessions expire 30 minutes after last use; at most 500 are kept (oldest evicted).
+- `seq` counts accepted events. A request that quotes any other value gets 409 `stale` and changes nothing, which makes double-clicks and replays harmless. Events after a finished item get 409 `session-closed`. The client also blocks a second request while one is in flight, and ignores replies for an abandoned session.
+- Restart is a new session; it never mutates curriculum data and records no evidence.
+
+### Demo limitations (not production claims)
+- Unauthenticated and open: anyone who can reach the server can create sessions and probe the API. A caller can still discover the answer by trying all 21 numbers; sessions only bound how many scored attempts the tutor allows. This is guided practice, **not** assessment.
+- State is per process: a restart, redeploy, serverless cold start or multiple instances lose sessions (the client restarts cleanly). A page refresh also starts a new session. Not suitable for multi-instance hosting as-is.
+- No rate limiting or CSRF protection beyond input validation (no cookies or accounts exist to abuse). Nothing is stored beyond the in-memory session; learner responses are not logged.
+- "Practice complete" is never mastery or evidence, and nothing here feeds `evidence`.

@@ -9,7 +9,16 @@ Two themed experiences are planned, sharing one curriculum and one learning engi
 
 ## Current stage
 
-**Application foundation only.** The repository contains the planning documents plus a minimal Next.js app: one static homepage that describes the concept and lists the two planned experiences. There is no game, curriculum, math evaluator, tutoring, accounts, database or data collection yet, and no learning results exist.
+**Early development, with one draft demo.** The repository contains the planning documents, a deterministic curriculum/math/tutoring engine (`src/domain`), and one playable Block Builder mission, _The Broken Bridge_ (subtraction 13 − 5). The mission is a **draft demonstration**: its content and hints have not been reviewed by an educator, and it is not a tested learning product. There are no accounts, database or data collection, and no learning results exist.
+
+## Try the demo
+
+```bash
+npm install
+npm run dev          # then open http://localhost:3000/block-builder
+```
+
+Tap blocks to put them on the bridge, pick how many are left in the pile, and press "Check my answer". Answers are scored by the server (`/api/practice/bridge`), which keeps short-lived in-memory sessions, so the demo needs `next dev` or `next start` (not a static export) and runs as a single instance. See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the client/server boundary and limitations.
 
 ## Getting started
 

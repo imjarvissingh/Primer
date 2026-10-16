@@ -11,23 +11,24 @@ describe("Home page", () => {
     ).toEqual(["Primer"]);
   });
 
-  it("lists both planned experiences, marked as not yet available", () => {
+  it("lists both experiences: Block Builder as a draft demo, Space Construction as planned", () => {
     render(<Home />);
     const list = screen.getByRole("list");
     const items = within(list).getAllByRole("listitem");
     expect(items).toHaveLength(2);
     expect(items[0]).toHaveTextContent("Block Builder");
+    expect(items[0]).toHaveTextContent("Draft demo");
     expect(items[1]).toHaveTextContent("Space Construction");
-    items.forEach((item) =>
-      expect(item).toHaveTextContent("Planned — not yet available"),
-    );
+    expect(items[1]).toHaveTextContent("Planned — not yet available");
   });
 
-  it("offers no interactive controls or forms (no data collection)", () => {
+  it("links only to the Block Builder demo and has no forms (no data collection)", () => {
     render(<Home />);
+    const links = screen.getAllByRole("link");
+    expect(links).toHaveLength(1);
+    expect(links[0]).toHaveAttribute("href", "/block-builder");
     expect(screen.queryByRole("button")).toBeNull();
     expect(screen.queryByRole("textbox")).toBeNull();
-    expect(screen.queryByRole("link")).toBeNull();
   });
 });
 

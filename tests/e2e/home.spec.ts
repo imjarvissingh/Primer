@@ -26,12 +26,16 @@ for (const [name, width, height] of [
   });
 }
 
-test("keyboard Tab does not trap focus and page has a main landmark", async ({
+test("keyboard Tab reaches the demo link, does not trap focus, and page has a main landmark", async ({
   page,
 }) => {
   await page.goto("/");
   await expect(page.getByRole("main")).toBeVisible();
-  // The page has no interactive elements yet, so Tab must leave focus on body/document.
+  // The only interactive element is the demo link; one more Tab leaves the page.
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("link", { name: "Try The Broken Bridge" }),
+  ).toBeFocused();
   await page.keyboard.press("Tab");
   const focusedTag = await page.evaluate(() => document.activeElement?.tagName);
   expect(["BODY", "HTML"]).toContain(focusedTag);

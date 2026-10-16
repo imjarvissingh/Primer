@@ -29,3 +29,13 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - No dependency was added. Plain TypeScript validation replaced a schema library to keep the surface small.
 
 **Implementation assumptions awaiting educator review** (not approved decisions): the prerequisite edges, bank contents, hint wording ids, the practice sequence (neutral feedback, hint 1, hint 2, prerequisite fallback or skip offer, stop after 5 wrong), and the 3-unreadable-answers skip offer.
+
+## Phase 3 decisions (2026-10-16)
+- **Server-authoritative demo session in memory.** Opaque UUID, 30-minute sliding TTL, 500-session cap, `seq` for stale/duplicate rejection. Rejected: client-held tutor state (forgeable hint/attempt counts), signed cookie/token (replayable, needs a secret), database/Redis (not justified for one demo). Cost: no persistence, single instance only; documented in ARCHITECTURE.md.
+- **Mission name, not item id.** The API accepts only `broken-bridge`, which the server maps to guided-practice item `GP-07`. Assessment items cannot be named.
+- **Route Handler, not Server Action.** A plain JSON endpoint is easier to unit test, inspect and bound.
+- **Shown quantity vs answer.** The pile always has `start` blocks; the live count shown is blocks *on the bridge* only. The remaining number is never printed, so the learner counts it.
+- **Tap/click first.** Blocks are native buttons; no drag-and-drop. Answers are a 0-20 radio group, not free text.
+- **Hint wording is client-side draft presentation** keyed by the server's hint id; make-ten numbers come from the evaluator's strategy.
+- **No `easier-practice` activity.** The policy's prerequisite fallback ends the mission with an honest message because new curriculum content is out of scope.
+- `server-only` is used without installing the package (Next resolves it); Vitest stubs it. No dependencies were added.

@@ -35,3 +35,23 @@ body {
     Arial,
     sans-serif;
 }
+
+:focus-visible {
+  outline: 3px solid #a21caf;
+  outline-offset: 2px;
+}
+
+.block-btn,
+.block-slot {
+  touch-action: manipulation;
+}
+
+/* Motion is opt-in: nothing animates unless the person has not asked for less. */
+@media (prefers-reduced-motion: no-preference) {
+  .block-btn {
+    transition: transform 120ms ease-out;
+  }
+  .block-btn:active {
+    transform: scale(0.94);
+  }
+}

@@ -12,3 +12,8 @@ If behind: simplify art/theme depth, not mathematical correctness, assessment se
 Done: curriculum graph and validation, five problem types with validated evaluator, four draft banks with integrity checks and answer-free projection, tutoring policy, evidence contracts with a conservative (draft) mastery policy, architecture tests.
 
 Remaining before any child pilot: educator review of skills, edges, banks and hint content; educator-approved mastery thresholds; Phase 3 Block Builder mission (must follow the server-side boundary in ARCHITECTURE.md); selection/ordering of items and learner-exposure tracking (needs persistence, deliberately not built).
+
+## Phase 3 status (2026-10-16)
+Done: Block Builder "The Broken Bridge" at `/block-builder` (server-authoritative scoring and tutoring, tap/keyboard blocks, hints, completion/stop/skip/restart, unit/component/browser tests, answer-isolation checks). It is a draft demonstration, not educator-approved.
+
+Not done / next: Phase 4 Space Construction on the shared engine; the prerequisite ("easier practice") activity; educator review of the item, hints and wording; real persistence and authentication before any child pilot.

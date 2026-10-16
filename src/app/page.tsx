@@ -15,12 +15,14 @@ export default function Home() {
 
       <section aria-labelledby="experiences" className="mt-10">
         <h2 id="experiences" className="text-2xl font-semibold">
-          Planned experiences
+          Experiences
         </h2>
         <ul className="mt-4 grid gap-4 sm:grid-cols-2">
           <ExperienceCard
             name="Block Builder"
             description="Build bridges and structures while practicing subtraction."
+            href="/block-builder"
+            linkLabel="Try The Broken Bridge"
           />
           <ExperienceCard
             name="Space Construction"
@@ -33,8 +35,9 @@ export default function Home() {
       </section>
 
       <p className="mt-10 border-t border-border pt-6 text-sm text-muted">
-        Primer is in early development. This page collects no information and
-        has no playable game yet.
+        Primer is in early development. The first playable mission is a draft
+        demonstration that has not been reviewed by an educator. This site
+        collects no information.
       </p>
     </main>
   );
