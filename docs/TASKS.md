@@ -32,3 +32,8 @@ Still open: educator review of the independent items and all wording; approved m
 Done: session-loss and error recovery messages, mid-check "Start over", hidden-page state reset, start rate limit, privacy headers and noindex on the summary, skip link, copy fixes, [DEMO-RUNBOOK.md](DEMO-RUNBOOK.md), recording-path and failure-recovery browser tests on three viewports.
 
 Follow-up (not started): Phase 7 YC narrative, demo recording and founder video. Still open from before: educator review, approved mastery rules, persistence/authentication/consent before any real child use, shared-store rate limiting for multi-instance hosting.
+
+## Phase 7 status (2026-10-16)
+Done: YC requirements checked against official pages (Winter 2027 batch, Nov 2 8pm PT; founder video rules; application questions are behind login and were not seen), and public-safe drafts: [YC-APPLICATION.md](YC-APPLICATION.md), [YC-DEMO-STORYBOARD.md](YC-DEMO-STORYBOARD.md), [YC-FOUNDER-VIDEO.md](YC-FOUNDER-VIDEO.md), [YC-VALIDATION-PLAN.md](YC-VALIDATION-PLAN.md), [YC-SUBMISSION-CHECKLIST.md](YC-SUBMISSION-CHECKLIST.md). No application code changed.
+
+Founder responsibilities: log in and copy the real questions; supply all personal facts; record the demo and founder video; run parent and educator conversations; write and submit the application privately.
