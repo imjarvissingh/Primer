@@ -258,3 +258,6 @@ test-results/
 .vscode/
 .idea/
 .vercel/
+
+# Primer: src/lib is source code, not a Python build directory
+!src/lib/
