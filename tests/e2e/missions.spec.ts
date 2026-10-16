@@ -136,16 +136,214 @@ for (const t of THEMES) {
       await expect(anySupply(page, t)).toHaveCount(13);
     });
 
-    test("repeated wrong answers reach a calm stop, not a failure", async ({
+    test("repeated wrong answers reach a calm warm-up offer, and declining it ends calmly", async ({
       page,
     }) => {
       await startMission(page, t);
       await buildFive(page, t);
       for (let i = 0; i < 4; i++) await answer(page, 3);
       await expect(
+        page.getByRole("heading", { name: /warm-up first/i }),
+      ).toBeFocused();
+      await expect(page.getByText(/fail|wrong/i)).toHaveCount(0);
+      await page.getByRole("button", { name: "Not now" }).click();
+      await expect(
         page.getByRole("heading", { name: /a little easier/i }),
       ).toBeVisible();
       await expect(page.getByText(/fail|wrong/i)).toHaveCount(0);
+    });
+
+    test("ten-frame pictures follow the authorized hints and never print the result", async ({
+      page,
+    }) => {
+      const bodies: string[] = [];
+      page.on("response", async (res) => {
+        if (res.url().endsWith(API))
+          bodies.push(await res.text().catch(() => ""));
+      });
+      await startMission(page, t);
+      await buildFive(page, t);
+      const frames = page.locator("figure.ten-frames");
+
+      await answer(page, 9);
+      await expect(page.getByText(/Not quite yet/)).toBeVisible();
+      await expect(frames).toHaveCount(0);
+
+      await answer(page, 9);
+      await expect(page.getByText("Hint 1", { exact: true })).toBeVisible();
+      await expect(frames).toHaveCount(1);
+      await expect(frames.getByRole("img")).toHaveAttribute(
+        "aria-label",
+        new RegExp(`13 ${t.plural} shown as one full ten and 3 extra`),
+      );
+      await expect(frames.locator('[data-cell="counter"]')).toHaveCount(10);
+      await expect(frames.locator('[data-cell="take-now"]')).toHaveCount(3);
+      // The server withheld hint 2's number from the hint 1 reply.
+      expect(bodies.at(-1)).toContain('"takeFromTen":null');
+
+      await answer(page, 9);
+      await expect(page.getByText("Hint 2", { exact: true })).toBeVisible();
+      await expect(frames.getByRole("img")).toHaveAttribute(
+        "aria-label",
+        /already taken.*2 marked to take next/,
+      );
+      await expect(frames.locator('[data-cell="counter"]')).toHaveCount(8);
+      await expect(frames.locator('[data-cell="take-now"]')).toHaveCount(2);
+      await expect(frames.locator('[data-cell="taken"]')).toHaveCount(3);
+      // Nothing in the picture says how many are left.
+      await expect(frames).not.toContainText(/\b8\b|left|remain/i);
+      // The interactive field still holds exactly the learner's five.
+      await expectSlots(page, 5);
+      await expect(anySupply(page, t)).toHaveCount(8);
+    });
+
+    test("warm-up: offered once, answered, then back to the original mission and solved", async ({
+      page,
+    }) => {
+      const bodies: string[] = [];
+      page.on("response", async (res) => {
+        if (res.url().endsWith(API))
+          bodies.push(await res.text().catch(() => ""));
+      });
+      await startMission(page, t);
+      await buildFive(page, t);
+      for (let i = 0; i < 4; i++) await answer(page, 3);
+      const offer = page.getByRole("heading", { name: /warm-up first/i });
+      await expect(offer).toBeFocused();
+      await page.getByRole("button", { name: "Try the warm-up" }).click();
+
+      const warm = page.getByRole("heading", { name: "Warm-up" });
+      await expect(warm).toBeFocused();
+      await expect(anySupply(page, t)).toHaveCount(10);
+      for (let n = 1; n <= 6; n++) await supplyItem(page, t, n).click();
+      await expectSlots(page, 6, 6);
+      await answer(page, 4);
+
+      // Back on the original 13 - 5 with a fresh field.
+      const back = page.getByRole("heading", { name: t.playHeading });
+      await expect(back).toBeFocused();
+      await expect(page.getByText(/You are back at the mission/)).toBeVisible();
+      await expect(anySupply(page, t)).toHaveCount(13);
+      await expectSlots(page, 0);
+      await buildFive(page, t);
+      await answer(page, 8);
+      await expect(page.getByRole("heading", { name: t.done })).toBeVisible();
+      await expect(page.getByText(/does not measure mastery/)).toBeVisible();
+
+      // Responses stay free of answer keys and bank internals.
+      for (const body of bodies) {
+        for (const token of FORBIDDEN) expect(body.includes(token)).toBe(false);
+        expect(body).not.toContain("mastery");
+      }
+    });
+
+    test("the warm-up is bounded: leave it early, and it is never offered twice", async ({
+      page,
+    }) => {
+      await startMission(page, t);
+      await buildFive(page, t);
+      for (let i = 0; i < 4; i++) await answer(page, 3);
+      await page.getByRole("button", { name: "Try the warm-up" }).click();
+      await expect(
+        page.getByRole("heading", { name: "Warm-up" }),
+      ).toBeVisible();
+      await page
+        .getByRole("button", { name: "Back to the mission" })
+        .first()
+        .click();
+      await expect(
+        page.getByRole("heading", { name: t.playHeading }),
+      ).toBeFocused();
+      await buildFive(page, t);
+      for (let i = 0; i < 4; i++) await answer(page, 3);
+      await expect(
+        page.getByRole("heading", { name: /a little easier/i }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: /warm-up first/i }),
+      ).toHaveCount(0);
+    });
+
+    test("keyboard-only: reach the offer, take the warm-up and come back", async ({
+      page,
+    }) => {
+      await startMission(page, t);
+      await buildFive(page, t);
+      for (let i = 0; i < 4; i++) await answer(page, 3);
+      await tabTo(page, page.getByRole("button", { name: "Try the warm-up" }));
+      await page.keyboard.press("Enter");
+      await expect(
+        page.getByRole("heading", { name: "Warm-up" }),
+      ).toBeFocused();
+      await tabTo(
+        page,
+        page.getByRole("button", { name: "Back to the mission" }).first(),
+      );
+      await page.keyboard.press("Space");
+      await expect(
+        page.getByRole("heading", { name: t.playHeading }),
+      ).toBeFocused();
+    });
+
+    for (const [name, width, height] of [
+      ["small mobile", 360, 740],
+      ["tablet", 768, 1024],
+      ["desktop", 1440, 900],
+    ] as const) {
+      test(`ten-frame hint and warm-up fit with no horizontal overflow on ${name}`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width, height });
+        const overflow = () =>
+          page.evaluate(
+            () => document.documentElement.scrollWidth - window.innerWidth,
+          );
+        await startMission(page, t);
+        await buildFive(page, t);
+        await answer(page, 9);
+        await answer(page, 9);
+        await answer(page, 9);
+        await expect(page.getByText("Hint 2", { exact: true })).toBeVisible();
+        expect(await overflow()).toBeLessThanOrEqual(0);
+        const svg = await page.locator("figure.ten-frames svg").boundingBox();
+        expect(svg!.width).toBeGreaterThan(200);
+        await answer(page, 9);
+        await expect(
+          page.getByRole("heading", { name: /warm-up first/i }),
+        ).toBeVisible();
+        expect(await overflow()).toBeLessThanOrEqual(0);
+        for (const label of ["Try the warm-up", "Not now", "Stop for now"]) {
+          const box = await page
+            .getByRole("button", { name: label })
+            .boundingBox();
+          expect(box?.height).toBeGreaterThanOrEqual(44);
+          expect(box?.width).toBeGreaterThanOrEqual(44);
+        }
+        await page.getByRole("button", { name: "Try the warm-up" }).click();
+        await expect(
+          page.getByRole("heading", { name: "Warm-up" }),
+        ).toBeVisible();
+        expect(await overflow()).toBeLessThanOrEqual(0);
+      });
+    }
+
+    test("ten-frame pictures have no motion, with or without a reduced-motion preference", async ({
+      page,
+    }) => {
+      for (const pref of ["reduce", "no-preference"] as const) {
+        await page.emulateMedia({ reducedMotion: pref });
+        await startMission(page, t);
+        await buildFive(page, t);
+        await answer(page, 9);
+        await answer(page, 9);
+        const cell = page.locator("figure.ten-frames [data-cell]").first();
+        await expect(cell).toBeVisible();
+        const style = await cell.evaluate((el) => {
+          const c = getComputedStyle(el.querySelector("rect")!);
+          return [c.animationName, c.transitionDuration];
+        });
+        expect(style).toEqual(["none", "0s"]);
+      }
     });
 
     test("the scene builds up with each placed item and mirrors returns", async ({

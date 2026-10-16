@@ -65,7 +65,7 @@ src/components/practice/          client UI (see Phase 4)
 - **Client owns** only presentation: which screen, which blocks are on the bridge, the picked number, the latest feedback.
 - Client code imports nothing from `@/domain` or `@/server` at runtime (enforced by `tests/unit/boundary.test.ts`). The challenge numbers (13 and 5) reach the client because they are the question; `maxAnswer` is sent too so the client needs no domain constant. Blocks drawn = `challenge.start`; the story text uses `challenge.takeAway`.
 - Responses are a closed set: `correct`, `neutral-feedback`, `hint` (controlled hint id, 1-based number, make-ten step numbers), `easier-practice`, `offer-skip`, `ask-again`, `skipped`, `ended`. They never contain an answer field, problem object, skill, bank, review status or other item. Hint text and cues are client-side draft presentations keyed by hint id; their numbers come from the server's `strategy`, not constants.
-- The missing "easier practice" (prerequisite) activity is not built: that policy action ends the mission with an honest message.
+- (Superseded in Phase 8C, see below: the prerequisite action now opens a one-time warm-up offer.)
 
 ### Session state and request validation
 - `POST /api/practice/mission` with `start | attempt | skip | stop`. Bodies are capped at 1 KB (checked on `content-length` and while reading), must be `application/json`, and must have exactly the expected keys. Unknown missions (including `IN-01`, `GP-07`, any item id), extra fields such as a client `expectedAnswer`, bad session ids and non-integer `seq` get 400/413/415.
@@ -192,3 +192,11 @@ A finished-looking scene (and a green outline around it) only means "the right n
 
 ### Motion and accessibility
 A new built slot plays a 220 ms `slot-in` settle, only inside `prefers-reduced-motion: no-preference`. With reduced motion the slot simply appears. Accessible state is unchanged: native item buttons and the existing polite status text (count, goal, readiness). The scene adds no live region.
+
+## Implementation status (Phase 8C, 2026-10-16): instructional visuals and bounded support
+
+- **Disclosure.** `hint` feedback carries `steps: {takeToTen, takeFromTen|null}`. The service (`authorizedSteps`) fills `takeFromTen` only for `hint.make-ten.take-rest-from-ten`. `TenFrames` draws via `makeTenView` (`src/lib/ten-frame.ts`): with `takeFromTen: null` only the "split" stage can be built. Pictures are read-only, own no quantity, never contain the final result, and render nothing for numbers that do not cross ten.
+- **Support stage.** The session has `stage` (`main`, `support-offer`, `support`), `supportUsed`, `support` and `hintsBeforeSupport`. When the policy returns `practice-prerequisite` and support is unused, the service replies `support-offer` (session open). New request `support` with `choice: start|decline` is valid only in that stage. `start` swaps the tutor state to a fresh S03 item (GP-05) and replies `support-started` with public numbers only. In the warm-up the same evaluator scores GP-05; a correct answer, skip, or exhausted tries all reply `support-finished` and restore a fresh mission item (hints carried). `stop` ends the whole session. All of it uses the existing `seq` replay protection.
+- **Assessment is untouched:** no assessment file changed; `/api/assessment` rejects the `support` action; an e2e check confirms no ten-frames or warm-up appear in the independent check.
+- **Evidence:** practice code paths never call the evidence module, so ten-frame use and warm-up completion cannot become independent evidence.
+- **Known limitation:** the `support-offer` / `support-started` responses name numbers (10 and 6) for the warm-up, as the mission's numbers are public; arithmetic answers are not secret from a determined viewer.

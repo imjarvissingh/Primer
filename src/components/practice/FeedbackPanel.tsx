@@ -1,12 +1,16 @@
 import type { PracticeFeedback } from "@/lib/practice-protocol";
 import type { ThemeVocabulary } from "@/themes";
 import { presentHint } from "./hints";
+import { TenFrames } from "./TenFrames";
 
 interface FeedbackPanelProps {
   vocabulary: ThemeVocabulary;
   feedback: PracticeFeedback | null;
   start: number;
+  takeAway: number;
   networkProblem: boolean;
+  /** "Skip" leaves the current challenge; in the warm-up it returns to the mission. */
+  skipLabel: string;
   onSkip: () => void;
 }
 
@@ -19,7 +23,9 @@ export function FeedbackPanel({
   vocabulary,
   feedback,
   start,
+  takeAway,
   networkProblem,
+  skipLabel,
   onSkip,
 }: FeedbackPanelProps) {
   return (
@@ -33,7 +39,9 @@ export function FeedbackPanel({
           <Message
             feedback={feedback}
             start={start}
+            takeAway={takeAway}
             vocabulary={vocabulary}
+            skipLabel={skipLabel}
             onSkip={onSkip}
           />
         </div>
@@ -45,12 +53,16 @@ export function FeedbackPanel({
 function Message({
   feedback,
   start,
+  takeAway,
   vocabulary,
+  skipLabel,
   onSkip,
 }: {
   feedback: PracticeFeedback;
   start: number;
+  takeAway: number;
   vocabulary: ThemeVocabulary;
+  skipLabel: string;
   onSkip: () => void;
 }) {
   switch (feedback.kind) {
@@ -72,12 +84,22 @@ function Message({
         <>
           <p className="font-semibold">Hint {feedback.hintNumber}</p>
           <p className="mt-1">{hint.text}</p>
+          {feedback.steps !== null && (
+            <TenFrames
+              vocabulary={vocabulary}
+              start={start}
+              takeAway={takeAway}
+              steps={feedback.steps}
+            />
+          )}
           <p className="mt-2 text-sm">
             Draft demo hint, not yet reviewed by an educator.
           </p>
         </>
       );
     }
+    case "support-finished":
+      return <p>You are back at the mission. Take your time.</p>;
     case "ask-again":
       return <p>We could not read that answer. Pick a number and try again.</p>;
     case "offer-skip":
@@ -89,7 +111,7 @@ function Message({
             onClick={onSkip}
             className="btn btn-secondary mt-2"
           >
-            Skip this challenge
+            {skipLabel}
           </button>
         </>
       );

@@ -53,3 +53,9 @@ Abandoned sessions stay in memory until their 30-minute expiry (or until the 500
 ## Before you record: automated check
 
 `npm run validate` (typecheck, lint, format, unit tests, build + Playwright). The `recording path` browser tests walk steps 1–7 on small-mobile, tablet and desktop sizes.
+
+## Guided-practice walkthrough update and clean verification (Phase 8C)
+
+In a mission, answer wrongly four times: wrong 1 gives a neutral note; hint 1 and hint 2 show a ten-frame; the fourth offers a short warm-up ("Try the warm-up" / "Not now" / "Stop for now"). After the warm-up (answer 4) you return to 13 − 5 (answer 8).
+
+**Clean browser verification of the current code:** `PRIMER_E2E_PORT=3217 npm run test:e2e` (builds, then starts a fresh server). Playwright will not reuse a running server unless you set `PRIMER_E2E_REUSE=1`; if the port is busy it fails loudly. Do not trust screenshots unless the server was started from the build you just made.

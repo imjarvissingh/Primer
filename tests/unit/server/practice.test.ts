@@ -246,16 +246,19 @@ describe("scoring and tutoring (server-authoritative)", () => {
       kind: "hint",
       hintId: "hint.make-ten.fill-to-ten",
       hintNumber: 1,
-      steps: { takeToTen: 3, takeFromTen: 2 },
+      // Hint 1 discloses only the extras to take first, not the second step.
+      steps: { takeToTen: 3, takeFromTen: null },
     });
-    expect(feedbackOf(answer(s, ref, 1))).toMatchObject({
+    expect(feedbackOf(answer(s, ref, 1))).toEqual({
       kind: "hint",
       hintId: "hint.make-ten.take-rest-from-ten",
       hintNumber: 2,
+      steps: { takeToTen: 3, takeFromTen: 2 },
     });
     const last = answer(s, ref, 1);
-    expect(feedbackOf(last)).toEqual({ kind: "easier-practice" });
-    expect(last.body).toMatchObject({ sessionStatus: "finished" });
+    // The policy's prerequisite action now opens a one-time offer, not a dead end.
+    expect(feedbackOf(last)).toEqual({ kind: "support-offer" });
+    expect(last.body).toMatchObject({ sessionStatus: "open" });
   });
 
   it("a correct answer after hints is still just confirmation, with no mastery field", () => {
@@ -472,5 +475,173 @@ describe("themes have no say on the server", () => {
       });
     };
     expect(play()).toEqual(play());
+  });
+});
+
+describe("bounded prerequisite support", () => {
+  type Ref = { id: string; seq: number };
+  const send = (r: Ref, req: Record<string, unknown>) => {
+    const reply = run({
+      sessionId: r.id,
+      seq: r.seq,
+      ...req,
+    } as PracticeRequest);
+    if (reply.body.ok && "feedback" in reply.body) r.seq = reply.body.seq;
+    return reply;
+  };
+  const wrong = (r: Ref, n = 1) => {
+    let last!: ReturnType<typeof run>;
+    for (let i = 0; i < n; i++)
+      last = send(r, { action: "attempt", answer: 1 });
+    return last;
+  };
+  /** Drives a fresh session to the offer. */
+  function offered(): Ref {
+    const s = begin();
+    const r = { id: s.id, seq: s.seq };
+    wrong(r, 4);
+    return r;
+  }
+
+  it("offer is open, carries no numbers, and blocks everything but yes/no/stop", () => {
+    const r = offered();
+    expect(
+      send({ ...r, seq: r.seq }, { action: "attempt", answer: 8 }).status,
+    ).toBe(409);
+    expect(send(r, { action: "skip" }).status).toBe(409);
+  });
+
+  it("starting the warm-up serves only public numbers and no answer", () => {
+    const r = offered();
+    const reply = send(r, { action: "support", choice: "start" });
+    expect(feedbackOf(reply)).toEqual({
+      kind: "support-started",
+      challenge: { start: 10, takeAway: 6, maxAnswer: 20 },
+    });
+    expect(JSON.stringify(reply.body)).not.toMatch(
+      /"answer"|expected|GP-|subtract/i,
+    );
+  });
+
+  it("the warm-up is scored by the same evaluator, against its own problem", () => {
+    const r = offered();
+    send(r, { action: "support", choice: "start" });
+    // 8 is the mission's answer; the warm-up's answer is 4.
+    expect(feedbackOf(send(r, { action: "attempt", answer: 8 })).kind).toBe(
+      "neutral-feedback",
+    );
+    const done = send(r, { action: "attempt", answer: 4 });
+    expect(feedbackOf(done)).toEqual({ kind: "support-finished" });
+    expect(done.body).toMatchObject({ sessionStatus: "open" });
+  });
+
+  it("returns to the original mission, which is then solved with 8", () => {
+    const r = offered();
+    send(r, { action: "support", choice: "start" });
+    send(r, { action: "attempt", answer: 4 });
+    // 4 solved the warm-up only; on the mission it is just a wrong try.
+    expect(feedbackOf(send(r, { action: "attempt", answer: 4 })).kind).toBe(
+      "neutral-feedback",
+    );
+    const fin = send(r, { action: "attempt", answer: 8 });
+    expect(feedbackOf(fin)).toEqual({ kind: "correct" });
+    expect(fin.body).toMatchObject({ sessionStatus: "finished" });
+  });
+
+  it("help stays on the record: the returned mission is not an independent try", () => {
+    const r = offered();
+    send(r, { action: "support", choice: "start" });
+    send(r, { action: "attempt", answer: 4 });
+    const session = store.get(r.id, T0)!;
+    expect(session.stage).toBe("main");
+    expect(session.tutor.hintsShown).toBe(2);
+    expect(session.tutor.incorrectAttempts).toBe(0);
+  });
+
+  it("skip inside the warm-up goes back to the mission", () => {
+    const r = offered();
+    send(r, { action: "support", choice: "start" });
+    expect(feedbackOf(send(r, { action: "skip" }))).toEqual({
+      kind: "support-finished",
+    });
+    expect(feedbackOf(send(r, { action: "attempt", answer: 8 }))).toEqual({
+      kind: "correct",
+    });
+  });
+
+  it("running out of tries in the warm-up also returns, never ends the mission", () => {
+    const r = offered();
+    send(r, { action: "support", choice: "start" });
+    // Warm-up: neutral, hint, hint, (policy prerequisite -> return).
+    wrong(r, 3);
+    expect(feedbackOf(wrong(r))).toEqual({ kind: "support-finished" });
+    expect(store.get(r.id, T0)!.stage).toBe("main");
+  });
+
+  it("stop inside the warm-up ends the whole session", () => {
+    const r = offered();
+    send(r, { action: "support", choice: "start" });
+    const reply = send(r, { action: "stop" });
+    expect(feedbackOf(reply)).toEqual({
+      kind: "ended",
+      reason: "learner-stopped",
+    });
+    expect(reply.body).toMatchObject({ sessionStatus: "finished" });
+    expect(send(r, { action: "attempt", answer: 8 }).status).toBe(409);
+  });
+
+  it("declining ends practice calmly and leaves nothing open", () => {
+    const r = offered();
+    const reply = send(r, { action: "support", choice: "decline" });
+    expect(feedbackOf(reply)).toEqual({ kind: "easier-practice" });
+    expect(reply.body).toMatchObject({ sessionStatus: "finished" });
+    expect(send(r, { action: "stop" }).status).toBe(409);
+    expect(send(r, { action: "support", choice: "start" }).status).toBe(409);
+  });
+
+  it("stop is allowed while the offer is showing", () => {
+    const r = offered();
+    expect(feedbackOf(send(r, { action: "stop" }))).toEqual({
+      kind: "ended",
+      reason: "learner-stopped",
+    });
+  });
+
+  it("the warm-up is offered once: a second failure ends practice (no loop)", () => {
+    const r = offered();
+    send(r, { action: "support", choice: "start" });
+    send(r, { action: "attempt", answer: 4 });
+    const last = wrong(r, 4);
+    expect(feedbackOf(last)).toEqual({ kind: "easier-practice" });
+    expect(last.body).toMatchObject({ sessionStatus: "finished" });
+  });
+
+  it("a client cannot start support without the offer, or answer the offer twice", () => {
+    const s = begin();
+    const r = { id: s.id, seq: s.seq };
+    expect(send(r, { action: "support", choice: "start" }).status).toBe(409);
+    wrong(r, 4);
+    send(r, { action: "support", choice: "start" });
+    expect(send(r, { action: "support", choice: "start" }).status).toBe(409);
+  });
+
+  it("replays are stale", () => {
+    const r = offered();
+    const old = r.seq;
+    send(r, { action: "support", choice: "start" });
+    expect(
+      run({ action: "support", sessionId: r.id, seq: old, choice: "start" })
+        .status,
+    ).toBe(409);
+  });
+
+  it("parseRequest accepts only the two choices and exact keys", () => {
+    const base = { action: "support", sessionId: ID, seq: 4 };
+    const parse = (o: unknown) => parseRequest(JSON.stringify(o));
+    expect(parse({ ...base, choice: "start" }).ok).toBe(true);
+    expect(parse({ ...base, choice: "decline" }).ok).toBe(true);
+    expect(parse({ ...base, choice: "yes" }).ok).toBe(false);
+    expect(parse(base).ok).toBe(false);
+    expect(parse({ ...base, choice: "start", skillId: "S03" }).ok).toBe(false);
   });
 });

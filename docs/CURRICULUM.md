@@ -43,3 +43,21 @@ Whether baseline-only correctness should ever lift a skill above "emerging"; how
 
 ## Independent check status (Phase 5, 2026-10-16)
 The check uses the four **draft, educator-unreviewed** items of the independent bank (16 − 5, 19 − 7, 14 − 6, 17 − 9; S03 x2, S04 x2) in that fixed order. It measures only whether a learner answered those four unseen subtraction items correctly on one occasion with no hints. It does not measure S01 or S02, retention (the delayed bank is not used), transfer beyond these items, or mastery: no thresholds are approved, so none is awarded. Open for the educator: whether four items suffice, whether the order or item mix is right, and whether skipped items should be followed up.
+
+## Phase 8C: make-ten progression and warm-up (DRAFT, pending external educator review)
+
+Progression for 13 − 5 (provisional): wrong 1 neutral note → hint 1: 13 as a full ten plus 3 extra, extras marked "take first" (part-whole plus first removal) → hint 2: extras gone, the remaining 2 marked inside the ten (13 − 3 = 10, then 10 − 2) → one-time warm-up (10 − 6, take-away). The pictures never show the final count.
+
+### Review checklist for a qualified elementary mathematics educator — STATUS: PENDING, not educator-approved
+1. Is the 13 − 5 make-ten progression appropriate?
+2. Is the two-row, five-column ten-frame conventional and understandable? Is ✕ / dashed circle clear to 6–9-year-olds?
+3. Are the removal stages sequenced correctly? Should the learner act on each stage?
+4. Does the hint ladder reveal too much too soon (hint 1 already names "take 3 first")?
+5. Is a take-away warm-up (S03) the right prerequisite, or should it be part-whole (S02)?
+6. Is the wording age-appropriate and non-pressuring?
+7. Is the return to the mission constructive?
+8. Do both themes carry the same meaning?
+9. Could the pictures cause subtraction misconceptions (e.g. extras shown in a separate frame)?
+10. Are other accessibility alternatives needed (physical manipulatives, audio)?
+
+Hint copy audit: hint 1 and hint 2 text is mathematically correct and was kept unchanged. Added draft text for the two S03 hint ids used in the warm-up. Neutral and fallback wording unchanged.

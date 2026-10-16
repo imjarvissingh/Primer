@@ -47,3 +47,9 @@ Not started: educator review, persistence/authentication/consent.
 Done: bridge and station scenes show one built slot per placed item (derived from the single selection set), returns empty slots, restart/put-all-back clears them; slot-in motion honoring reduced motion; home card pill alignment; contrast measured (no fixes needed). No math, tutoring, API, schema or assessment changes. Tests: shared-state, slot-mapping, restart and incorrect-answer unit tests, plus per-theme Playwright journey and reduced-motion checks.
 
 Not started: Phase 8C (instructional feedback, make-ten visualization, prerequisite remediation).
+
+## Phase 8C status (2026-10-16)
+
+Done: accessible read-only ten-frame pictures tied to the two make-ten hints; the server now discloses a hint's step numbers only with that hint; one bounded, server-controlled warm-up (take-away within ten) offered once when the policy asks for prerequisite practice; Playwright no longer silently reuses a running server.
+
+Still open (all draft): **external educator review** (checklist in docs/CURRICULUM.md); whether the warm-up should be S03 (policy's choice) or part-whole (S02); persistence/authentication before any pilot. Phase 8D not started.

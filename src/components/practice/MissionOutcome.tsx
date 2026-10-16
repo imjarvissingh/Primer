@@ -19,7 +19,7 @@ function copyFor(kind: OutcomeKind, theme: ThemeConfig, answer: number | null) {
     case "easier-practice":
       return {
         title: "Let's try something a little easier next time",
-        body: "This one was a big challenge. In a full version, you would get an easier one to practice first. This demo does not have that yet.",
+        body: "This one was a big challenge. A grown-up can help, or you can start again whenever you like.",
       };
     case "skipped":
       return {

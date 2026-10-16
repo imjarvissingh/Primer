@@ -27,12 +27,27 @@ export function presentHint(
         highlightAbove: extrasFrom,
       };
     }
-    if (hintId === "hint.make-ten.take-rest-from-ten") {
+    if (
+      hintId === "hint.make-ten.take-rest-from-ten" &&
+      steps.takeFromTen !== null
+    ) {
       return {
         text: `You took ${countOf(steps.takeToTen, vocab)} to make a full ten. You still need to take ${steps.takeFromTen} more from the ten. How many are left?`,
         highlightAbove: extrasFrom,
       };
     }
+  }
+  if (hintId === "hint.take-away.cover-the-taken") {
+    return {
+      text: `Cover the ${vocab.plural} you take away. Then look at the ones that are not covered.`,
+      highlightAbove: null,
+    };
+  }
+  if (hintId === "hint.take-away.count-what-is-left") {
+    return {
+      text: `Count the ${vocab.plural} that are not covered. That is how many are left.`,
+      highlightAbove: null,
+    };
   }
   return {
     text: `Take another look at the ${vocab.plural}. Count the ones still ${vocab.supplyPlace}.`,

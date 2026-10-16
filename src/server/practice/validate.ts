@@ -59,6 +59,10 @@ export function parseRequest(raw: string): ParseResult {
     }
   } else if (body.action === "skip" || body.action === "stop") {
     if (!hasOnlyKeys(body, ["action", "sessionId", "seq"])) return bad;
+  } else if (body.action === "support") {
+    if (!hasOnlyKeys(body, ["action", "sessionId", "seq", "choice"]))
+      return bad;
+    if (body.choice !== "start" && body.choice !== "decline") return bad;
   } else {
     return bad;
   }
@@ -72,6 +76,17 @@ export function parseRequest(raw: string): ParseResult {
     return {
       ok: true,
       request: { action: "attempt", sessionId, seq, answer: body.answer },
+    };
+  }
+  if (body.action === "support") {
+    return {
+      ok: true,
+      request: {
+        action: "support",
+        sessionId,
+        seq,
+        choice: body.choice as "start" | "decline",
+      },
     };
   }
   return { ok: true, request: { action: body.action, sessionId, seq } };

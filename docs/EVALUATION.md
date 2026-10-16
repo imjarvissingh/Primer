@@ -13,3 +13,7 @@ Not supported, and not to be written in the product or the YC application from t
 
 ## Demo claims (Phase 6)
 Allowed: "this is a working draft of guided practice in two themes, an independent check with no hints, and an adult summary built from server-recorded answers; all data is synthetic." Not allowed: any statement of learning improvement, mastery, engagement, traction, user feedback or educator approval. The summary's wording ("Correct in this short check", "Needs more evidence", "Mastery: not awarded") is deliberately descriptive and must stay so until an educator-approved policy exists. A passing automated test suite is evidence the software behaves as specified, not that it teaches.
+
+## Assisted practice provenance (Phase 8C)
+
+Hints, ten-frame pictures and the warm-up are guided practice. Practice never records evidence, and after a warm-up the mission item keeps its earlier hint count, so nothing counts as independent. No completion or assistance count is accepted from the client. Limitation: practice outcomes are not stored at all, so the demo cannot show how much help a learner used.

@@ -380,7 +380,7 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
               kind: "hint",
               hintId: "hint.make-ten.fill-to-ten",
               hintNumber: 1,
-              steps: { takeToTen: 3, takeFromTen: 2 },
+              steps: { takeToTen: 3, takeFromTen: null },
             }),
       );
       const user = await start();
@@ -557,7 +557,8 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       await submit(user, 9);
       await screen.findByRole("heading", { name: /a little easier/i });
       expect(screen.queryByRole("link")).toBeNull();
-      expect(screen.getByText(/does not have that yet/)).toBeInTheDocument();
+      expect(screen.getByText(/A grown-up can help/)).toBeInTheDocument();
+      expect(screen.queryByText(/does not have that yet/)).toBeNull();
     });
   });
 });

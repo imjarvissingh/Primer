@@ -15,3 +15,7 @@ Adult-operated, synthetic-data demonstration only. No accounts, names, emails, d
 
 ## Demo hardening limits (Phase 6)
 The demo has no parental authorization. The summary URL's session id works as an unguessable access capability: anyone with the link can view that synthetic summary until the session expires (30 minutes idle or server restart). The page is marked no-index, no-referrer and no-store, and the id is not put in navigation links, analytics (none exist), logs or fixtures. The start rate limit is per process and identifier-free; it is not abuse protection for a hosted product. None of this is COPPA compliance, a security review or child-safety readiness. Do not enter real child information.
+
+## Instructional visuals and warm-up (Phase 8C)
+
+All wording and pictures are draft and unreviewed by an educator. The warm-up is optional, offered once, never labels the learner, and has a visible way back or out. Arithmetic is computable from public numbers; the protection is against exposing reserved answers, later hint steps and assessment content, not secrecy of simple arithmetic. No new data is collected or stored.

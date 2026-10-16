@@ -5,6 +5,7 @@ import {
   PRACTICE_MISSION_ID,
   type PracticeFeedback,
   type PublicChallenge,
+  type SupportChallenge,
 } from "@/lib/practice-protocol";
 import { AnswerPicker } from "./AnswerPicker";
 import { ConstructionField } from "./ConstructionField";
@@ -20,11 +21,14 @@ interface Session {
   id: string;
   seq: number;
   challenge: PublicChallenge;
+  /** Set only while the server has the learner in the short warm-up. */
+  support: SupportChallenge | null;
 }
 
 type Screen =
   | { name: "intro" }
   | { name: "playing"; session: Session }
+  | { name: "offer"; session: Session }
   | { name: "outcome"; kind: OutcomeKind };
 
 const primaryButton = "btn btn-primary";
@@ -60,6 +64,17 @@ function MissionBody({ theme }: PracticeMissionProps) {
   const [busy, setBusy] = useState(false);
   // A ref, not state, so a rapid second click is blocked before React re-renders.
   const inFlight = useRef(false);
+  // Set when the screen changes between mission, offer and warm-up, so focus
+  // moves to the new heading once (and never on ordinary re-renders).
+  const needsFocus = useRef(false);
+  useEffect(() => {
+    if (!needsFocus.current) return;
+    needsFocus.current = false;
+    document.getElementById("offer-heading")?.focus();
+    if (document.activeElement?.id !== "offer-heading") {
+      document.getElementById("play-heading")?.focus();
+    }
+  });
   // Bumped on restart so a late reply for an abandoned session is ignored.
   const generation = useRef(0);
 
@@ -120,6 +135,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
             id: res.sessionId,
             seq: res.seq,
             challenge: res.challenge,
+            support: null,
           },
         });
       } else {
@@ -136,7 +152,10 @@ function MissionBody({ theme }: PracticeMissionProps) {
     setScreen({ name: "intro" });
   }
 
-  function act(session: Session, request: "attempt" | "skip" | "stop") {
+  function act(
+    session: Session,
+    request: "attempt" | "skip" | "stop" | { support: "start" | "decline" },
+  ) {
     return guarded(async () => {
       const mine = generation.current;
       setNetworkProblem(false);
@@ -144,7 +163,9 @@ function MissionBody({ theme }: PracticeMissionProps) {
       const res = await sendPractice(
         request === "attempt"
           ? { action: "attempt", ...base, answer: selected }
-          : { action: request, ...base },
+          : typeof request === "object"
+            ? { action: "support", ...base, choice: request.support }
+            : { action: request, ...base },
       );
       if (mine !== generation.current) return;
       if (!res.ok) {
@@ -162,7 +183,35 @@ function MissionBody({ theme }: PracticeMissionProps) {
         setScreen({ name: "outcome", kind: outcomeFor(next) });
         return;
       }
-      setScreen({ name: "playing", session: { ...session, seq: res.seq } });
+      // The server decides every move between the mission and the warm-up.
+      const advanced = { ...session, seq: res.seq };
+      if (next.kind === "support-offer") {
+        needsFocus.current = true;
+        setFeedback(null);
+        setSelected(null);
+        setScreen({ name: "offer", session: advanced });
+        return;
+      }
+      if (next.kind === "support-started") {
+        needsFocus.current = true;
+        setUsed(new Set());
+        setSelected(null);
+        setFeedback(null);
+        setScreen({
+          name: "playing",
+          session: { ...advanced, support: next.challenge },
+        });
+        return;
+      }
+      if (next.kind === "support-finished") {
+        needsFocus.current = true;
+        setUsed(new Set());
+        setSelected(null);
+        setFeedback(next);
+        setScreen({ name: "playing", session: { ...advanced, support: null } });
+        return;
+      }
+      setScreen({ name: "playing", session: advanced });
       setFeedback(next);
       if (next.kind !== "ask-again") setSelected(null);
     });
@@ -232,7 +281,66 @@ function MissionBody({ theme }: PracticeMissionProps) {
 
   const { session } = screen;
   const v = theme.vocabulary;
-  const { challenge } = session;
+  // The warm-up reuses the same screen with the server's smaller numbers.
+  const inSupport = session.support !== null;
+  const challenge: SupportChallenge = session.support ?? session.challenge;
+
+  if (screen.name === "offer") {
+    return (
+      <section aria-labelledby="offer-heading" className="grid gap-4">
+        {framedScene(NOT_STARTED)}
+        <h2
+          id="offer-heading"
+          tabIndex={-1}
+          className="text-2xl font-extrabold"
+        >
+          Want a short warm-up first?
+        </h2>
+        <p className="text-lg">
+          It is a smaller one with the same idea. Then you come back to{" "}
+          {theme.missionTitle}.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            aria-disabled={busy}
+            onClick={() =>
+              busy ? undefined : void act(session, { support: "start" })
+            }
+            className={primaryButton}
+          >
+            Try the warm-up
+          </button>
+          <button
+            type="button"
+            aria-disabled={busy}
+            onClick={() =>
+              busy ? undefined : void act(session, { support: "decline" })
+            }
+            className={secondaryButton}
+          >
+            Not now
+          </button>
+          <button
+            type="button"
+            aria-disabled={busy}
+            onClick={() => (busy ? undefined : void act(session, "stop"))}
+            className={secondaryButton}
+          >
+            Stop for now
+          </button>
+        </div>
+        <div role="status" aria-live="polite">
+          {networkProblem && (
+            <p className="notice">
+              We could not reach the activity. Check the connection and try
+              again.
+            </p>
+          )}
+        </div>
+      </section>
+    );
+  }
   const ready = used.size === challenge.takeAway;
   const hintCue =
     feedback?.kind === "hint"
@@ -244,9 +352,14 @@ function MissionBody({ theme }: PracticeMissionProps) {
     <section aria-labelledby="play-heading" className="grid gap-5">
       {framedScene({ placed: used.size, required: challenge.takeAway })}
       <div>
-        <h2 id="play-heading" className="text-2xl font-extrabold">
-          {theme.playHeading}
+        <h2 id="play-heading" tabIndex={-1} className="text-2xl font-extrabold">
+          {inSupport ? "Warm-up" : theme.playHeading}
         </h2>
+        {inSupport && (
+          <p className="mt-1 font-semibold">
+            A smaller one first. Then you go back to {theme.missionTitle}.
+          </p>
+        )}
         <p className="mt-2 text-lg">
           {fillStory(theme.story, challenge)} Tap{" "}
           {countOf(challenge.takeAway, v)} to put them {v.builtPlace}.
@@ -324,11 +437,22 @@ function MissionBody({ theme }: PracticeMissionProps) {
         vocabulary={v}
         feedback={feedback}
         start={challenge.start}
+        takeAway={challenge.takeAway}
         networkProblem={networkProblem}
+        skipLabel={inSupport ? "Back to the mission" : "Skip this challenge"}
         onSkip={() => void act(session, "skip")}
       />
 
       <div className="flex flex-wrap gap-3 border-t border-border pt-4">
+        {inSupport && (
+          <button
+            type="button"
+            onClick={() => void act(session, "skip")}
+            className={secondaryButton}
+          >
+            Back to the mission
+          </button>
+        )}
         <button
           type="button"
           onClick={() => void act(session, "stop")}

@@ -329,3 +329,39 @@ body {
 .skip-link:focus {
   top: 0.5rem;
 }
+
+/* Ten-frame picture (guided-practice hints). Every state also differs in shape, not only color. */
+.ten-frames-svg {
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  height: auto;
+}
+.ten-frames-label {
+  fill: var(--foreground);
+  font-size: 12px;
+  font-weight: 700;
+}
+.ten-frames-cell {
+  stroke: var(--border);
+}
+.ten-frames-counter {
+  fill: var(--accent);
+}
+.ten-frames-take {
+  fill: var(--surface);
+  stroke: var(--foreground);
+  stroke-width: 2.5;
+}
+.ten-frames-x {
+  fill: none;
+  stroke: var(--foreground);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.ten-frames-taken {
+  fill: none;
+  stroke: var(--foreground);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}

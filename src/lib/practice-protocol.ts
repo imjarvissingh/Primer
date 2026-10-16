@@ -13,7 +13,14 @@ export type PracticeRequest =
   | { action: "start"; missionId: typeof PRACTICE_MISSION_ID }
   | { action: "attempt"; sessionId: string; seq: number; answer: unknown }
   | { action: "skip"; sessionId: string; seq: number }
-  | { action: "stop"; sessionId: string; seq: number };
+  | { action: "stop"; sessionId: string; seq: number }
+  /** Answer the server's one-time offer of a short warm-up (see `support-offer`). */
+  | {
+      action: "support";
+      sessionId: string;
+      seq: number;
+      choice: "start" | "decline";
+    };
 
 /** The question itself, as the story states it. Not an answer. */
 export interface PublicChallenge {
@@ -24,10 +31,21 @@ export interface PublicChallenge {
   maxAnswer: number;
 }
 
-/** Numbers a make-ten hint may mention. They describe a strategy, not the final answer. */
+/**
+ * Numbers a make-ten hint may mention. They describe a strategy, not the final
+ * answer. The server sends `takeFromTen` only with the hint that uses it, so a
+ * client cannot draw a later step than the one it was authorized to show.
+ */
 export interface MakeTenHintSteps {
   takeToTen: number;
-  takeFromTen: number;
+  takeFromTen: number | null;
+}
+
+/** The short warm-up activity's numbers. Same shape of question, no answer. */
+export interface SupportChallenge {
+  start: number;
+  takeAway: number;
+  maxAnswer: number;
 }
 
 /** What the learner is shown after an event. Controlled identifiers only. */
@@ -41,7 +59,14 @@ export type PracticeFeedback =
       hintNumber: number;
       steps: MakeTenHintSteps | null;
     }
+  /** Wrong tries are used up. Practice stops here, with no warm-up (offered once, or declined). */
   | { kind: "easier-practice" }
+  /** The server offers ONE short warm-up. The session stays open until the learner chooses. */
+  | { kind: "support-offer" }
+  /** The warm-up began; the learner is now answering `challenge` instead of the mission. */
+  | { kind: "support-started"; challenge: SupportChallenge }
+  /** The warm-up is over (done, skipped or finished trying). Back on the original mission. */
+  | { kind: "support-finished" }
   | { kind: "offer-skip" }
   | { kind: "ask-again" }
   | { kind: "skipped" }

@@ -83,3 +83,15 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Space planet moved down ~16 px** to make room for up to nine module cells (takeAway can be 1–9 in the cross-ten family).
 - **Home cards:** the "Draft demo" pill moved beside the card title so the action button no longer wraps differently per card.
 - **Contrast review:** Space theme token pairs (text, muted, buttons, item numbers, borders, focus, cue) all measured at or above their WCAG AA targets (lowest: field-built border 4.62:1 vs 3:1 required), so no colors were changed.
+
+## Phase 8C decisions (2026-10-16) — all provisional pending educator review
+
+- **No tutoring-policy change.** The domain already emits `practice-prerequisite` (S03) after both hints. The service now honours it instead of ending the mission. Rejected: adding a new remediation state to the domain (nothing needed it).
+- **Warm-up is S03 (take-away), reusing guided-practice item GP-05 (10 − 6).** It is the policy's first S04 prerequisite and needs no new bank. Rejected: a part-whole (S02) exercise, because the policy names S03 first and a second item type would be new curriculum. Open educator question.
+- **Offered once per session.** A second request for support ends practice as before, so there is no remediation loop. The learner can decline, go back to the mission or stop at any time.
+- **Help stays on the record.** Returning to the mission starts a fresh item but carries `hintsShown`, so a later correct answer is never "independent". Practice never writes evidence in any case.
+- **Stage = what the server disclosed.** Hint 1 carries `takeToTen` with `takeFromTen: null`; hint 2 carries both. Earlier code sent both with hint 1, which let a client draw hint 2 early. The picture builder cannot produce a later stage without the later number.
+- **Ten-frame helper lives in `src/lib/ten-frame.ts`, import-free,** because the boundary test forbids client imports of `@/domain` (answer keys live there). It holds no scoring authority.
+- **A bare ten-frame is only part-whole.** The make-ten label is used only when the second removal step is shown (hint 2 / "from-ten" stage). Ineligible numbers draw nothing.
+- **Neutral feedback (wrong answer 1) gets no picture.** Stage A of the candidate ladder maps to it unchanged.
+- **Playwright:** `reuseExistingServer` is now opt-in (`PRIMER_E2E_REUSE=1`); the port is overridable with `PRIMER_E2E_PORT`.

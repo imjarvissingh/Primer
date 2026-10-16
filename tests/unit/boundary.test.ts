@@ -59,6 +59,12 @@ describe("client/server boundary", () => {
     expect(runtimeImports(proto?.text ?? "")).toEqual([]);
   });
 
+  it("keeps the shared ten-frame helper free of runtime imports", () => {
+    const f = all.find((x) => x.rel === "lib/ten-frame.ts");
+    expect(f).toBeDefined();
+    expect(runtimeImports(f?.text ?? "")).toEqual([]);
+  });
+
   it("never lets a client component reference the answer-bearing banks or fields", () => {
     for (const { rel, text } of all) {
       if (serverSide(rel) || rel.startsWith("domain/")) continue;

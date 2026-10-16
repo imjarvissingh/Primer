@@ -365,3 +365,24 @@ test("the API enforces one scored answer, sequence checks and bounded input", as
   });
   expect(JSON.stringify(sum)).not.toMatch(/IN-0|expectedAnswer|"answer"/);
 });
+
+test("the independent check has no ten-frames, warm-up or support, and the API refuses them", async ({
+  page,
+  request,
+}) => {
+  await startCheck(page);
+  await answer(page, 0);
+  await expect(heading(page, 2)).toBeVisible();
+  await expect(page.locator("[data-cell], figure.ten-frames")).toHaveCount(0);
+  await expect(page.getByText(/warm-up|ten-frame|take these/i)).toHaveCount(0);
+
+  const res = await request.post(API, {
+    data: {
+      action: "support",
+      sessionId: "123e4567-e89b-42d3-a456-426614174000",
+      seq: 0,
+      choice: "start",
+    },
+  });
+  expect(res.status()).toBe(400);
+});
