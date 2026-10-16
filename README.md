@@ -9,22 +9,49 @@ Two themed experiences are planned, sharing one curriculum and one learning engi
 
 ## Current stage
 
-**Planning only.** This repository contains planning documents and no application code. Nothing described in the docs has been built, tested, or evaluated yet, and no learning results exist.
+**Application foundation only.** The repository contains the planning documents plus a minimal Next.js app: one static homepage that describes the concept and lists the two planned experiences. There is no game, curriculum, math evaluator, tutoring, accounts, database or data collection yet, and no learning results exist.
+
+## Getting started
+
+Prerequisites: Node.js 20.9 or newer (developed on 24.16) and npm. Git is needed to clone.
+
+```bash
+npm install                      # install dependencies from package-lock.json
+npx playwright install chromium  # one-time download for browser tests
+npm run dev                      # development server at http://localhost:3000
+```
+
+| Command                | What it does                                           |
+| ---------------------- | ------------------------------------------------------ |
+| `npm run build`        | Production build                                       |
+| `npm start`            | Serve the production build (run `build` first)         |
+| `npm run typecheck`    | TypeScript strict type check                           |
+| `npm run lint`         | ESLint                                                 |
+| `npm run format:check` | Check Prettier formatting (`npm run format` fixes it)  |
+| `npm test`             | Unit tests (Vitest + React Testing Library)            |
+| `npm run test:e2e`     | Production build, then Playwright Chromium smoke tests |
+| `npm run validate`     | All of the above checks in sequence                    |
+
+Continuous integration (`.github/workflows/ci.yml`) runs the same checks on every push to `main` and on pull requests, plus a production-dependency audit and a gitleaks secret scan. There is no automatic deployment.
+
+### Stack
+
+Next.js 16.4.2 (App Router), React 19.3, TypeScript 5.9 (strict), Tailwind CSS 4.3, ESLint 9, Prettier 3.9, Vitest 5, React Testing Library, Playwright 1.64 (Chromium).
 
 ## Documentation
 
 All planning documents live in [`docs/`](docs/00-INDEX.md):
 
-| Document | Contents |
-| --- | --- |
-| [00-INDEX.md](docs/00-INDEX.md) | Project overview and milestones |
-| [PRODUCT.md](docs/PRODUCT.md) | MVP product requirements |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Planned technical architecture |
-| [CURRICULUM.md](docs/CURRICULUM.md) | Skills, assessment banks, tutoring states |
-| [SAFETY.md](docs/SAFETY.md) | Child-safety and privacy release gates |
-| [DECISIONS.md](docs/DECISIONS.md) | Decisions made, open questions, deferred items |
-| [EVALUATION.md](docs/EVALUATION.md) | Hypotheses and pilot evaluation plan |
-| [TASKS.md](docs/TASKS.md) | Solo-founder schedule |
+| Document                                | Contents                                       |
+| --------------------------------------- | ---------------------------------------------- |
+| [00-INDEX.md](docs/00-INDEX.md)         | Project overview and milestones                |
+| [PRODUCT.md](docs/PRODUCT.md)           | MVP product requirements                       |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Planned technical architecture                 |
+| [CURRICULUM.md](docs/CURRICULUM.md)     | Skills, assessment banks, tutoring states      |
+| [SAFETY.md](docs/SAFETY.md)             | Child-safety and privacy release gates         |
+| [DECISIONS.md](docs/DECISIONS.md)       | Decisions made, open questions, deferred items |
+| [EVALUATION.md](docs/EVALUATION.md)     | Hypotheses and pilot evaluation plan           |
+| [TASKS.md](docs/TASKS.md)               | Solo-founder schedule                          |
 
 ## Safety-first approach
 
