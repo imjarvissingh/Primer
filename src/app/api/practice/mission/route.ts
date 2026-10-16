@@ -1,5 +1,6 @@
 import { MAX_REQUEST_BYTES } from "@/lib/practice-protocol";
 import { readBounded } from "@/server/http";
+import { startLimiter } from "@/server/rate-limit";
 import { handlePracticeRequest } from "@/server/practice/service";
 import { defaultStore } from "@/server/practice/sessions";
 import { parseRequest } from "@/server/practice/validate";
@@ -31,6 +32,12 @@ export async function POST(request: Request) {
       { ok: false, error: parsed.error },
       parsed.error === "too-large" ? 413 : 400,
     );
+  }
+  if (
+    parsed.request.action === "start" &&
+    !startLimiter("practice").allow(Date.now())
+  ) {
+    return json({ ok: false, error: "rate-limited" }, 429);
   }
   try {
     const reply = handlePracticeRequest(

@@ -97,6 +97,7 @@ export type AssessmentErrorCode =
   | "stale"
   | "session-closed"
   | "not-finished"
+  | "rate-limited"
   | "server-error";
 
 export interface AssessmentFailure {

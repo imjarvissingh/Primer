@@ -56,3 +56,12 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **No link between practice and check state.** Rejected: carrying a practice session id into the check, which would need a server-verified link and an identity concept we do not have.
 - **Version labels are shown to adults as provenance**, so they are no longer in the browser-exposure token list; answer keys, item ids and bank names still are.
 - **Descriptive labels only:** "Correct in this short check", "Needs more evidence", "Not yet assessed". No percentage-as-mastery, trend or prediction.
+
+## Phase 6 decisions (2026-10-16)
+- **Keep the in-memory store.** No database, Redis or auth just to survive a restart; expiry is surfaced honestly instead. Rejected: rebuilding a session from client-held answers or scores (fabricated evidence).
+- **Reset on hide, not `cacheComponents: false`.** Disabling the setting would change caching across the whole app; resetting two client components fixes the stale-state hazard directly. Tested by `returning to a page through in-app navigation never resumes old state`.
+- **Global per-process start limiter, not per-IP.** IP-keyed limiting needs trusted proxy headers and amounts to tracking; a global start cap protects the real risk (evicting live sessions) with no identifier. Rejected: external rate-limit services.
+- **No CSRF token** (no cookies, JSON-only, no CORS headers).
+- **Bare summary link removed from the home page.** It was a dead end without a session id, and the id should only travel from the finished check. The summary page still explains itself when opened bare.
+- **5xx is retryable.** Previously any non-network error returned the learner to the start; a transient server error now keeps their question.
+- **Copy:** fixed one grammar error on the home page, softened "planned" in page metadata, added refresh behavior to the intro text. No mathematical values, hint policy or feedback semantics changed. Wording still needs educator review.

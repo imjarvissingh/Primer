@@ -50,6 +50,19 @@ export function AssessmentCheck() {
     if (screen.name !== "intro") heading.current?.focus();
   }, [screen.name, position]);
 
+  // Next keeps a page you navigated away from mounted but hidden, with its
+  // state. Hiding (or unmounting) runs this cleanup, so a later visit never
+  // resumes a check whose server session may be gone: it opens at the intro.
+  useEffect(() => {
+    const abandoned = generation;
+    return () => {
+      abandoned.current += 1;
+      setScreen({ name: "intro" });
+      setSelected(null);
+      setNotice("");
+    };
+  }, []);
+
   async function guarded(task: () => Promise<void>) {
     if (inFlight.current) return;
     inFlight.current = true;
@@ -62,10 +75,10 @@ export function AssessmentCheck() {
     }
   }
 
-  function restart() {
+  function restart(message = "") {
     generation.current += 1;
     setSelected(null);
-    setNotice("");
+    setNotice(message);
     setScreen({ name: "intro" });
   }
 
@@ -84,7 +97,11 @@ export function AssessmentCheck() {
           question: res.question,
         });
       } else {
-        setNotice("We could not start. Please try again.");
+        setNotice(
+          !res.ok && res.error === "rate-limited"
+            ? "Lots of people are trying this right now. Please wait a minute and try again."
+            : "We could not start. Please try again.",
+        );
       }
     });
   }
@@ -103,11 +120,14 @@ export function AssessmentCheck() {
       );
       if (mine !== generation.current) return;
       if (!res.ok) {
-        if (res.error === "network") {
+        if (res.error === "network" || res.error === "server-error") {
           setNotice("We could not reach the activity. Please try again.");
         } else {
-          // Lost, expired or out-of-step session: the only safe move is a fresh start.
-          restart();
+          // Lost, expired or out-of-step session: it cannot be rebuilt from
+          // anything the browser holds, so the only safe move is a fresh start.
+          restart(
+            "That check is no longer available, so it could not be continued. Press Start to begin a new one.",
+          );
         }
         return;
       }
@@ -142,7 +162,8 @@ export function AssessmentCheck() {
         <p className="text-lg">
           These are a few short questions. You do the thinking by yourself.
           There are no hints, no timer, and you will not see if an answer is
-          right. You can skip a question or stop at any time.
+          right. You can skip a question or stop at any time. If you refresh
+          this page, the check starts over.
         </p>
         <div role="status" aria-live="polite">
           {notice && (
@@ -188,7 +209,7 @@ export function AssessmentCheck() {
           </Link>
         </p>
         <div>
-          <button type="button" onClick={restart} className={primary}>
+          <button type="button" onClick={() => restart()} className={primary}>
             Start over
           </button>
         </div>
@@ -259,6 +280,14 @@ export function AssessmentCheck() {
           className={secondary}
         >
           Stop for now
+        </button>{" "}
+        <button
+          type="button"
+          aria-disabled={busy}
+          onClick={() => (busy ? undefined : restart())}
+          className={secondary}
+        >
+          Start over
         </button>
       </div>
     </section>

@@ -43,10 +43,13 @@ export function ProgressSummary() {
       if (cancelled) return;
       if (res.ok && "counts" in res)
         return setState({ name: "ready", summary: res });
+      const error = res.ok ? null : res.error;
       const reason =
-        !res.ok && res.error === "not-finished"
+        error === "not-finished"
           ? "That check is not finished yet. Finish or stop it, then open the summary again."
-          : "We could not find that check. Demo sessions are short-lived and are not saved, so it may have expired.";
+          : error === "network" || error === "server-error"
+            ? "We could not reach the demo just now. Reload this page to try again. If the demo was restarted, the check may be gone."
+            : "We could not find that check. Demo sessions are short-lived and are not saved, so it may have expired or the demo may have restarted. Results are never rebuilt after that.";
       setState({ name: "unavailable", reason });
     }
     void load();
@@ -85,7 +88,9 @@ function Body({ state }: { state: State }) {
         </p>
         <p>
           <Link href="/assessment" className="underline">
-            Go to the independent check
+            {state.name === "unavailable"
+              ? "Start a new independent check"
+              : "Go to the independent check"}
           </Link>
         </p>
       </section>

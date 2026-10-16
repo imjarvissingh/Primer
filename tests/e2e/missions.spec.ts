@@ -295,7 +295,7 @@ test("switching themes starts a fresh session and never carries progress over", 
   await expect(page.getByRole("heading", { name: space.title })).toBeVisible();
   await expect(
     page.locator("p:visible", {
-      hasText: /Starting over begins a new practice session/,
+      hasText: /begins a new practice session/,
     }),
   ).toBeVisible();
   await page.getByRole("button", { name: space.start }).click();

@@ -1,15 +1,15 @@
 # Primer
 
-Primer is a planned interest-personalized mathematics game for US children ages 6–9. It aims to turn a child's interest into a learning adventure while measuring mathematical understanding, not just engagement.
+Primer is an early-stage, interest-personalized mathematics game for US children ages 6–9. It aims to turn a child's interest into a learning adventure while measuring mathematical understanding, not just engagement.
 
-Two themed experiences are planned, sharing one curriculum and one learning engine:
+Two themed experiences share one curriculum and one learning engine:
 
 - **Block Builder** — bridges, building blocks and a builder guide.
 - **Space Construction** — a space station, modules and a space guide.
 
 ## Current stage
 
-**Early development, with one draft demo.** The repository contains the planning documents, a deterministic curriculum/math/tutoring engine (`src/domain`), and one playable Block Builder mission, _The Broken Bridge_ (subtraction 13 − 5). The mission is a **draft demonstration**: its content and hints have not been reviewed by an educator, and it is not a tested learning product. There are no accounts, database or data collection, and no learning results exist.
+**Early development, with a draft demo.** The repository contains the planning documents, a deterministic curriculum/math/tutoring engine (`src/domain`), one guided subtraction mission in two themes (Block Builder _The Broken Bridge_ and Space Construction _The Space Station Mission_, 13 − 5), a short independent check, and an adult-facing synthetic evidence summary. The missions and check are **draft demonstrations**: its content and hints have not been reviewed by an educator, and it is not a tested learning product. There are no accounts, database or data collection, and no learning results exist.
 
 ## Try the demo
 
@@ -24,6 +24,10 @@ Tap the 5 blocks (or modules) to put them on the bridge (or station), pick how m
 ### Independent check and demo summary
 
 `/assessment` is a short independent check (four draft questions, no hints, no right-or-wrong feedback, skippable). When it ends, "Summary for a grown-up" opens `/demo-progress?session=...`, which shows what the server recorded for that check: counts, each question's outcome, skills sampled and where the data came from. It says plainly that mastery is not awarded and that the data is synthetic. Opening `/demo-progress` with no session shows only guidance. Both are unauthenticated, in-memory, single-instance demos; see [ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+**Sessions and recovery.** Sessions live in server memory for 30 minutes after last use. Refreshing a page, restarting the server or waiting too long ends a session; the page then says so and offers a fresh start. It never resumes or rebuilds results from the browser. "Start over" always begins a new session. Hosted multi-instance deployments cannot rely on this in-memory store.
+
+**Recording the demo:** follow [docs/DEMO-RUNBOOK.md](docs/DEMO-RUNBOOK.md).
 
 ## Getting started
 

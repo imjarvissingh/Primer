@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import type { ThemeConfig } from "@/themes";
+import { THEMES, type ThemeConfig } from "@/themes";
 
 export type OutcomeKind =
   | "correct"
@@ -56,6 +56,7 @@ export function MissionOutcome({
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus(), []);
   const copy = copyFor(kind, theme, answer);
+  const other = THEMES.find((t) => t.id !== theme.id);
   return (
     <section
       aria-labelledby="outcome-heading"
@@ -81,6 +82,15 @@ export function MissionOutcome({
             Independent check
           </Link>{" "}
           (separate from this practice).
+        </p>
+      )}
+      {kind === "correct" && other !== undefined && (
+        <p className="mt-3">
+          Or visit another world:{" "}
+          <Link href={other.href} className="underline">
+            {other.displayName}
+          </Link>{" "}
+          (a new, separate practice).
         </p>
       )}
       <button

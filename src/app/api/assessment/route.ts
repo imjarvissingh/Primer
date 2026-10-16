@@ -3,6 +3,7 @@ import { handleAssessmentRequest } from "@/server/assessment/service";
 import { defaultAssessmentStore } from "@/server/assessment/sessions";
 import { parseAssessmentRequest } from "@/server/assessment/validate";
 import { readBounded } from "@/server/http";
+import { startLimiter } from "@/server/rate-limit";
 
 const HEADERS = { "Cache-Control": "no-store" };
 const json = (body: unknown, status: number) =>
@@ -29,6 +30,12 @@ export async function POST(request: Request) {
       { ok: false, error: parsed.error },
       parsed.error === "too-large" ? 413 : 400,
     );
+  }
+  if (
+    parsed.request.action === "start" &&
+    !startLimiter("assessment").allow(Date.now())
+  ) {
+    return json({ ok: false, error: "rate-limited" }, 429);
   }
   try {
     const reply = handleAssessmentRequest(

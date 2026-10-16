@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   PRACTICE_MISSION_ID,
   type PracticeFeedback,
@@ -57,11 +57,32 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
   const [submitted, setSubmitted] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<PracticeFeedback | null>(null);
   const [networkProblem, setNetworkProblem] = useState(false);
+  const [sessionLost, setSessionLost] = useState(false);
+  const [rateLimited, setRateLimited] = useState(false);
   const [busy, setBusy] = useState(false);
   // A ref, not state, so a rapid second click is blocked before React re-renders.
   const inFlight = useRef(false);
   // Bumped on restart so a late reply for an abandoned session is ignored.
   const generation = useRef(0);
+
+  // Next keeps a page you navigated away from mounted but hidden, with its
+  // state. Coming back would then show a half-played mission tied to a server
+  // session that may have expired. Hiding (or unmounting) runs this cleanup, so
+  // the next visit always opens at the introduction.
+  useEffect(() => {
+    const abandoned = generation;
+    return () => {
+      abandoned.current += 1;
+      setScreen({ name: "intro" });
+      setUsed(new Set());
+      setSelected(null);
+      setSubmitted(null);
+      setFeedback(null);
+      setNetworkProblem(false);
+      setSessionLost(false);
+      setRateLimited(false);
+    };
+  }, []);
 
   function resetLocal() {
     setUsed(new Set());
@@ -69,6 +90,8 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
     setSubmitted(null);
     setFeedback(null);
     setNetworkProblem(false);
+    setSessionLost(false);
+    setRateLimited(false);
   }
 
   async function guarded(task: () => Promise<void>) {
@@ -103,13 +126,15 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
         });
       } else {
         setNetworkProblem(true);
+        if (!res.ok && res.error === "rate-limited") setRateLimited(true);
       }
     });
   }
 
-  function restart() {
+  function restart(sessionEnded = false) {
     generation.current += 1;
     resetLocal();
+    setSessionLost(sessionEnded);
     setScreen({ name: "intro" });
   }
 
@@ -126,8 +151,9 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
       if (mine !== generation.current) return;
       if (!res.ok) {
         // Lost, expired or out-of-step session: the only safe move is a fresh start.
-        if (res.error === "network") setNetworkProblem(true);
-        else restart();
+        if (res.error === "network" || res.error === "server-error")
+          setNetworkProblem(true);
+        else restart(true);
         return;
       }
       if (!("feedback" in res)) return;
@@ -162,9 +188,13 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
         </h2>
         <p className="text-lg">{theme.intro}</p>
         <div role="status" aria-live="polite">
-          {networkProblem && (
+          {(networkProblem || sessionLost) && (
             <p className="rounded-lg border-2 border-border p-3">
-              We could not start the activity. Please try again.
+              {sessionLost
+                ? "That practice is no longer available, so it could not be continued. Press the button to begin a new one."
+                : rateLimited
+                  ? "Lots of people are trying this right now. Please wait a minute and try again."
+                  : "We could not start the activity. Please try again."}
             </p>
           )}
         </div>
@@ -188,7 +218,7 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
         theme={theme}
         kind={screen.kind}
         answer={submitted}
-        onRestart={restart}
+        onRestart={() => restart()}
       />
     );
   }
@@ -285,7 +315,11 @@ function MissionBody({ theme, scene }: PracticeMissionProps) {
         >
           Stop for now
         </button>
-        <button type="button" onClick={restart} className={secondaryButton}>
+        <button
+          type="button"
+          onClick={() => restart()}
+          className={secondaryButton}
+        >
           Start over
         </button>
       </div>

@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Demo learning evidence summary — Primer",
   description:
     "A synthetic-data demonstration of an adult-facing summary of one independent check.",
+  // The URL carries a session id that works as an access capability.
+  robots: { index: false, follow: false },
+  referrer: "no-referrer",
 };
 
 export default function DemoProgressPage() {

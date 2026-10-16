@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import { POST } from "@/app/api/assessment/route";
 import { CURRICULUM } from "@/domain/curriculum";
@@ -26,6 +27,11 @@ import { selectAssessmentItems, toQuestion } from "@/server/assessment/items";
 import { handleAssessmentRequest } from "@/server/assessment/service";
 import { AssessmentStore } from "@/server/assessment/sessions";
 import { parseAssessmentRequest } from "@/server/assessment/validate";
+import {
+  START_LIMIT,
+  START_WINDOW_MS,
+  StartLimiter,
+} from "@/server/rate-limit";
 import { SESSION_TTL_MS } from "@/server/ttl-store";
 
 const ID = "123e4567-e89b-42d3-a456-426614174000";
@@ -571,5 +577,28 @@ describe("evidence integrity (the contract the summary relies on)", () => {
     expect(s.counts.independentCorrect).toBe(2);
     expect(s.state).toBe("emerging");
     expect(s.policyApproval).toBe("draft-unapproved");
+  });
+});
+
+describe("start rate limit", () => {
+  it("caps starts per window without reading any identifier, then recovers", () => {
+    const limiter = new StartLimiter();
+    for (let i = 0; i < START_LIMIT; i++) {
+      expect(limiter.allow(1_000)).toBe(true);
+    }
+    expect(limiter.allow(1_000)).toBe(false);
+    expect(limiter.allow(1_000 + START_WINDOW_MS - 1)).toBe(false);
+    expect(limiter.allow(1_000 + START_WINDOW_MS)).toBe(true);
+  });
+
+  it("is applied to starts only and reads no client identifier", () => {
+    for (const file of [
+      "src/app/api/assessment/route.ts",
+      "src/app/api/practice/mission/route.ts",
+    ]) {
+      const src = readFileSync(path.resolve(process.cwd(), file), "utf8");
+      expect(src, file).toMatch(/action === "start"/);
+      expect(src, file).not.toMatch(/x-forwarded-for|x-real-ip/i);
+    }
   });
 });

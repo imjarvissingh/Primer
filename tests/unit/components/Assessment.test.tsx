@@ -377,4 +377,59 @@ describe("ProgressSummary", () => {
     expect(await screen.findByText(/may have expired/)).toBeInTheDocument();
     expect(screen.queryByRole("table")).toBeNull();
   });
+
+  it("offers a fresh check, and never rebuilds results, when the session is gone", async () => {
+    visit(`?session=${SESSION}`);
+    mockServer(() => ({ ok: false, error: "session-not-found" }));
+    render(<ProgressSummary />);
+    expect(await screen.findByText(/never rebuilt/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Start a new independent check" }),
+    ).toHaveAttribute("href", "/assessment");
+  });
+
+  it("does not call a network failure a missing check", async () => {
+    visit(`?session=${SESSION}`);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => Promise.reject(new Error("offline"))),
+    );
+    render(<ProgressSummary />);
+    expect(await screen.findByText(/could not reach the demo/)).toBeVisible();
+    expect(screen.queryByText(/may have expired/)).toBeNull();
+  });
+});
+
+describe("AssessmentCheck recovery", () => {
+  it("explains why it went back to the start when the session is gone", async () => {
+    mockServer((r) =>
+      r.action === "start"
+        ? started
+        : { ok: false, error: "session-not-found" },
+    );
+    const user = await start();
+    await pickAndSave(user, 11);
+    expect(await screen.findByText(/no longer available/)).toBeVisible();
+    expect(screen.getByRole("button", { name: "Start" })).toBeVisible();
+  });
+
+  it("tells the truth when starts are rate limited", async () => {
+    mockServer(() => ({ ok: false, error: "rate-limited" }));
+    const user = userEvent.setup();
+    render(<AssessmentCheck />);
+    await user.click(screen.getByRole("button", { name: "Start" }));
+    expect(await screen.findByText(/wait a minute/)).toBeVisible();
+  });
+
+  it("can start over from the middle, creating a new session", async () => {
+    mockServer(() => started);
+    const user = await start();
+    await user.click(screen.getByRole("button", { name: "Start over" }));
+    expect(
+      screen.getByRole("heading", { name: "Try some on your own" }),
+    ).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Start" }));
+    await screen.findByRole("heading", { name: "Question 1 of 4" });
+    expect(seen.filter((r) => r.action === "start")).toHaveLength(2);
+  });
 });

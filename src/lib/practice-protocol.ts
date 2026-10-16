@@ -66,6 +66,7 @@ export type PracticeErrorCode =
   | "session-not-found"
   | "stale"
   | "session-closed"
+  | "rate-limited"
   | "server-error";
 
 export interface PracticeFailure {

@@ -40,25 +40,23 @@ export default function Home() {
           Independent check
         </h2>
         <p className="mt-2 text-muted">
-          A short check with no hints and no right-or-wrong feedback, and a
-          summary for a grown-up that shows what was answered independently. It
-          uses made-up demo sessions only and does not award mastery.
+          A short check with no hints and no right-or-wrong feedback. Guided
+          practice above can use hints; this check cannot, so it shows what was
+          answered independently. When it ends, a summary for a grown-up opens
+          from the last screen. It uses made-up demo sessions only and does not
+          award mastery.
         </p>
         <p className="mt-3 font-medium">
           Draft demo &mdash;{" "}
           <Link href="/assessment" className="underline">
             Try the independent check
-          </Link>{" "}
-          &middot;{" "}
-          <Link href="/demo-progress" className="underline">
-            See the demo summary page
           </Link>
         </p>
       </section>
 
       <p className="mt-10 border-t border-border pt-6 text-sm text-muted">
         Primer is in early development. The playable missions and the check are
-        draft demonstrations that has not been reviewed by an educator. This
+        draft demonstrations that have not been reviewed by an educator. This
         site collects no information.
       </p>
     </main>

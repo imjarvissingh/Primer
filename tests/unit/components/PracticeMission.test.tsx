@@ -361,6 +361,15 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       expect(
         await screen.findByRole("button", { name: theme.startLabel }),
       ).toBeInTheDocument();
+      expect(screen.getByText(/no longer available/)).toBeVisible();
+    });
+
+    it("says so when starts are rate limited", async () => {
+      mockServer(() => ({ ok: false, error: "rate-limited" }));
+      const user = userEvent.setup();
+      render(<PracticeMission theme={theme} scene={null} />);
+      await user.click(screen.getByRole("button", { name: theme.startLabel }));
+      expect(await screen.findByText(/wait a minute/)).toBeVisible();
     });
 
     it("shows a connection message on network failure and keeps the work", async () => {

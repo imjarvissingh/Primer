@@ -1,0 +1,34 @@
+import "server-only";
+import { singleton } from "./ttl-store";
+
+/** At most this many new sessions per window, per server process (not per person). */
+export const START_LIMIT = 120;
+export const START_WINDOW_MS = 60 * 1000;
+
+/**
+ * A deliberately small fixed-window cap on session starts. It exists so a flood
+ * of "start" calls cannot churn the bounded session store and evict sessions
+ * that are in use. It is global to one process: no IP address, header or other
+ * identifier is read, so it fingerprints nobody, and it is NOT robust across
+ * several server instances.
+ */
+export class StartLimiter {
+  private windowStart = Number.NEGATIVE_INFINITY;
+  private used = 0;
+
+  /** Returns true if one more start is allowed right now. */
+  allow(now: number): boolean {
+    if (now - this.windowStart >= START_WINDOW_MS || now < this.windowStart) {
+      this.windowStart = now;
+      this.used = 0;
+    }
+    if (this.used >= START_LIMIT) return false;
+    this.used += 1;
+    return true;
+  }
+}
+
+/** Separate limiters so one flow cannot starve the other. */
+export function startLimiter(flow: "practice" | "assessment"): StartLimiter {
+  return singleton(`primer.${flow}.startLimiter`, () => new StartLimiter());
+}

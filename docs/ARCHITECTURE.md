@@ -146,3 +146,17 @@ Nothing ties a practice session to a check, so no practice claim ("used no hints
 - A user can learn answers by running many fresh sessions, or by finishing a check and reading its summary's right/not-correct column. No rate limiting beyond input validation and the session cap.
 - Learner answers are not logged. Sessions vanish on restart; the summary then says so.
 - Four questions on one occasion is not enough evidence for any mastery claim; the draft policy would not make one regardless.
+
+## Implementation status (Phase 6, 2026-10-16): demo stabilisation
+
+### Session lifecycle
+- Unchanged architecture: in-memory `TtlStore`, 30-minute sliding TTL, 500-session cap, one store per flow. A hosted deployment with several instances (or serverless) would lose or split sessions; that is a known demo limit, not a bug to fix before persistence/identity exist.
+- A lost, expired or out-of-step session is never reconstructed. Practice and check both return to the introduction with an explanatory message; the summary says the check cannot be found. Server errors (5xx) are treated as retryable, not as a lost session.
+- Next keeps a client-navigated-away page mounted but hidden (Activity), preserving React state. `PracticeMission` and `AssessmentCheck` reset in an effect cleanup when hidden, so returning via a link always opens at the introduction instead of a stale, possibly dead session. Refresh does the same by construction.
+- "Start over" creates a new session. The abandoned one stays until TTL; it is unreachable from the UI.
+
+### Hardening
+- `/demo-progress` is served with `Referrer-Policy: no-referrer`, `X-Robots-Tag: noindex, nofollow`, `Cache-Control: no-store` and matching page metadata; all routes send `X-Content-Type-Options: nosniff`. API replies were already `no-store`.
+- Session starts are capped per flow at 120/minute per server process (`src/server/rate-limit.ts`), so a flood cannot churn the 500-slot store and evict live sessions. It reads no IP, header or identifier, and is not effective across multiple instances. Running sessions are never throttled. Over the cap, the API returns 429 `rate-limited`.
+- CSRF: assessed, no change. There are no cookies or ambient credentials; the APIs require `application/json` (not a CORS-simple type) and send no CORS headers, so a cross-site page cannot make a credentialed state change. A CSRF token would add nothing.
+- The session id in the summary URL is an unguessable capability (UUID v4), not authentication. Anyone holding the URL can see that one synthetic summary until it expires.

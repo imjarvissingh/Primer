@@ -27,3 +27,8 @@ Still open: educator review of the item, hints and theme wording (including "mod
 Done: independent check at `/assessment` (independent bank, one question at a time, neutral replies, one scored answer per item, skip and stop), server-derived evidence through the Phase 2 interpreter, adult demo summary at `/demo-progress`, unit/server/component/browser tests including answer-isolation checks.
 
 Still open: educator review of the independent items and all wording; approved mastery thresholds (none exist, so none is awarded); delayed check and persistence (need identity, consent and storage); rate limiting and authentication before any real use; Phase 6 demo stabilisation.
+
+## Phase 6 status (2026-10-16)
+Done: session-loss and error recovery messages, mid-check "Start over", hidden-page state reset, start rate limit, privacy headers and noindex on the summary, skip link, copy fixes, [DEMO-RUNBOOK.md](DEMO-RUNBOOK.md), recording-path and failure-recovery browser tests on three viewports.
+
+Follow-up (not started): Phase 7 YC narrative, demo recording and founder video. Still open from before: educator review, approved mastery rules, persistence/authentication/consent before any real child use, shared-store rate limiting for multi-instance hosting.

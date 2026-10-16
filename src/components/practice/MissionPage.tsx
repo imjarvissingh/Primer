@@ -27,8 +27,8 @@ export function MissionPage({
       <p className="mt-3 rounded-lg border-2 border-border p-3 text-sm">
         Draft demonstration. This practice mission and its hints have not been
         reviewed by an educator, and it is not a tested learning product. It
-        collects no information and saves nothing. Starting over begins a new
-        practice session; each mission has its own.
+        collects no information and saves nothing. Starting over, or refreshing
+        this page, begins a new practice session; each mission has its own.
       </p>
       <div className="mt-6">
         <PracticeMission theme={theme} scene={scene} />
