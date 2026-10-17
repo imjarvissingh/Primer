@@ -8,8 +8,10 @@ import {
   canPress,
   chooseAnswer,
   countAt,
+  countedGroup,
   initialLab,
   isCrossTenProblem,
+  isMarkable,
   isRight,
   LESSON_PROBLEM,
   nextNeeds,
@@ -18,6 +20,7 @@ import {
   RACK,
   recap,
   shownBy,
+  triesFor,
   type LabState,
 } from "@/lib/make-ten-lab";
 
@@ -246,6 +249,125 @@ describe("draft make-ten lab: back and start again", () => {
       expect(countAt(s, "nets")).toBeLessThanOrEqual(s.problem.take);
       if (s.step >= 2 && s.step <= 4)
         expect(countAt(s, "rack")).toBeGreaterThanOrEqual(8);
+    }
+  });
+});
+
+describe("draft make-ten lab: counting aid and support after mix-ups", () => {
+  it("balls outside a full ten can be marked, and marking changes no quantity", () => {
+    const full = press(initialLab(), ...range(0, 9));
+    expect(countedGroup(full)).toBe("pile");
+    const marked = press(full, 10, 12);
+    expect(marked.marked).toEqual([10, 12]);
+    expect(marked.places).toEqual(full.places);
+    expect(shownBy(marked, "extras")).toBe(3);
+    // Before the ten is full the same balls are for moving, not marking.
+    expect(countedGroup(press(initialLab(), 0))).toBeNull();
+    expect(isMarkable(full, 0)).toBe(false);
+  });
+
+  it("any move clears the marks, because the groups they described changed", () => {
+    const marked = press(press(initialLab(), ...range(0, 9)), 10, 11);
+    expect(press(marked, 0).marked).toEqual([]);
+    const four = press(toStep4(), 2, 3);
+    expect(four.marked).toEqual([2, 3]);
+    expect(advance(chooseAnswer(four, "left", 8)).marked).toEqual([]);
+  });
+
+  it("the unguided try offers no counting aid", () => {
+    const s = advance(chooseAnswer(toStep4(), "left", 8));
+    const four = press(s, 0, 1, 2, 3);
+    expect(countedGroup(four)).toBeNull();
+    expect(press(four, 5)).toBe(four);
+  });
+
+  it("counts wrong numbers for the same picture and starts again when it changes", () => {
+    let s = press(initialLab(), ...range(0, 9));
+    s = chooseAnswer(s, "extras", 5);
+    s = chooseAnswer(s, "extras", 10);
+    expect(triesFor(s, "extras")).toBe(2);
+    // A right number is not a mix-up and adds nothing.
+    expect(triesFor(chooseAnswer(s, "extras", 3), "extras")).toBe(2);
+    // Taking a ball back changes the picture: the count and the answer reset.
+    const moved = press(s, 0);
+    expect(triesFor(moved, "extras")).toBe(0);
+    expect(moved.answers.extras).toBeUndefined();
+  });
+});
+
+describe("draft make-ten lab: the numbers a stage asks for come from the picture", () => {
+  it("the learner is never told how many to take in step 3; the nets show the room", () => {
+    const s = toStep3();
+    expect(s.answers.more).toBe(2);
+    expect(s.problem.take - countAt(s, "nets")).toBe(2);
+  });
+
+  it("Next then Back returns exactly the same lab, answers and marks included", () => {
+    const states = [
+      initialLab(),
+      toStep2(),
+      press(chooseAnswer(press(toStep2(), 10, 11, 12), "more", 5), 0),
+      toStep3(),
+      press(toStep4(), 2, 4),
+      chooseAnswer(toStep4(), "left", 8),
+    ];
+    for (const s of states) {
+      if (!canAdvance(s)) continue;
+      expect(back(advance(s))).toEqual(s);
+    }
+  });
+
+  it("pressing a movable ball twice puts everything back exactly", () => {
+    for (const s of [
+      initialLab(),
+      toStep2(),
+      toStep3(),
+      advance(chooseAnswer(toStep4(), "left", 8)),
+    ]) {
+      for (let i = 0; i < s.places.length; i++) {
+        const once = pressBall(s, i);
+        if (once === s || once.places[i] === s.places[i]) continue; // a mark, not a move
+        const twice = pressBall(once, i);
+        expect(twice.places).toEqual(s.places);
+        expect(twice.fromRack).toEqual(s.fromRack);
+      }
+    }
+  });
+
+  it("no recap before a right answer, in any reachable state", () => {
+    let s = initialLab();
+    let seed = 11;
+    const rnd = (n: number) => {
+      seed = (seed * 48271) % 2147483647;
+      return seed % n;
+    };
+    for (let k = 0; k < 3000; k++) {
+      const r = rnd(10);
+      if (r < 6) s = pressBall(s, rnd(s.places.length));
+      else if (r < 8) {
+        const q = openQuestion(s);
+        if (q) s = chooseAnswer(s, q, rnd(14));
+      } else if (r === 8) s = advance(s);
+      else s = back(s);
+      const rc = recap(s);
+      if (rc) {
+        expect(s.step).toBe(4);
+        expect(s.answers.left).toBe(8);
+        expect(rc).toEqual({
+          total: 13,
+          extras: 3,
+          fromRack: 2,
+          take: 5,
+          left: 8,
+        });
+      }
+      // Every object has exactly one valid place; marks only name counted objects.
+      expect(s.places).toHaveLength(s.problem.total);
+      for (const p of s.places) expect(["pile", "rack", "nets"]).toContain(p);
+      for (const i of s.marked) expect(isMarkable(s, i)).toBe(true);
+      // A "right" verdict is always about the picture as it is now.
+      for (const q of ["extras", "more", "left", "apply"] as const)
+        if (isRight(s, q)) expect(s.answers[q]).toBe(shownBy(s, q));
     }
   });
 });

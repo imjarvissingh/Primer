@@ -42,3 +42,6 @@ Cricket Academy (`/cricket`) now opens with a short animated story (skippable, p
 
 ## Learning Experience 2.1 status (2026-10-18)
 The draft `/cricket/make-ten-lab` is now a five-step activity in which the learner builds a ten, says how many are outside it, takes those, says how many more are needed, takes them from the ten, says how many are left, and then tries 11 − 4 without help. It is adult-operated, client-only and labelled as unreviewed; it scores, saves and reports nothing. The production mission, tutor, check and summary are unchanged. No claim of learning benefit is made; see educator packet §6C.
+
+## Learning Experience 2.2 status (2026-10-18)
+The draft make-ten lab now reads cleanly on a 320–390 px phone (objects stay in view while a number is chosen, no empty status card), has a counting aid and wrong-answer support for educators to judge, and animates every change of place. It remains an adult-operated, client-only draft: scores, saves and reports nothing, and no educator has validated it. A review kit and an adult usability protocol are ready; no sessions or reviews have happened.

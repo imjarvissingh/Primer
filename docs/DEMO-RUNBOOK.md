@@ -94,9 +94,26 @@ Use the operator script, route checklist and recording plan in [RC1.md](RC1.md).
 5. Reduced motion: enable it in the OS; the story then steps with Next/Back and no motion plays.
 Recording note: no video was recorded by the agent. Record the screen with macOS Shift-Cmd-5 while following steps 1 to 3.
 
-## Draft make-ten lab, Learning Experience 2.1 (2026-10-18)
+## Draft make-ten lab, Learning Experience 2.2 (2026-10-18)
 1. Run the Cricket mission at `/cricket` first (the lab uses the same 13 − 5).
-2. Open `/cricket/make-ten-lab`. Step 1: tap ten balls into the rack, answer "how many are outside?" (try 10 first to see the feedback, then 3). Step 2: tap the three loose balls, answer "how many more?" (2). Step 3: tap two balls in the rack. Step 4: optionally tap balls to mark them, answer 8; the recap appears only now. Step 5: send 4 of 11 balls, answer 7.
-3. **Back a step**, **Start again** and **Leave the activity** work at any point. Say on camera that it is a draft no educator has reviewed and that nothing is saved.
+2. Open `/cricket/make-ten-lab`. Step 1: tap ten balls into the rack, answer "how many are outside?" (try 10 first to see the feedback, tap one loose ball to see the counting mark, then 3). Step 2: tap the three loose balls, answer "how many more?" (2). Step 3: tap balls in the rack to fill the empty spots (two). Step 4: optionally mark rack balls, answer 8; the recap appears only now. Step 5: send 4 of 11 balls, answer 7. Answer one question wrongly three times to see the added support lines.
+3. **Back a step**, **Start again** and **Leave the activity** work at any point; tapping a moved ball again puts it back. Say on camera that it is a draft no educator has reviewed and that nothing is saved.
+4. On a phone, the objects stay pinned above the question while a number is chosen; on a very short screen or at large text they scroll with the page instead.
+5. For an educator: send `docs/LAB-REVIEW-KIT.md` (message, route, questions, template) and the `m390-*` screenshots in `docs/cricket-lab-screens/`.
 
-**Adult usability script (first-time adult participant; not for children).** Do not record names or personal details. Say: "This is an unfinished math activity for 6–9-year-olds. Please think aloud. There are no wrong moves; I am testing the activity, not you." Tasks without help: (1) "Start the activity and do what you think it asks." Note the first action and any hesitation. (2) "At the question, pick a number you think a child might wrongly choose." Note whether the feedback is understood. (3) "Go back one step." (4) "Finish the activity." (5) Repeat step 1 on a phone. Ask after: What was the activity trying to teach? Where did you feel you were watching rather than doing? What would confuse a 6-year-old? Record observations only from real sessions; none have been run.
+### Adult usability test (10–15 minutes, one first-time adult, not a child)
+
+**Before.** Have the participant sit with a laptop or phone you do not touch. Use a fresh browser window. Prepare a notes sheet (columns: time, what they did, what they said, hesitation, misreading). Record no name or personal detail; use "P1". Screen recording only if the participant agrees, and delete it after notes are made. Say once: "This is an unfinished math activity for 6–9-year-olds. Please think aloud. There are no wrong moves; I am testing the activity, not you." After that, answer questions with "What would you do?" and do not explain the screen. Do not use this protocol with children: that needs safety, consent and review decisions first.
+
+| Min | Task (read aloud) | Watch for (do not prompt) |
+| --- | --- | --- |
+| 0–2 | "Open the Cricket Academy page and go into the activity." (`/cricket`) | Where they look first; whether they find or skip the introduction; whether "Skip" and Next are noticed |
+| 2–4 | "Try the practice for a minute. Tell me what you think each number on the scoreboard means." | Misreading of start / sent / left; whether tapping balls is discovered |
+| 4–5 | "Now open the draft activity page." (link for grown-ups on `/cricket`, or `/cricket/make-ten-lab`) | Whether the draft notice is read; whether they understand it is separate from the practice |
+| 5–9 | "Do what the page asks. Say what you are thinking." | Hesitation before the first tap; whether they notice they can tap a ball again to put it back; whether they notice the counting marks; what they say the rack, the outside balls and the nets are; which steps they rush |
+| 9–10 | "Choose a number you think a child might get wrong, then tell me what the message means." | Whether the feedback is understood; whether it feels discouraging or too revealing |
+| 10–12 | "Go back one step, then carry on." | Whether **Back a step** is found; whether the restored picture is understood |
+| 12–14 | "Do the last try on your own." (11 − 4) | Whether they carry the idea over; whether the missing rack confuses them |
+| 14–15 | Questions, neutral and in this order: "In your own words, what was that activity teaching?" "Where did you feel you were watching rather than doing?" "Was anything unclear or too wordy?" "What did the ending tell you?" "What would you change first?" | Compare their words with the lab's intended idea (13 is 10 and 3; 5 is 3 and 2; 8 left) without correcting them |
+
+**Capture, per participant.** Where they hesitated (screen and seconds); what they misunderstood (quote it); how they described the quantities (rack, outside, nets, left); whether available actions were noticed (tap to undo, marking, Back, Start again); whether any text was unclear; whether the ending conveyed what was learned. Add device, viewport and browser. **Do not infer learning from an adult's answers and do not record invented feedback.** Findings go to a private notes file; only anonymised, participant-approved summaries are committed. No sessions have been run.

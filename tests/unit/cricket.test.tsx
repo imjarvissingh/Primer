@@ -197,6 +197,11 @@ describe("Cricket aftermath", () => {
 });
 
 describe("Draft make-ten lab page", () => {
+  beforeEach(() => {
+    // jsdom does not implement scrolling; the lab scrolls its new step into view.
+    window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
+  });
+
   it("only enables balls that can act in the current step", async () => {
     render(<MakeTenLab />);
     // Step 1: every loose ball can go to the rack.
@@ -235,5 +240,61 @@ describe("Draft make-ten lab page", () => {
       "Start with the extras",
     );
     expect(screen.queryByTestId("lab-result")).toBeNull();
+  });
+
+  const fillRack = async (user: ReturnType<typeof userEvent.setup>) => {
+    for (let n = 1; n <= 10; n++)
+      await user.click(
+        screen.getByRole("button", {
+          name: new RegExp(`^Ball ${n}, outside the rack`),
+        }),
+      );
+  };
+
+  it("announces moves in one hidden live region and shows no empty status card", async () => {
+    const user = userEvent.setup();
+    render(<MakeTenLab />);
+    const status = screen.getByTestId("lab-status");
+    expect(status).toHaveAttribute("role", "status");
+    expect(status).toHaveClass("sr-only");
+    await user.click(
+      screen.getByRole("button", { name: /^Ball 1, outside the rack/ }),
+    );
+    expect(status).toHaveTextContent("Ball 1 moved to the rack.");
+    // The visible page holds no card whose only job is to announce.
+    expect(document.querySelectorAll(".card").length).toBe(0);
+  });
+
+  it("offers a way to count, and more support only after repeated mix-ups, never the number", async () => {
+    const user = userEvent.setup();
+    render(<MakeTenLab />);
+    await fillRack(user);
+    expect(screen.getByTestId("lab-count-aid")).toHaveTextContent(
+      "Tap each ball outside the rack to mark it as you count.",
+    );
+    const mark = screen.getByRole("button", {
+      name: /^Ball 11, outside the rack/,
+    });
+    expect(mark).toHaveAttribute("aria-pressed", "false");
+    await user.click(mark);
+    expect(mark).toHaveAttribute("aria-pressed", "true");
+    const wrong = async (n: string) => {
+      await user.click(screen.getByRole("radio", { name: n }));
+      await user.click(screen.getByRole("button", { name: "Check" }));
+    };
+    await wrong("5");
+    expect(screen.getByTestId("lab-feedback")).not.toHaveTextContent(
+      /one at a time/,
+    );
+    await wrong("6");
+    expect(screen.getByTestId("lab-feedback")).toHaveTextContent(
+      /one at a time/,
+    );
+    await wrong("7");
+    expect(screen.getByTestId("lab-feedback")).toHaveTextContent(
+      /grown-up can count with you/,
+    );
+    // None of this support states the number of balls outside.
+    expect(screen.getByTestId("lab-feedback")).not.toHaveTextContent(/\b3\b/);
   });
 });

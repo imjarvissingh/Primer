@@ -6,8 +6,9 @@ const ball = (p: Page, n: number) =>
   p.getByRole("button", { name: new RegExp(`^Ball ${n}, in the basket`) });
 const answer = async (p: Page, n: number) => {
   await p
-    .getByRole("radio", { name: String(n), exact: true })
-    .check({ force: true });
+    .locator("label")
+    .filter({ has: p.getByRole("radio", { name: String(n), exact: true }) })
+    .click();
   await p.getByRole("button", { name: "Check my answer" }).click();
 };
 const noOverflow = async (p: Page) =>
@@ -227,8 +228,9 @@ const labBall = (p: Page, n: number, where: string) =>
   p.getByRole("button", { name: new RegExp(`^Ball ${n}, ${where}`) });
 const labAnswer = async (p: Page, n: number) => {
   await p
-    .getByRole("radio", { name: String(n), exact: true })
-    .check({ force: true });
+    .locator("label")
+    .filter({ has: p.getByRole("radio", { name: String(n), exact: true }) })
+    .click();
   await p.getByRole("button", { name: "Check", exact: true }).click();
 };
 const next = (p: Page) => p.getByRole("button", { name: "Next step" });
@@ -274,8 +276,13 @@ test.describe("Draft make-ten lab", () => {
       await labBall(page, n, "outside the rack").click();
     await expect(page.locator("[data-lab-question]")).toHaveCount(0);
     await labBall(page, 10, "outside the rack").click();
-    // A full rack: the three outside cannot be added.
-    await expect(labBall(page, 11, "outside the rack")).toBeDisabled();
+    // A full rack: the three outside cannot be added; they can be marked to count.
+    await labBall(page, 11, "outside the rack").click();
+    await expect(page.locator("[data-lab-place='rack']")).toHaveCount(10);
+    await expect(labBall(page, 11, "outside the rack")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
     await labAnswer(page, 10);
     await expect(feedback).toContainText("10 is how many are in the rack");
     await expect(next(page)).toHaveAttribute("aria-disabled", "true");
@@ -299,9 +306,12 @@ test.describe("Draft make-ten lab", () => {
     await next(page).click();
 
     // Step 3: two from the ten; never a third.
+    // The number to take is the learner's own from step 2; it is not repeated.
     await expect(page.getByTestId("lab-instruction")).toContainText(
-      "Now take 2 balls from the rack",
+      "Take that many balls from the rack",
     );
+    await expect(page.getByTestId("lab-instruction")).not.toContainText("2");
+    await expect(page.getByText("At the nets: 3 of 5")).toBeVisible();
     await labBall(page, 1, "in the rack").click();
     await labBall(page, 2, "in the rack").click();
     await expect(labBall(page, 3, "in the rack")).toBeDisabled();
@@ -378,9 +388,11 @@ test.describe("Draft make-ten lab", () => {
     await expect(
       page.getByRole("radio", { name: "0", exact: true }),
     ).toBeFocused();
-    await page
-      .getByRole("radio", { name: "3", exact: true })
-      .check({ force: true });
+    // Arrow keys choose a number, as for any radio group.
+    for (let k = 0; k < 3; k++) await page.keyboard.press("ArrowRight");
+    await expect(
+      page.getByRole("radio", { name: "3", exact: true }),
+    ).toBeChecked();
     await page
       .getByRole("button", { name: "Check", exact: true })
       .press("Enter");

@@ -249,3 +249,10 @@ Presentation and a client-only draft; no change to `src/domain`, `src/server`, `
 - *Accessibility contract:* objects are buttons; focus follows the work (next object in the same place, else the question, else Next); the step heading takes focus on Next/Back; motion is decorative (Web Animations travel and a CSS reveal) and off under reduced motion; panels hold a full row of five or wrap at very large text.
 
 **Boundaries kept:** one server evaluator; one tutor state machine; no theme-specific answers; no evidence written; the lab is not linked from any hint and is not imported by the tutor. Only Cricket mounts it. Wiring other worlds or the tutor to it needs educator review and an explicit decision.
+
+## Learning Experience 2.2 changes to the draft lab (2026-10-18)
+Client-only, no change to `src/domain`, `src/server`, any API, the tutor or the check.
+- **Rules (`src/lib/make-ten-lab.ts`):** snapshots gain `tries` (wrong numbers for the current picture; reset by a move; used only to offer more counting support). `pressBall` moves an object, or marks it when it cannot move and belongs to the group being counted (`countedGroup`, `isMarkable`); any move clears marks. Still no stored answer: `shownBy` reads the picture.
+- **Component (`MakeTenLab.tsx`):** `latest` ref so a second tap before React re-renders builds on the first; hidden single live region; question focus on open; `usePinnedBoard` (sets `data-pinned` and `scroll-padding-top` from the board height, only when 15 rem remain below it); `remember`/`spotsOf` + a layout effect move each object from where it looked to where it is (Web Animations; skipped under reduced motion or when the problem changes). A restored, already-answered question does not take focus.
+- **Page and CSS:** the lab page wraps the lab in `theme-cricket mission-panel`; `.lab-nets`/`.lab-part` group the take; `.lab-board[data-pinned]`; 44 px objects below 40 rem.
+- **Tests:** unit (rules, invariants, random walk), component, and e2e (`tests/e2e/cricket-lab-interaction.spec.ts`: phone layout, stress, motion, reduced motion). `tests/tools/capture-lab-screens.mjs` regenerates the packet screenshots.

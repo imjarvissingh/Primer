@@ -1208,17 +1208,81 @@ h3 {
   gap: 0.25rem;
   max-width: 17.5rem;
 }
+/* While a question is open and the board leaves room for it, the objects stay
+   in view as the question scrolls (set by the lab; never applied to a board
+   too tall to leave room, so the question can always be reached). */
+.lab-board[data-pinned="true"] {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin-inline: -0.5rem;
+  padding: 0.5rem;
+  background: var(--panel-bg, var(--background));
+  border-bottom: 2px solid var(--border);
+}
+/* Nothing is outside the ten: on a phone that panel would only push the rest
+   down; from tablet width the two columns keep their places. */
+@media (max-width: 46.99rem) {
+  .lab-pile-empty {
+    display: none;
+  }
+}
+/* An object that cannot be pressed now looks settled (paler, no pointer), so a
+   tap target never looks the same as a locked one. It is still fully visible
+   and countable. */
+.lab button.item:disabled {
+  cursor: default;
+  filter: saturate(0.45);
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* The balls outside the full ten nudge once so the eye finds that group; no
+     number is shown or implied. */
+  .lab-cue {
+    animation: lab-nudge 700ms ease-in-out 2;
+  }
+}
+@keyframes lab-nudge {
+  50% {
+    transform: scale(1.12);
+  }
+}
 /* Marked while counting: ring and tick together, never color alone. */
 .lab-marked {
   outline: 4px solid var(--accent);
   outline-offset: 2px;
 }
-/* A gap between the two parts of the take at the nets (extras | from the ten). */
+/* At the nets the take is shown as its parts (extras | from the ten | still
+   empty). Each part is a unit that wraps as a whole, so "3 | 2" never breaks
+   in the middle of a part on a narrow screen. */
+.lab-nets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+.lab-part {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  max-width: 100%;
+}
+.lab-part:empty {
+  display: none;
+}
+/* The part that came from the ten is set off from the extras by a dashed rule
+   that travels with it if the parts have to wrap. */
 .lab-split {
-  align-self: stretch;
-  width: 0;
-  margin: 0 0.25rem;
+  padding-left: 0.25rem;
   border-left: 3px dashed var(--border);
+}
+/* On a phone the objects are 44px, the smallest comfortable target, so a full
+   row of five and the dashed divider still fit at 320px. */
+@media (max-width: 39.99rem) {
+  .lab .item {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
 }
 /* Part-whole: the whole, then its two parts. Text, so it scales with the page. */
 .lab-bond {

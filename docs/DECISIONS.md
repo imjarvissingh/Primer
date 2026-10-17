@@ -177,3 +177,15 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Small theme abstraction only.** `LabWords` + art id; no registry entries, no other world wired, no tutor change.
 - **Production unchanged:** mission, hints, ladder, warm-up, check, summary, sessions, rate limit, other worlds.
 - **PR #39 not merged by the agent.** The merge was blocked by the session's permission policy; this work is stacked on its head `3c3f9dc`.
+
+## Learning Experience 2.2 decisions (2026-10-18) — all provisional, none educator-approved
+- **PR #41 was rebased, not replaced.** PR #39 was squash-merged and main's tree equalled #39's old head, so `git rebase --onto origin/main 3c3f9dc` carried exactly one lab commit; the force-push used a lease against the known remote head. History and comments of PR #41 are kept.
+- **Pin the board, but only when the question fits below it.** Pinning is chosen at run time from the board's height against the screen (in rem, so text size counts); a board too tall for that scrolls normally. No fixed viewport-height rule.
+- **No visible status card.** Moves are announced once in a hidden live region; sighted learners see the objects and the counts in the panel titles. Step 4 does not show a count at the nets, to avoid echoing "5".
+- **The lab shows the Cricket palette.** It had none (a 2.1 defect: empty spots had no border). Only the lab page wrapper changed.
+- **Step 3 no longer says how many to take.** Hypothesis H6; educator question P3.
+- **Counting aid is local and silent.** Marks never show a number and are cleared by any move; absent in the unguided step.
+- **Support after repeated wrong numbers points to careful counting, then to a grown-up; it never states a number and does not limit retries.** Hypothesis H8; question P2. Not wired to the tutor's attempt thresholds, which are untouched.
+- **One travel system.** Each change records where objects look to be and moves them from there; it is visual only, never blocks input, and is skipped under reduced motion. Final state is identical either way (tested).
+- **The educator kit is the single entry point for a reviewer**; packet section 6C holds the detail and section 8 the record. Nothing was sent to anyone. The educator gate stays open.
+- **Production unchanged:** tutor, hints, evaluator, banks, check, summary, sessions, rate limit, server and the other four worlds.

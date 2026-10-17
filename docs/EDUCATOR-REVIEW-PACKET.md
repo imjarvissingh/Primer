@@ -163,11 +163,13 @@ Issue #38. **Nothing below is educator-reviewed.** No AI agent has certified any
 
 _Update 2026-10-18: the C5 lab described above has been replaced by the five-step draft in section 6C (the learner now names the extras, the second part and the remainder). C1–C4 are unchanged._
 
-## 6C. Learning Experience 2.1: the Cricket 13 − 5 case study and the redesigned draft lab (2026-10-18)
+## 6C. Learning Experience 2.1 and 2.2: the Cricket 13 − 5 case study and the redesigned draft lab (2026-10-18)
+
+**Start with `docs/LAB-REVIEW-KIT.md`** (message to send, demonstration route, decision map, prioritized questions, feedback template). This section is the detailed reference behind it.
 
 **Status: DRAFT. NOT reviewed by a qualified educator.** The audit below is an AI-assisted preliminary review by the implementing agent (with an AI code review by Codex CLI). It is a list of questions and observations. It is not an educator finding, not an endorsement and not evidence that anything helps children learn. No child and no educator has used this build.
 
-This section is self-contained: a reviewer can read it without the code. Screenshots of the real running page are in `docs/cricket-lab-screens/` (390 px and 1440 px, one per step).
+This section is self-contained: a reviewer can read it without the code. Screenshots of the real running page are in `docs/cricket-lab-screens/`: `m390-*` every mathematical state on a 390 px phone, `m320-*` the question states on the smallest phone, `d1440-*` key states on a desktop. Regenerate with `tests/tools/capture-lab-screens.mjs`.
 
 ### 6C.1 Who and what
 
@@ -206,11 +208,13 @@ Every number the learner gives is checked against the objects on screen at that 
 
 | Step (on screen) | Learner action | Representation | Prompt (verbatim) | Feedback (verbatim; draft) |
 | --- | --- | --- | --- | --- |
-| 1 "Make a ten" | Tap balls into a 2 × 5 rack until it is full (any ten), then choose a number | 13 separate balls in rows of five; rack with ten dashed places | "Coach Bails has 13 balls. Tap balls to put them in the rack. A full rack holds 10." / "The rack is full. How many balls are outside it?" (0–13) | Right: "Yes. 13 is 10 and 3." plus a part-whole picture. Chose 10: "10 is how many are in the rack. How many are outside it?" Chose 13: "13 is all of the balls. How many are outside the rack?" Other: "Not quite. Count the balls outside the rack." |
-| 2 "Start with the extras" | Send the 3 balls outside the rack to the nets (the rack is locked), then choose a number | Nets with 5 spots: 3 filled, 2 empty | "Coach Bails needs 5 balls at the nets. One way to start: send the balls outside the rack first. Tap each one." / "How many more balls does Coach Bails need?" | Right: "Yes. 5 is 3 and 2." plus picture. Chose 5: "5 is how many Coach Bails needs in all. Some are there already. How many spots are still empty?" Chose 3: "3 are at the nets already. How many spots are still empty?" Other: "Not quite. Count the empty spots at the nets." |
-| 3 "Take the rest from the ten" | Tap 2 balls in the rack (a third cannot be taken; either can be put back) | Nets show the parts apart: 3 extras, a dashed divider, 2 from the ten | "Now take 2 balls from the rack and send them to the nets." | "To go on, fill all 5 spots at the nets." until done |
-| 4 "How many are left?" | Optionally tap balls to mark them while counting (no number appears), then choose a number | Rack with 8 balls and 2 empty places | "Look at the rack. You can tap each ball to mark it while you count." / "How many balls are still in the rack?" (0–13) | Right: "Yes. 8 balls are still in the rack." then "You made a ten and 3 extras. You took the 3 extras, then 2 more from the ten. 13 take away 5 leaves 8. This is one way to do it. Taking any 5 balls from 13 leaves 8 too." Chose 5: "5 is how many went to the nets. How many are still in the rack?" Chose 13: "13 is how many Coach Bails had at the start. Some went to the nets." Chose 10: "Look again: some spots in the rack are empty now." |
+| 1 "Make a ten" | Tap balls into a 2 × 5 rack until it is full (any ten), then choose a number | 13 separate balls in rows of five; rack with ten dashed places | "Coach Bails has 13 balls. Tap balls to put them in the rack. A full rack holds 10. Tap one in the rack to put it back." / "The rack is full. How many balls are outside it?" (0–13); a line under the numbers: "Tap each ball outside the rack to mark it as you count." | Right: "Yes. 13 is 10 and 3." plus a part-whole picture. Chose 10: "10 is how many are in the rack. How many are outside it?" Chose 13: "13 is all of the balls. How many are outside the rack?" Other: "Not quite. Count the balls outside the rack." |
+| 2 "Start with the extras" | Send the 3 balls outside the rack to the nets (the rack is locked and shown paler), then choose a number | Nets titled "At the nets: 3 of 5" with 5 spots: 3 filled, 2 empty | "Coach Bails needs 5 balls at the nets. One way to start: send the balls outside the rack first. Tap each one." / "How many more balls does Coach Bails need?" | Right: "Yes. 5 is 3 and 2." plus picture. Chose 5: "5 is how many Coach Bails needs in all. Some are there already. How many spots are still empty?" Chose 3: "3 are at the nets already. How many spots are still empty?" Other: "Not quite. Count the empty spots at the nets." |
+| 3 "Take the rest from the ten" | Tap balls in the rack to fill the empty spots (a third cannot be taken; either can be put back) | Nets show the parts apart: 3 extras, a dashed divider, 2 from the ten | "You found how many more Coach Bails needs. Take that many balls from the rack to fill the empty spots at the nets." (the number is no longer stated; 2.1 said "take 2") | "To go on, fill all 5 spots at the nets." until done |
+| 4 "How many are left?" | Optionally tap balls to mark them while counting (no number appears), then choose a number | Rack with 8 balls and 2 empty places | "How many balls are still in the rack?" (0–13); under the numbers: "Tap each ball in the rack to mark it as you count." (the instruction line steps aside while a question is open) | Right: "Yes. 8 balls are still in the rack." then "You made a ten and 3 extras. You took the 3 extras, then 2 more from the ten. 13 take away 5 leaves 8. This is one way to do it. Taking any 5 balls from 13 leaves 8 too." Chose 5: "5 is how many went to the nets. How many are still in the rack?" Chose 13: "13 is how many Coach Bails had at the start. Some went to the nets." Chose 10: "Look again: some spots in the rack are empty now." |
 | 5 "Try one on your own" | Send 4 of 11 balls to the nets, then choose a number; no rack, no hints | 11 balls in rows of five; nets with 4 spots | "A new one, with no help. Coach Bails has 11 balls. Send 4 to the nets, then work out how many are left." / "11 balls, 4 at the nets. How many balls are left?" | Right: "Yes, that matches the balls that are left. That is the end of this draft activity." Wrong: "That does not match yet. Look again at the balls that are not at the nets." (no strategy cue) |
+
+After a second wrong number for the same picture (steps 1, 2 and 4 only; never in step 5) the feedback adds "Count them one at a time and tap each ball as you count it." (step 2: "Count the empty spots at the nets one at a time, touching each one."); after a third it adds "A grown-up can count with you, or you can use Back a step." These lines never state a number. Moving any ball starts the count again. They are hypotheses (questions P2).
 
 Controls on every step: **Next step** (blocked, with the reason shown, until the step's action and answer are done), **Back a step**, **Start again**, **Leave the activity**. The step-4 recap states only actions the lab required and recorded; it does not claim the learner chose the strategy freely.
 
@@ -218,7 +222,7 @@ Controls on every step: **Next step** (blocked, with the reason shown, until the
 
 ### 6C.4 Accessibility accommodations (automated browser checks only)
 
-Every ball is a real button (tap, click, Enter/Space); no dragging. After a move, focus stays with the objects (next ball in the same place, else the question, else Next). The step heading takes focus on Next/Back. Moves are announced in a polite live region ("Ball 4 moved to the rack."). A right answer replaces the number choices with "Your answer: n" and focus moves to the confirmation. Marked balls show a ring and a tick, not colour alone. Motion (balls travelling, the part-whole picture appearing) is decorative and off under reduced motion; nothing depends on it. Checked with Playwright at 320, 390, 768, 1024 and 1440 px and at 200% text. **Not done:** a real VoiceOver or other screen-reader pass, switch access, physical phones and tablets, Safari and Firefox.
+Every ball is a real button (tap, click, Enter/Space); no dragging. After a move, focus stays with the objects (next ball in the same place, else the question, else Next; the question takes focus the moment it opens). The step heading takes focus on Next/Back and the page scrolls so the heading is at the top. Moves are announced in one polite live region that is hidden from sight ("Ball 4 moved to the rack. The rack is full."; "Ball 12 moved to the nets. 3 of 5 spots at the nets are filled."); it never states a number the learner is still being asked for. A right answer replaces the number choices with "Your answer: n" and focus moves to the confirmation. Marked balls show a ring and a tick, not colour alone; a marked ball reports `aria-pressed`. Balls that cannot be pressed are real disabled buttons and look paler. Motion is decorative and off under reduced motion; nothing depends on it. Checked with Playwright at 320, 390, 768, 1024 and 1440 px and at 200% text. Cross-browser and assistive-technology results for this build are in `docs/ACCESSIBILITY-AUDIT.md` (Learning Experience 2.2 section). **Not done unless stated there:** a real VoiceOver or other screen-reader pass, switch access, physical phones and tablets.
 
 ### 6C.5 Instructional hypotheses (all unvalidated)
 
@@ -226,6 +230,10 @@ Every ball is a real button (tap, click, Enter/Space); no dragging. After a move
 - H2. Showing the two parts of the take apart at the nets (3 | 2) makes 5 = 3 + 2 visible without an equation.
 - H3. Asking for the remainder, with a silent marking aid instead of a running count, keeps the final reasoning with the learner.
 - H4. Number-specific feedback for 5, 10 and 13 helps learners who confuse the part taken, the ten or the whole with the remainder.
+- H6. (2.2) Leaving the number to take in step 3 unstated makes the learner use their own step-2 answer and the empty spots, instead of following an instruction.
+- H7. (2.2) A counting aid (marking the group being counted) lets a learner who is unsure count carefully without the app giving the number.
+- H8. (2.2) After two or three wrong numbers, pointing to careful counting and then to a grown-up is better than repeating the same feedback. Nothing here limits retries.
+- H9. (2.2) Showing "3 of 5" in the nets title makes "5 is 3 and 2" visible; it may also make the "how many more" question easy. Pale locked balls and one nudge of the loose balls direct attention; they may also distract.
 - H5. One unaided try right after the guided steps shows the adult whether the learner can start a similar problem; it says nothing about learning or retention.
 
 ### 6C.6 Likely misconceptions to watch
@@ -233,6 +241,8 @@ Every ball is a real button (tap, click, Enter/Space); no dragging. After a move
 (a) Answering 5 (the part moved) for what is left. (b) Answering 10 because "make a ten" sounds like the answer. (c) Believing the 3-then-2 order is the only correct way. (d) Reading the dashed divider at the nets as a separate group not counted in the 5. (e) Counting the empty dashed places in the rack as balls. (f) Thinking the unguided try must also use a rack.
 
 ### 6C.7 Questions for the educator
+
+The prioritized list to send (P1–P6, including questions about the 2.2 changes) is in `docs/LAB-REVIEW-KIT.md` section 5; this list is the original set.
 
 1. Is the sequence (build ten → name the extras → take the extras → name what is still needed → take from the ten → name the remainder) mathematically sound and appropriate for ages 6–9? For which grade?
 2. Should the learner choose *which* first part to take, or is "one way to start" adequate?
@@ -250,15 +260,39 @@ Every ball is a real button (tap, click, Enter/Space); no dragging. After a move
 
 Accept for adult-operated demonstration only if all hold: (1) every quantity and statement on screen is mathematically correct; (2) no screen states a result before the learner gives it; (3) the strategy is presented as one way, not the way; (4) the wording is age-appropriate when read aloud; (5) feedback is not discouraging; (6) the reviewer judges the sequence a reasonable model of make-ten subtraction for the stated grade. Reject or revise if any statement misdescribes what the learner did, if a representation is likely to cause one of the misconceptions above in a way the feedback cannot correct, or if the sequence is developmentally inappropriate. Acceptance for a child pilot is a separate decision and is **not** implied.
 
-### 6C.9 What changed in the software, and what did not
+### 6C.9 What changed in the software, and what did not (2.1)
 
 Changed: `/cricket/make-ten-lab` only (`src/lib/make-ten-lab.ts`, `src/components/practice/cricket/MakeTenLab.tsx`, the page notice, lab CSS, lab tests). **Not changed:** the mission, server, hint wording and ladder, tutoring policy, evaluator, question banks, independent check, parent summary, session lifecycle, rate limit, and the other four worlds.
+
+### 6C.10 Learning Experience 2.2: what changed, and why (2026-10-18)
+
+Layout and interaction changes to the draft lab only. **Not changed:** the tutor, hints, evaluator, banks, check, summary, sessions, server, rate limit and the other four worlds.
+
+| Change | Reason | Kind |
+| --- | --- | --- |
+| The draft notice is two lines with the rest under "More about this draft" | On a 320 px phone it filled the first screen | Layout |
+| The visible status card is gone; moves go to a hidden live region and counts sit in the panel titles ("At the nets: 3 of 5") | In step 4 the card was empty; elsewhere it repeated what the objects show | Defect fix |
+| While a question is open the board (objects) is pinned above it when it leaves room for the question | At 320×568 and 390×664 the question pushed the rack out of view | Layout |
+| The panel "Outside the rack" disappears on phones when it is empty | It only pushed the rest down | Layout |
+| Objects are 44 px on phones (48 px before); at 320 px the nets show "3 \| 2" on one row, as two groups that wrap as units | A full row of five plus the divider did not fit | Layout |
+| The page now wears the Cricket palette | Without it the empty nets spots had no border and moved balls no ring (a defect in 2.1) | Defect fix |
+| Step 3 does not state the number to take | The learner already found it in step 2; the spots show it | Interaction (hypothesis H6) |
+| Counting marks work on the group being counted (outside the full ten; the rack in step 4); never in step 5 | Counting aid without giving a number | Interaction (H7) |
+| Support after the second and third wrong number | Mistake handling | Interaction (H8, question P2) |
+| Locked balls are paler; the loose balls nudge once when the ten is full | Show what can be pressed; draw the eye to the extras | Interaction (H9) |
+| One travel system for every change (tap, undo, Next, Back, Start again); it always continues from where an object looks to be | Make each change visible; survive rapid taps | Animation (visual only) |
+| Rapid taps build on each other instead of undoing | Real defect found by the new stress test | Defect fix |
+| A step restored by Back keeps focus on its heading | Real defect found by the e2e suite | Defect fix |
+
+**Decision map.** The learner's decisions, with what each shows and whether guessing can pass them, are tabulated in `docs/LAB-REVIEW-KIT.md` section 4. Summary: steps 1–2 make the learner decide two numbers from pictures they built; step 3 turns the step-2 answer into an action; step 4 asks for the remainder; step 5 is the same task with no help. Guessing a number can eventually succeed in every step because retries are unlimited; that is a question for the educator, not a software decision.
 
 ## 7. How to run it yourself (adult, synthetic data only)
 
 `npm ci && npm run build && npm start -- --port 3000`, then open `/block-builder`: tap blocks 1–5, answer 9 four times to see every step above, then accept the warm-up (tap 6 blocks, answer 4), re-place 5 blocks and answer 8. The independent check is at `/assessment`. See `docs/DEMO-RUNBOOK.md`. **Do not enter real child information; do not observe a real child with this build.**
 
 ## 8. Review record (blank — to be completed by a real reviewer, privately)
+
+A reviewer who uses the feedback template in `docs/LAB-REVIEW-KIT.md` (section 6) returns that template; transfer each finding into the table below, anonymised, once the reviewer approves publication. Decisions (accepted / deferred / declined, with the reason) are written in the last column by the founder.
 
 **Public-repository rule:** this repository is public. Reviewer names, contact details, employer, qualifications evidence and private notes must be recorded in a private copy outside the repository. Commit only what the reviewer has explicitly approved for publication, and only in anonymised form.
 

@@ -53,10 +53,16 @@ interface Snapshot {
   readonly places: readonly Place[];
   /** Objects moved from the rack in step 3, in order. */
   readonly fromRack: readonly number[];
-  /** Objects the learner marked while counting in step 4 (a counting aid; no number is shown). */
+  /** Objects the learner marked while counting (a counting aid; no number is ever shown for it). Any move clears the marks. */
   readonly marked: readonly number[];
   /** The learner's current number for each question. Moving an object clears the answer it was about. */
   readonly answers: Readonly<Partial<Record<Question, number>>>;
+  /**
+   * How many numbers the learner has tried for each question while the picture
+   * stayed the same. Only used to offer more counting support after repeated
+   * mix-ups; never a score, never saved. Moving an object starts the count again.
+   */
+  readonly tries: Readonly<Partial<Record<Question, number>>>;
 }
 
 export interface LabState extends Snapshot {
@@ -72,6 +78,7 @@ function fresh(step: LabStep, problem: MakeTenProblem): Snapshot {
     fromRack: [],
     marked: [],
     answers: {},
+    tries: {},
   };
 }
 
@@ -84,12 +91,39 @@ export const countAt = (s: Snapshot, place: Place) =>
 
 function move(s: LabState, i: number, to: Place, clear?: Question): LabState {
   const answers = { ...s.answers };
-  if (clear) delete answers[clear];
-  return { ...s, places: s.places.map((p, j) => (j === i ? to : p)), answers };
+  const tries = { ...s.tries };
+  if (clear) {
+    delete answers[clear];
+    delete tries[clear];
+  }
+  // The groups changed, so counting marks no longer describe them.
+  return {
+    ...s,
+    places: s.places.map((p, j) => (j === i ? to : p)),
+    marked: [],
+    answers,
+    tries,
+  };
 }
 
-/** What pressing object `i` (0-based) does in the current step. Anything else returns `s` unchanged. */
-export function pressBall(s: LabState, i: number): LabState {
+/**
+ * The group the open question asks the learner to count, whose objects can be
+ * marked while counting. "More" counts empty spots, which are not objects. The
+ * unguided try ("apply") offers no counting aid, so it stays as it was.
+ */
+export function countedGroup(s: Snapshot): Place | null {
+  switch (openQuestion(s)) {
+    case "extras":
+      return "pile";
+    case "left":
+      return "rack";
+    default:
+      return null;
+  }
+}
+
+/** What pressing object `i` (0-based) moves, if anything, in the current step. */
+function moveBall(s: LabState, i: number): LabState {
   const here = s.places[i];
   if (here === undefined) return s;
   const nets = countAt(s, "nets");
@@ -113,19 +147,36 @@ export function pressBall(s: LabState, i: number): LabState {
         };
       return s;
     case 4:
-      if (here !== "rack") return s;
-      return {
-        ...s,
-        marked: s.marked.includes(i)
-          ? s.marked.filter((b) => b !== i)
-          : [...s.marked, i],
-      };
+      return s;
     case 5:
       if (here === "pile" && nets < s.problem.take)
         return move(s, i, "nets", "apply");
       if (here === "nets") return move(s, i, "pile", "apply");
       return s;
   }
+}
+
+/** True when object `i` is in the group being counted, so pressing it marks it. */
+export function isMarkable(s: Snapshot, i: number): boolean {
+  const g = countedGroup(s);
+  return g !== null && s.places[i] === g;
+}
+
+/**
+ * What pressing object `i` (0-based) does in the current step: move it, or, when
+ * it cannot move but belongs to the group being counted, mark or unmark it.
+ * Anything else returns `s` unchanged.
+ */
+export function pressBall(s: LabState, i: number): LabState {
+  const moved = moveBall(s, i);
+  if (moved !== s) return moved;
+  if (!isMarkable(s, i)) return s;
+  return {
+    ...s,
+    marked: s.marked.includes(i)
+      ? s.marked.filter((b) => b !== i)
+      : [...s.marked, i],
+  };
 }
 
 /** True when pressing object `i` would do something now (so the control can be enabled). */
@@ -166,8 +217,13 @@ export function shownBy(s: Snapshot, q: Question): number {
 /** A local check only; nothing is scored, saved or sent anywhere. */
 export function chooseAnswer(s: LabState, q: Question, n: number): LabState {
   if (openQuestion(s) !== q || !Number.isInteger(n) || n < 0) return s;
-  return { ...s, answers: { ...s.answers, [q]: n } };
+  const tries =
+    n === shownBy(s, q) ? s.tries : { ...s.tries, [q]: (s.tries[q] ?? 0) + 1 };
+  return { ...s, answers: { ...s.answers, [q]: n }, tries };
 }
+
+/** Wrong numbers tried for `q` since the picture last changed. */
+export const triesFor = (s: Snapshot, q: Question) => s.tries[q] ?? 0;
 
 export function isRight(s: Snapshot, q: Question): boolean {
   return openQuestion(s) === q && s.answers[q] === shownBy(s, q);
