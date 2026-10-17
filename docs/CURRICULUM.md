@@ -61,3 +61,6 @@ Progression for 13 − 5 (provisional): wrong 1 neutral note → hint 1: 13 as a
 10. Are other accessibility alternatives needed (physical manipulatives, audio)?
 
 Hint copy audit: hint 1 and hint 2 text is mathematically correct and was kept unchanged. Added draft text for the two S03 hint ids used in the warm-up. Neutral and fallback wording unchanged.
+
+## Interests and curriculum (2026-10-17)
+Interest does not change curriculum. All interests present the same single challenge, 13 - 5 = 8, through the same evaluator, tutoring policy and independent check. No new skills, items or hints were added, and nothing here is educator-approved. Open pedagogical questions are tracked in issues #16 to #20.

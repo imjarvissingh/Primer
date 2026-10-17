@@ -17,6 +17,9 @@ export default defineConfig({
   // loudly ("already used") instead of silently testing the wrong code.
   webServer: {
     command: `npm run start -- --port ${PORT}`,
+    // The suite starts more sessions per minute than the production cap (120)
+    // allows. Only this test server raises it; production code is unchanged.
+    env: { PRIMER_START_LIMIT: "5000" },
     url: `http://localhost:${PORT}`,
     reuseExistingServer: process.env.PRIMER_E2E_REUSE === "1",
     timeout: 60_000,

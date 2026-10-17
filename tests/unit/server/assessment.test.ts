@@ -29,6 +29,7 @@ import { AssessmentStore } from "@/server/assessment/sessions";
 import { parseAssessmentRequest } from "@/server/assessment/validate";
 import {
   START_LIMIT,
+  configuredStartLimit,
   START_WINDOW_MS,
   StartLimiter,
 } from "@/server/rate-limit";
@@ -589,6 +590,20 @@ describe("start rate limit", () => {
     expect(limiter.allow(1_000)).toBe(false);
     expect(limiter.allow(1_000 + START_WINDOW_MS - 1)).toBe(false);
     expect(limiter.allow(1_000 + START_WINDOW_MS)).toBe(true);
+  });
+
+  it("takes a start-limit override only from a plain whole number in range", () => {
+    expect(configuredStartLimit(undefined)).toBe(START_LIMIT);
+    expect(configuredStartLimit("5000")).toBe(5000);
+    for (const bad of ["", "0", "-5", "1.5", "1e9", "100001", "abc", " 9"]) {
+      expect(configuredStartLimit(bad), bad).toBe(START_LIMIT);
+    }
+    const limiter = new StartLimiter(2);
+    expect([1, 2, 3].map(() => limiter.allow(1_000))).toEqual([
+      true,
+      true,
+      false,
+    ]);
   });
 
   it("is applied to starts only and reads no client identifier", () => {

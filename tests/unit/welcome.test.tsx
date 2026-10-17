@@ -145,16 +145,24 @@ describe("Welcome: adventure previews", () => {
       );
       const box = screen.getByTestId("availability");
       expect(box).toHaveTextContent(/Preview only: not playable yet/);
-      expect(within(box).queryByRole("link")).toBeNull();
+      // Unbuilt interests offer no Start; they point to the two real worlds.
+      expect(
+        within(box)
+          .getAllByRole("link")
+          .map((l) => [l.textContent, l.getAttribute("href")]),
+      ).toEqual([
+        ["Play Building instead", "/block-builder"],
+        ["Play Space instead", "/space-construction"],
+      ]);
       expect(screen.queryByRole("button", { name: /start|play/i })).toBeNull();
-      expect(screen.queryAllByRole("link", { name: /mission/i })).toHaveLength(
-        0,
-      );
+      expect(
+        screen.queryAllByRole("link", { name: /start the .* mission/i }),
+      ).toHaveLength(0);
       await user.click(screen.getByRole("button", { name: "Change interest" }));
     }
   });
 
-  it("links Building and Space only to their own existing missions, and says they are separate", async () => {
+  it("links Building and Space only to their own real missions", async () => {
     const user = await toChooser();
     for (const [title, href] of [
       ["Building", "/block-builder"],
@@ -167,9 +175,10 @@ describe("Welcome: adventure previews", () => {
       const box = screen.getByTestId("availability");
       expect(
         within(box).getByRole("link", {
-          name: "Open the existing draft mission",
+          name: `Start the ${title.toLowerCase()} mission`,
         }),
       ).toHaveAttribute("href", href);
+      expect(within(box).getAllByRole("link")).toHaveLength(1);
       expect(box).toHaveTextContent(/own story/);
       await user.click(screen.getByRole("button", { name: "Change interest" }));
     }

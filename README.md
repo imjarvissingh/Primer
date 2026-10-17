@@ -11,6 +11,18 @@ Two themed experiences share one curriculum and one learning engine:
 
 **Early development, with a draft demo.** The repository contains the planning documents, a deterministic curriculum/math/tutoring engine (`src/domain`), one guided subtraction mission in two themes (Block Builder _The Broken Bridge_ and Space Construction _The Space Station Mission_, 13 − 5), a short independent check, and an adult-facing synthetic evidence summary. The missions and check are **draft demonstrations**: its content and hints have not been reviewed by an educator, and it is not a tested learning product. There are no accounts, database or data collection, and no learning results exist.
 
+## Available routes
+
+| Route                                   | What it is                                                  |
+| --------------------------------------- | ----------------------------------------------------------- |
+| `/`                                     | Home; "Start" opens interest choice                         |
+| `/welcome`                              | Parent introduction, five interests, "Surprise me", preview |
+| `/block-builder`, `/space-construction` | The two playable guided missions (13 - 5)                   |
+| `/assessment`                           | Independent check (no hints)                                |
+| `/demo-progress?session=...`            | Adult summary of a finished check (synthetic, short-lived)  |
+
+Cricket, Basketball and Soccer appear on `/welcome` as previews only and are **not playable yet**.
+
 ## Try the demo
 
 ```bash
@@ -64,16 +76,18 @@ Next.js 16.4.2 (App Router), React 19.3, TypeScript 5.9 (strict), Tailwind CSS 4
 
 All planning documents live in [`docs/`](docs/00-INDEX.md):
 
-| Document                                | Contents                                       |
-| --------------------------------------- | ---------------------------------------------- |
-| [00-INDEX.md](docs/00-INDEX.md)         | Project overview and milestones                |
-| [PRODUCT.md](docs/PRODUCT.md)           | MVP product requirements                       |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Planned technical architecture                 |
-| [CURRICULUM.md](docs/CURRICULUM.md)     | Skills, assessment banks, tutoring states      |
-| [SAFETY.md](docs/SAFETY.md)             | Child-safety and privacy release gates         |
-| [DECISIONS.md](docs/DECISIONS.md)       | Decisions made, open questions, deferred items |
-| [EVALUATION.md](docs/EVALUATION.md)     | Hypotheses and pilot evaluation plan           |
-| [TASKS.md](docs/TASKS.md)               | Solo-founder schedule                          |
+| Document                                    | Contents                                       |
+| ------------------------------------------- | ---------------------------------------------- |
+| [00-INDEX.md](docs/00-INDEX.md)             | Project overview and milestones                |
+| [PRODUCT.md](docs/PRODUCT.md)               | MVP product requirements                       |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md)     | Planned technical architecture                 |
+| [CURRICULUM.md](docs/CURRICULUM.md)         | Skills, assessment banks, tutoring states      |
+| [SAFETY.md](docs/SAFETY.md)                 | Child-safety and privacy release gates         |
+| [DECISIONS.md](docs/DECISIONS.md)           | Decisions made, open questions, deferred items |
+| [EVALUATION.md](docs/EVALUATION.md)         | Hypotheses and pilot evaluation plan           |
+| [TASKS.md](docs/TASKS.md)                   | Solo-founder schedule                          |
+| [MVP-5-DAY-PLAN.md](docs/MVP-5-DAY-PLAN.md) | Five-day sprint scope and cut rules            |
+| [AGENTS.md](AGENTS.md)                      | Rules for AI coding agents                     |
 
 ## Safety-first approach
 

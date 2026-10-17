@@ -49,11 +49,11 @@ test("walks through all five interests with changing previews and constant arith
     await expect(page.getByTestId("story")).toContainText(noun);
     await expect(page.getByTestId("number-sentence")).toHaveText("13 − 5 = ?");
     await expect(page.getByTestId("availability")).toContainText(
-      hasMission ? "existing mission separate" : "not playable yet",
+      hasMission ? "mission is ready to play" : "not playable yet",
     );
-    expect(await page.getByRole("link", { name: /mission/i }).count()).toBe(
-      hasMission ? 1 : 0,
-    );
+    expect(
+      await page.getByRole("link", { name: /^Start the .* mission$/ }).count(),
+    ).toBe(hasMission ? 1 : 0);
     await page.getByRole("button", { name: "Change interest" }).click();
   }
 });
@@ -108,14 +108,16 @@ test("makes no requests beyond the page itself and stores nothing", async ({
   expect(stored).toEqual({ cookie: "", local: 0, session: 0 });
 });
 
-test("the existing homepage is unchanged and does not link to the preview", async ({
+test("the homepage keeps its heading and links to interest choice", async ({
   page,
 }) => {
   await page.goto("/");
   await expect(
     page.getByRole("heading", { level: 1, name: "Primer" }),
   ).toBeVisible();
-  await expect(page.locator('a[href="/welcome"]')).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: /choose what your child loves/ }),
+  ).toHaveAttribute("href", "/welcome");
 });
 
 for (const width of WIDTHS) {

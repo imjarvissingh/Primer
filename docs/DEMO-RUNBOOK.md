@@ -69,3 +69,6 @@ In a mission, answer wrongly four times: wrong 1 gives a neutral note; hint 1 an
 - **Summary URL** contains the session id: crop it. The browser console shows one expected 404 for an unknown-session summary; it is not an error in the product.
 - **Do not start more than 120 sessions a minute** (limiter); restarting the server resets every session and the limiter.
 - Practice and the check are separate sessions; theme switching persists no account. Nothing was recorded or uploaded in Phase 8D. Status of every claim: [MVP-READINESS.md](MVP-READINESS.md).
+
+## Connected journey (Milestone 1, 2026-10-17)
+Start: `npm run dev` (or `npm run build && npm start`), open `/`. Path: "Start: choose what your child loves" -> "Choose an interest" -> Building or Space -> preview -> "Start the ... mission" -> play -> "Change interest" or "Independent check" -> "Summary for a grown-up" -> "Back to Primer home". Cricket, Basketball and Soccer are previews only; say so on camera. Automated check: `tests/e2e/connected-journey.spec.ts`. Running the browser suite: `PRIMER_E2E_PORT=<free port> npm run test:e2e` (the test server sets `PRIMER_START_LIMIT`; never set it for a real deployment).

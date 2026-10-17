@@ -615,7 +615,10 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       await build(user);
       await submit(user, 9);
       await screen.findByRole("heading", { name: /a little easier/i });
-      expect(screen.queryByRole("link")).toBeNull();
+      // Only the way back to interest choice; no assessment or other-world links.
+      expect(
+        screen.getAllByRole("link").map((l) => l.getAttribute("href")),
+      ).toEqual(["/welcome"]);
       expect(screen.getByText(/A grown-up can help/)).toBeInTheDocument();
       expect(screen.queryByText(/does not have that yet/)).toBeNull();
     });

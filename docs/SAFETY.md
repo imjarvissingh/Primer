@@ -19,3 +19,6 @@ The demo has no parental authorization. The summary URL's session id works as an
 ## Instructional visuals and warm-up (Phase 8C)
 
 All wording and pictures are draft and unreviewed by an educator. The warm-up is optional, offered once, never labels the learner, and has a visible way back or out. Arithmetic is computable from public numbers; the protection is against exposing reserved answers, later hint steps and assessment content, not secrecy of simple arithmetic. No new data is collected or stored.
+
+## Connected journey (Milestone 1, 2026-10-17)
+The welcome flow asks for no information, has no text inputs, and stores nothing (no cookies, local or session storage). Its disclosures say the demo is a draft, not educator-approved, uses made-up data, is not ready for children to use alone, and shows no evidence of learning gains. Unbuilt interests are labelled "not playable yet". Links to the summary still carry only the opaque session id that the finished check produced. **Do not set `PRIMER_START_LIMIT` in any deployment.** All child-data release gates above remain unmet: COPPA legal review, verified parental consent, deletion, security review, educator review.

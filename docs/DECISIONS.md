@@ -108,3 +108,12 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 
 - **Fix the track, not the art.** The SVG scenes already scaled; the grid's implicit `auto` column grew to the resource rows' min-content. Mission grids use `grid-cols-1` (`minmax(0, 1fr)`) and rows wrap. No global `overflow-x` rule, because that would hide the problem and clip content.
 - **Wrap before shrinking.** Text and touch targets keep their rem sizes; rows wrap, headings use `overflow-wrap: break-word` and buttons `max-width: 100%`. The five-per-row grouping yields only when five items cannot fit.
+
+## Milestone 1 decisions (2026-10-17)
+- **Welcome is the product entry; missions stay separate routes.** Home links to `/welcome`; choosing Building or Space links to the real `/block-builder` or `/space-construction`. The interest is not passed to the server and is not stored. Rejected: query parameters or storage carrying the interest (new state, no benefit yet).
+- **Unbuilt interests are never started.** Cricket, Basketball and Soccer show "not playable yet" and offer Building or Space. Rejected: starting a Building mission under another name.
+- **`/welcome` resets when left**, like the mission pages, because Next keeps hidden pages mounted. The choice lives only while the page is in view.
+- **Shared header links** "Choose an interest" and "Back to Primer home" on every non-home page, so no page is a dead end.
+- **E2E start limit.** Root cause of the full-suite failures reproduced locally: the production start cap (120/min) is exhausted by the browser suite itself. The production default is unchanged. Only the Playwright test server sets `PRIMER_START_LIMIT=5000`. The variable must never be set in a deployment (it would raise the cap); tracked in #30. The earlier CI failures are consistent with this cause but were not confirmed from their logs.
+- **Prototype preserved, not integrated.** The Block Builder prototype lives on `prototype/block-builder-adventure` (simulated scoring, unreviewed hints). Reuse is decided in #4.
+- **Agent governance:** `AGENTS.md` holds agent rules, GitHub issues hold work, `docs/MVP-5-DAY-PLAN.md` holds sprint scope; no other plan documents.

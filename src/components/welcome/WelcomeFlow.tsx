@@ -15,6 +15,12 @@ import {
 } from "@/interests";
 import { InterestScene, SurpriseArt } from "./InterestArt";
 
+const PLAYABLE = INTERESTS.flatMap((i) =>
+  i.existingMission === null
+    ? []
+    : [{ id: i.id, title: i.title, href: i.existingMission.href }],
+);
+
 type Step = "intro" | "choose" | "preview";
 
 const DISCLOSURES = [
@@ -59,6 +65,19 @@ export function WelcomeFlow() {
   const [bySurprise, setBySurprise] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const moved = useRef(false);
+
+  // Next keeps a page you navigated away from mounted but hidden, with its
+  // state. Coming back would resume an old preview, so hiding resets to the
+  // introduction (nothing is stored; the choice lives only while the page is
+  // in view).
+  useEffect(() => {
+    return () => {
+      setStep("intro");
+      setChoice(null);
+      setShown(null);
+      setBySurprise(false);
+    };
+  }, []);
 
   // Move focus to the new screen's heading, but never on first load.
   useEffect(() => {
@@ -412,24 +431,42 @@ function Preview({
             <h2 id="status" className="text-lg font-bold">
               {playable === null
                 ? "Preview only: not playable yet"
-                : "Preview here, existing mission separate"}
+                : "A draft mission is ready to play"}
             </h2>
             {playable === null ? (
-              <p className="mt-1">
-                This is a picture of the idea. There is no playable{" "}
-                {interest.title.toLowerCase()} adventure yet, so there is
-                nothing to start. The same math will sit inside every story.
-              </p>
+              <>
+                <p className="mt-1">
+                  This is a picture of the idea. There is no playable{" "}
+                  {interest.title.toLowerCase()} adventure yet, so there is
+                  nothing to start. The same math will sit inside every story.
+                </p>
+                <p className="mt-2">
+                  You can play a draft mission in one of the two worlds that
+                  exist today:
+                </p>
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {PLAYABLE.map((p) => (
+                    <Link
+                      key={p.id}
+                      href={p.href}
+                      className="btn btn-secondary"
+                    >
+                      Play {p.title} instead
+                    </Link>
+                  ))}
+                </div>
+              </>
             ) : (
               <>
                 <p className="mt-1">
-                  A draft {interest.title.toLowerCase()} mission already exists
-                  and opens on its own page. It has its own story and is not
-                  changed by this preview.
+                  This opens the real draft {interest.title.toLowerCase()}{" "}
+                  mission. It tells its own story with a grown-up guiding, and
+                  checks answers on the server. The picture above is only a
+                  preview of the theme.
                 </p>
                 <div className="mt-3">
-                  <Link href={playable.href} className="btn btn-secondary">
-                    Open the existing draft mission
+                  <Link href={playable.href} className="btn btn-primary">
+                    Start the {interest.title.toLowerCase()} mission
                   </Link>
                 </div>
               </>
@@ -439,7 +476,7 @@ function Preview({
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-secondary"
               onClick={onChange}
             >
               Change interest
