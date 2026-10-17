@@ -33,6 +33,45 @@ export interface ThemeVocabulary {
   readonly builtPlace: string;
 }
 
+/** Which drawn object a theme's resources use. Presentation only. */
+export const ITEM_ARTS = [
+  "block",
+  "module",
+  "cricket-ball",
+  "basketball",
+  "soccer-ball",
+] as const;
+export type ItemArtId = (typeof ITEM_ARTS)[number];
+
+/** Which drawn guide a theme uses. Presentation only. */
+export const GUIDE_LOOKS = [
+  "tinker",
+  "orbi",
+  "coach-cap",
+  "coach-headband",
+  "coach-beanie",
+] as const;
+export type GuideLook = (typeof GUIDE_LOOKS)[number];
+
+/**
+ * A themed guide: a name, a drawing, and one fixed line for each of four game
+ * moments. The lines are authored text, never generated, carry no numbers, and
+ * never praise or judge the learner: "again" is neutral, and "done" thanks the
+ * learner for helping rather than saying how they did.
+ */
+export interface ThemeGuide {
+  readonly name: string;
+  readonly look: GuideLook;
+  /** Nothing placed yet. */
+  readonly welcome: string;
+  /** Resources are being moved. */
+  readonly working: string;
+  /** After an answer that was not yet right, or help was shown. */
+  readonly again: string;
+  /** After the mission is finished with the right answer. */
+  readonly done: string;
+}
+
 export interface ThemeConfig {
   readonly id: ThemeId;
   readonly displayName: string;
@@ -51,6 +90,8 @@ export interface ThemeConfig {
   /** Contains {start} and {takeAway}. */
   readonly story: string;
   readonly vocabulary: ThemeVocabulary;
+  readonly itemArt: ItemArtId;
+  readonly guide: ThemeGuide;
   readonly outcomeTitle: string;
   readonly outcomeThanks: string;
 }
@@ -79,6 +120,15 @@ export const BLOCK_BUILDER_THEME: ThemeConfig = Object.freeze({
     builtHeading: "On the bridge",
     builtPlace: "on the bridge",
   }),
+  itemArt: "block",
+  guide: Object.freeze({
+    name: "Tinker",
+    look: "tinker",
+    welcome: "Hi, I am Tinker! Let us fix the bridge together.",
+    working: "Nice and steady. Keep building.",
+    again: "Let us take another look together.",
+    done: "The bridge is fixed. Thank you for helping!",
+  }),
   outcomeTitle: "The bridge is fixed!",
   outcomeThanks: "Thank you for helping the builder.",
 });
@@ -106,6 +156,15 @@ export const SPACE_CONSTRUCTION_THEME: ThemeConfig = Object.freeze({
     supplyPlace: "in the supply",
     builtHeading: "On the station",
     builtPlace: "on the station",
+  }),
+  itemArt: "module",
+  guide: Object.freeze({
+    name: "Orbi",
+    look: "orbi",
+    welcome: "Hello, I am Orbi! The station needs your help.",
+    working: "Modules are going in. Keep going.",
+    again: "Let us look at this together.",
+    done: "The station is ready. Thank you for helping!",
   }),
   outcomeTitle: "The station is ready!",
   outcomeThanks: "Thank you for helping the space engineer.",
@@ -136,6 +195,15 @@ export const CRICKET_THEME: ThemeConfig = Object.freeze({
     builtHeading: "At the nets",
     builtPlace: "at the nets",
   }),
+  itemArt: "cricket-ball",
+  guide: Object.freeze({
+    name: "Coach Bails",
+    look: "coach-cap",
+    welcome: "Hello, I am Coach Bails! Let us set up the nets.",
+    working: "Good teamwork. Keep going.",
+    again: "Let us take another look together.",
+    done: "The nets are ready. Thank you for helping!",
+  }),
   outcomeTitle: "Practice can begin!",
   outcomeThanks: "Thank you for helping the coach.",
 });
@@ -165,6 +233,15 @@ export const BASKETBALL_THEME: ThemeConfig = Object.freeze({
     builtHeading: "On the court",
     builtPlace: "on the court",
   }),
+  itemArt: "basketball",
+  guide: Object.freeze({
+    name: "Coach Dribbles",
+    look: "coach-headband",
+    welcome: "Hi, I am Coach Dribbles! Let us get the court ready.",
+    working: "Good teamwork. Keep going.",
+    again: "Let us take another look together.",
+    done: "The court is ready. Thank you for helping!",
+  }),
   outcomeTitle: "The court is ready!",
   outcomeThanks: "Thank you for helping the coach.",
 });
@@ -193,6 +270,15 @@ export const SOCCER_THEME: ThemeConfig = Object.freeze({
     supplyPlace: "in the bag",
     builtHeading: "On the field",
     builtPlace: "on the field",
+  }),
+  itemArt: "soccer-ball",
+  guide: Object.freeze({
+    name: "Coach Kicks",
+    look: "coach-beanie",
+    welcome: "Hey, I am Coach Kicks! Let us set up the field.",
+    working: "Good teamwork. Keep going.",
+    again: "Let us take another look together.",
+    done: "The field is ready. Thank you for helping!",
   }),
   outcomeTitle: "Training can start!",
   outcomeThanks: "Thank you for helping the coach.",

@@ -1,9 +1,12 @@
-import { capitalize, type ThemeVocabulary } from "@/themes";
+import { capitalize, type ItemArtId, type ThemeVocabulary } from "@/themes";
+import { ItemArt } from "./ItemArt";
 
 const PER_ROW = 5;
 
 interface ConstructionFieldProps {
   vocabulary: ThemeVocabulary;
+  /** Which drawing the resources use (a theme choice, presentation only). */
+  art: ItemArtId;
   /** Total items the mission starts with. */
   total: number;
   /** 1-based numbers of items currently in the construction area. */
@@ -23,6 +26,7 @@ interface ConstructionFieldProps {
  */
 export function ConstructionField({
   vocabulary: v,
+  art,
   total,
   used,
   onToggle,
@@ -45,16 +49,26 @@ export function ConstructionField({
         aria-labelledby="supply-heading"
         className="field-panel field-supply"
       >
-        <h3 id="supply-heading" className="mb-2 text-lg font-bold">
+        <h3 id="supply-heading" className="tray-label">
           {v.supplyHeading}
         </h3>
+        {/* Counting is the task, so say how to do it without saying the number. */}
+        <p id="supply-help" className="sr-only">
+          Count the {v.plural} {v.supplyPlace} yourself: move through them one
+          at a time with Tab. Each one is a button you can press to put it{" "}
+          {v.builtPlace}.
+        </p>
         <div
-          className="grid grid-cols-1 gap-2"
+          className="tray grid grid-cols-1 gap-2"
           role="group"
           aria-labelledby="supply-heading"
+          aria-describedby="supply-help"
         >
           {rows.map((row) => (
-            <div key={row[0]} className="flex flex-wrap gap-1 sm:gap-2">
+            <div
+              key={row[0]}
+              className="tray-row flex flex-wrap gap-1 sm:gap-2"
+            >
               {row.map((b) => {
                 const cued = highlightAbove !== null && b > highlightAbove;
                 return used.has(b) ? (
@@ -68,7 +82,7 @@ export function ConstructionField({
                     aria-label={`${name} ${b}, ${v.supplyPlace}${cued ? ", outlined by the hint" : ""}. Press to put it ${v.builtPlace}.`}
                     className={`item item-supply ${cued ? "item-cue" : ""}`}
                   >
-                    <span aria-hidden="true">{b}</span>
+                    <ItemArt art={art} />
                   </button>
                 );
               })}
@@ -81,7 +95,7 @@ export function ConstructionField({
         aria-labelledby="built-heading"
         className="field-panel field-built"
       >
-        <h3 id="built-heading" className="mb-2 text-lg font-bold">
+        <h3 id="built-heading" className="tray-label">
           {v.builtHeading}
         </h3>
         <div
@@ -103,7 +117,10 @@ export function ConstructionField({
               aria-label={`${name} ${b}, ${v.builtPlace}. Press to put it back ${v.supplyPlace}.`}
               className="item item-built"
             >
-              <span aria-hidden="true">{b}</span>
+              <ItemArt art={art} />
+              <span aria-hidden="true" className="item-check">
+                &#10003;
+              </span>
             </button>
           ))}
         </div>

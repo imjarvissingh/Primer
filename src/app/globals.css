@@ -322,23 +322,42 @@ h3 {
     height: 3.25rem;
   }
 }
-.item-supply {
-  background: var(--supply-bg);
-  border-color: var(--supply-border);
-  color: var(--supply-fg);
-  box-shadow: 0 3px 0 var(--supply-border);
+/* The drawn object IS the button: no numeral, so a child counts what they see. */
+.item {
+  position: relative;
+  padding: 0;
 }
-/* Used items are striped, so they differ from supply items by pattern as well as place. */
+.item-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.item-supply {
+  background: transparent;
+  border-color: transparent;
+}
+/* A moved object is the same drawing, ringed and ticked, so "moved" is shown by
+   place, ring and tick together and never by color alone. */
 .item-built {
   background-color: var(--built-bg);
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent 0 8px,
-    rgb(0 0 0 / 0.3) 8px 10px
-  );
-  border-color: var(--built-border);
-  color: var(--built-fg);
+  border: 3px solid var(--built-border);
   box-shadow: 0 3px 0 var(--built-border);
+}
+.item-check {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 9999px;
+  background: var(--built-border);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
 }
 .item-slot {
   border: 2px dashed var(--border);
@@ -366,6 +385,149 @@ h3 {
   background: var(--surface);
 }
 
+/* ---- Trays: the container the objects are really in ---------------------- */
+.tray-label {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.125rem 0.75rem;
+  border-radius: 9999px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: 800;
+}
+.theme-bridge .field-supply {
+  border: 5px solid #8a5a2b;
+  border-radius: 0.5rem;
+  background: repeating-linear-gradient(
+    90deg,
+    #f2d49a 0 22px,
+    #e6c27c 22px 24px
+  );
+  box-shadow: inset 0 -10px 0 rgb(0 0 0 / 0.1);
+}
+.theme-bridge .tray-row {
+  padding-bottom: 0.25rem;
+  border-bottom: 3px solid rgb(138 90 43 / 0.35);
+}
+.theme-cricket .field-supply {
+  border: 4px solid #7a4f22;
+  border-radius: 0.5rem 0.5rem 2rem 2rem;
+  background: repeating-linear-gradient(45deg, #ebc98f 0 7px, #dcb273 7px 14px);
+}
+.theme-basketball .field-supply {
+  border: 5px solid #4b5563;
+  border-radius: 0.5rem;
+  background: #d4dae3;
+}
+.theme-basketball .tray-row {
+  padding-bottom: 0.15rem;
+  border-bottom: 6px solid #4b5563;
+}
+.theme-soccer .field-supply {
+  border: 4px solid #14532d;
+  border-radius: 0.75rem 0.75rem 2rem 2rem;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 9px,
+      rgb(20 83 45 / 0.22) 9px 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 9px,
+      rgb(20 83 45 / 0.22) 9px 10px
+    ),
+    #d5f1e0;
+}
+.theme-space .field-supply {
+  border: 4px solid #818cf8;
+  border-radius: 0.75rem;
+  background: repeating-linear-gradient(
+    0deg,
+    #16215c 0 18px,
+    #1d2c78 18px 20px
+  );
+}
+.theme-space .tray-row {
+  padding-bottom: 0.15rem;
+}
+
+/* ---- Stage: the scene and its guide, framed as one game screen ------------ */
+.stage {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 3px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.stage-scene svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.guide-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-top: 3px solid var(--border);
+  background: var(--panel-bg);
+}
+.guide-figure {
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 5.25rem;
+  overflow: visible;
+}
+@media (min-width: 40rem) {
+  .guide-figure {
+    width: 6rem;
+    height: 7rem;
+  }
+}
+.guide-bubble {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.875rem;
+  border-radius: 1rem;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  overflow-wrap: break-word;
+}
+.guide-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Guide colors per world (the drawing is shared). */
+.theme-bridge {
+  --guide-main: #1f9d8f;
+  --guide-accent: #ff9f1c;
+}
+.theme-space {
+  --guide-main: #6366f1;
+  --guide-accent: #fde047;
+}
+.theme-cricket {
+  --guide-main: #f8fafc;
+  --guide-accent: #1d4ed8;
+}
+.theme-basketball {
+  --guide-main: #1d4ed8;
+  --guide-accent: #ef4444;
+}
+.theme-soccer {
+  --guide-main: #16a34a;
+  --guide-accent: #facc15;
+}
+
 /* ---- Motion: short, purposeful, and off when the user asks for none ----- */
 @keyframes scene-in {
   from {
@@ -373,9 +535,44 @@ h3 {
     transform: translateY(8px);
   }
 }
-@keyframes place {
+@keyframes item-drop {
   from {
-    transform: scale(0.7);
+    opacity: 0.3;
+    transform: translateY(-22px) scale(0.8);
+  }
+  60% {
+    transform: translateY(3px) scale(1.04);
+  }
+}
+@keyframes item-pop {
+  from {
+    opacity: 0.4;
+    transform: scale(0.55);
+  }
+}
+@keyframes guide-hop {
+  0% {
+    transform: translateY(6px) scale(0.94);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.04);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes guide-wave {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+@keyframes scene-celebrate {
+  40% {
+    filter: brightness(1.12) saturate(1.25);
   }
 }
 @keyframes slot-in {
@@ -394,8 +591,24 @@ h3 {
   .scene-enter {
     animation: scene-in 400ms ease-out;
   }
+  /* A placed object drops into its spot; one put back pops into the tray. */
   .item-built {
-    animation: place 160ms ease-out;
+    animation: item-drop 340ms ease-out;
+  }
+  .item-supply {
+    animation: item-pop 220ms ease-out;
+  }
+  .guide-figure {
+    transform-origin: 50% 100%;
+    animation: guide-hop 420ms ease-out;
+  }
+  .guide-wave {
+    transform-box: fill-box;
+    transform-origin: 0% 100%;
+    animation: guide-wave 800ms ease-in-out 2;
+  }
+  .stage-scene[data-complete="true"] svg {
+    animation: scene-celebrate 900ms ease-out;
   }
   button.item {
     transition: transform 120ms ease-out;
