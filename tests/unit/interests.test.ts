@@ -7,7 +7,7 @@ import {
   INTEREST_IDS,
   pickSurprise,
 } from "@/interests";
-import { THEMES, fillStory } from "@/themes";
+import { THEMES, fillStory, getTheme } from "@/themes";
 
 describe("interest registry", () => {
   it("has exactly the five planned interests with unique ids, titles and classes", () => {
@@ -24,13 +24,11 @@ describe("interest registry", () => {
     }
   });
 
-  it("tells the same 13 and 5 story in every interest, from one shared constant", () => {
+  it("tells the same 13 and 5 story in every interest, using its mission theme's own story", () => {
     expect(DEMO_NUMBERS).toEqual({ start: 13, takeAway: 5 });
     for (const i of INTERESTS) {
-      expect(i.story, i.id).toContain("{start}");
-      expect(i.story, i.id).toContain("{takeAway}");
-      expect(i.story, i.id).not.toMatch(/\d/); // numbers never live in copy
-      expect(fillStory(i.story, DEMO_NUMBERS).match(/\d+/g), i.id).toEqual([
+      const story = getTheme(i.mission.themeId).story;
+      expect(fillStory(story, DEMO_NUMBERS).match(/\d+/g), i.id).toEqual([
         "13",
         "5",
       ]);
@@ -46,14 +44,14 @@ describe("interest registry", () => {
     }
   });
 
-  it("maps only to existing themes, and only where a mission already exists", () => {
-    const themeIds = THEMES.map((t) => t.id);
-    const playable = INTERESTS.filter((i) => i.existingMission !== null);
-    expect(playable.map((i) => i.id)).toEqual(["building", "space"]);
-    for (const i of playable) {
-      const m = i.existingMission!;
-      expect(themeIds).toContain(m.themeId);
-      expect(THEMES.find((t) => t.id === m.themeId)?.href).toBe(m.href);
+  it("maps every interest to its own distinct, existing mission theme and route", () => {
+    expect(INTERESTS.map((i) => i.mission.themeId).sort()).toEqual(
+      THEMES.map((t) => t.id).sort(),
+    );
+    for (const i of INTERESTS) {
+      const theme = getTheme(i.mission.themeId);
+      expect(theme.href, i.id).toBe(i.mission.href);
+      expect(theme.className, i.id).toBeTruthy();
     }
   });
 

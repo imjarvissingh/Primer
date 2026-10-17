@@ -72,3 +72,6 @@ In a mission, answer wrongly four times: wrong 1 gives a neutral note; hint 1 an
 
 ## Connected journey (Milestone 1, 2026-10-17)
 Start: `npm run dev` (or `npm run build && npm start`), open `/`. Path: "Start: choose what your child loves" -> "Choose an interest" -> Building or Space -> preview -> "Start the ... mission" -> play -> "Change interest" or "Independent check" -> "Summary for a grown-up" -> "Back to Primer home". Cricket, Basketball and Soccer are previews only; say so on camera. Automated check: `tests/e2e/connected-journey.spec.ts`. Running the browser suite: `PRIMER_E2E_PORT=<free port> npm run test:e2e` (runs one worker on purpose: the server caps session starts at 120 per minute and parallel workers exceed it; allow about 4 minutes).
+
+## Five worlds (Milestone 2, 2026-10-17)
+Routes: `/cricket`, `/block-builder`, `/space-construction`, `/basketball`, `/soccer`. In each: press the start button, tap five balls (or blocks, or modules) to move them, pick how many are left, "Check my answer". A wrong answer gives neutral feedback, then Hint 1 and Hint 2 (framed as "the same subtraction another way"). "Start over" on the finish screen replays with a fresh server session; "Choose an interest" in the header switches. Then the finish screen's "Independent check" -> "Summary for a grown-up". Automated: `tests/e2e/five-worlds.spec.ts`.

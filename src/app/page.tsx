@@ -3,11 +3,19 @@ import { Wordmark } from "@/components/brand/Wordmark";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { BridgeScene } from "@/components/practice/scenes/BridgeScene";
 import { SpaceScene } from "@/components/practice/scenes/SpaceScene";
+import {
+  BasketballScene,
+  CricketScene,
+  SoccerScene,
+} from "@/components/practice/scenes/SportsScenes";
 import { THEMES, type ThemeId } from "@/themes";
 
 const ART: Record<ThemeId, React.ReactNode> = {
   "block-builder": <BridgeScene />,
   "space-construction": <SpaceScene />,
+  "cricket-academy": <CricketScene />,
+  "basketball-challenge": <BasketballScene />,
+  "soccer-quest": <SoccerScene />,
 };
 
 const STEPS = [
@@ -88,7 +96,8 @@ export default function Home() {
           ))}
         </ul>
         <p className="mt-4 text-muted">
-          Both worlds share one curriculum and one learning engine.
+          All five worlds share one curriculum and one learning engine; only the
+          story and pictures change.
         </p>
       </section>
 

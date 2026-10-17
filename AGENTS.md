@@ -27,7 +27,7 @@ Primer is an early-stage, interest-personalized math game for US children aged 6
 - `src/app/api/` practice (`/api/practice/mission`) and assessment (`/api/assessment`) route handlers.
 - `src/themes/` presentation-only mission themes. `src/interests/` presentation-only welcome registry.
 - `src/components/` UI. `src/lib/` client-safe protocol types and the ten-frame helper.
-- Routes: `/`, `/welcome`, `/block-builder`, `/space-construction`, `/assessment`, `/demo-progress?session=...`. `/prototype/...` exists only on a separate prototype branch.
+- Routes: `/`, `/welcome`, `/cricket`, `/block-builder`, `/space-construction`, `/basketball`, `/soccer`, `/assessment`, `/demo-progress?session=...`. `/prototype/...` exists only on a separate prototype branch.
 - Next.js here is **not** the version you know. Read `node_modules/next/dist/docs/` before changing framework-level code.
 
 ## 4. Commands
@@ -90,3 +90,7 @@ State uncertainty instead of inventing facts, traction, interviews, educator end
 - Docs updated (`docs/TASKS.md`, `docs/DECISIONS.md` as needed).
 - Known defects, risks, blockers, and anything simulated.
 - What the founder must decide or review next.
+
+## Adding or changing a themed world
+
+A world is a `ThemeConfig` (strings only), a CSS palette class, a scene in `src/components/practice/scenes/`, a route page, and an entry in `src/interests`. Do not add a theme field to any API or tutoring code. Scenes must not draw the supply in a countable way or print the remainder. Hint wording may describe a strategy picture but must never say what the learner did ("you took"). Keep the cross-theme invariance test over all themes passing.

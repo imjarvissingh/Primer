@@ -11,23 +11,31 @@ describe("Home page", () => {
     ).toEqual(["Primer"]);
   });
 
-  it("lists both experiences, each a draft demo linking to its own route", () => {
+  it("lists all five experiences, each a draft demo linking to its own route", () => {
     render(<Home />);
     const list = screen.getByRole("list");
     const items = within(list).getAllByRole("listitem");
-    expect(items).toHaveLength(2);
-    expect(items[0]).toHaveTextContent("Block Builder");
-    expect(items[1]).toHaveTextContent("Space Construction");
+    expect(items).toHaveLength(5);
+    expect(items.map((i) => i.querySelector("h3")?.textContent)).toEqual([
+      "Block Builder",
+      "Space Construction",
+      "Cricket Academy",
+      "Basketball Challenge",
+      "Soccer Quest",
+    ]);
     items.forEach((item) => expect(item).toHaveTextContent("Draft demo"));
   });
 
-  it("links only to interest choice, the two missions, and the check (the summary needs a finished session, so it is not linked bare), and has no forms (no data collection)", () => {
+  it("links only to interest choice, the five missions, and the check (the summary needs a finished session, so it is not linked bare), and has no forms (no data collection)", () => {
     render(<Home />);
     const links = screen.getAllByRole("link");
     expect(links.map((l) => l.getAttribute("href"))).toEqual([
       "/welcome",
       "/block-builder",
       "/space-construction",
+      "/cricket",
+      "/basketball",
+      "/soccer",
       "/assessment",
     ]);
     expect(screen.queryByRole("button")).toBeNull();

@@ -107,14 +107,14 @@ function Cell({ state, x, y }: { state: CellState; x: number; y: number }) {
 
 function caption(view: MakeTenView): string {
   return view.stage === "split"
-    ? "✕ means take these first."
-    : "✕ means take these next. A dashed circle is already taken.";
+    ? "In this picture, ✕ means take these first."
+    : "In this picture, ✕ means take these next. A dashed circle is already taken in the picture.";
 }
 
 /** Short spoken equivalent. It never states how many are left. */
 function describe(view: MakeTenView, v: ThemeVocabulary): string {
   if (view.stage === "split") {
-    return `${countOf(view.start, v)} shown as one full ten and ${view.takeToTen} extra. The ${view.takeToTen} extra are marked to take first.`;
+    return `A picture of ${countOf(view.start, v)} as one full ten and ${view.takeToTen} extra. In the picture, the ${view.takeToTen} extra are marked to take first.`;
   }
-  return `The ${view.takeToTen} extra ${v.plural} are already taken. The full ten has ${view.takeFromTen} marked to take next.`;
+  return `In the picture, the ${view.takeToTen} extra ${v.plural} are already taken. The full ten has ${view.takeFromTen} marked to take next.`;
 }

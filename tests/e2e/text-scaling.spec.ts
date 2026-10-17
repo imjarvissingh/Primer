@@ -11,6 +11,9 @@ import { expect, test, type Page } from "@playwright/test";
 const WORLDS = [
   { route: "/block-builder", start: "Start building", item: "Block" },
   { route: "/space-construction", start: "Start the mission", item: "Module" },
+  { route: "/cricket", start: "Start practice", item: "Ball" },
+  { route: "/basketball", start: "Start court practice", item: "Basketball" },
+  { route: "/soccer", start: "Start training", item: "Soccer ball" },
 ] as const;
 const WIDTHS = [320, 360, 390, 768, 1440] as const;
 const SCALES = [100, 200] as const;
@@ -41,7 +44,13 @@ const supply = (page: Page, w: (typeof WORLDS)[number], n: number) =>
 async function answer(page: Page, n: number) {
   const radio = page.getByRole("radio", { name: String(n), exact: true });
   await expect(radio).toBeEnabled();
-  await radio.check({ force: true });
+  // Tap the visible answer, as a learner does. (Force-checking the 1px
+  // screen-reader-only input is fragile: after a long hint the browser can park
+  // it exactly on the viewport's top edge, where Playwright calls it
+  // "outside of the viewport" although its 56px label is fully reachable.)
+  // Clicking the label also requires it to be visible and to receive events.
+  await radio.locator("xpath=ancestor::label[1]").click();
+  await expect(radio).toBeChecked();
   await page.getByRole("button", { name: "Check my answer" }).click();
 }
 
@@ -119,7 +128,9 @@ for (const w of WORLDS) {
     await supply(page, w, 1).click();
     await supply(page, w, 2).click();
     await expect(built()).toHaveCount(2);
-    await page.getByRole("button", { name: /^Block 2, |^Module 2, / }).click();
+    await page
+      .getByRole("button", { name: new RegExp(`^${w.item} 2, (on|at) the`) })
+      .click();
     await expect(built()).toHaveCount(1);
     for (let n = 2; n <= 5; n++) await supply(page, w, n).click();
     await expect(built()).toHaveCount(5);

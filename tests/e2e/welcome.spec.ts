@@ -2,11 +2,11 @@ import { expect, test, type Page } from "@playwright/test";
 
 /** Day 1: parent welcome -> interest selection -> adventure preview. */
 const INTERESTS = [
-  ["Cricket", "Cricket Academy", "practice balls", false],
-  ["Building", "Block Builder", "blocks", true],
-  ["Space", "Space Explorer", "repair modules", true],
-  ["Basketball", "Basketball Challenge", "basketballs", false],
-  ["Soccer", "Soccer Quest", "soccer balls", false],
+  ["Cricket", "Cricket Academy", "practice balls"],
+  ["Building", "Block Builder", "blocks"],
+  ["Space", "Space Explorer", "modules"],
+  ["Basketball", "Basketball Challenge", "basketballs"],
+  ["Soccer", "Soccer Quest", "soccer balls"],
 ] as const;
 const WIDTHS = [320, 390, 768, 1440] as const;
 
@@ -37,7 +37,7 @@ test("walks through all five interests with changing previews and constant arith
   page,
 }) => {
   await chooser(page);
-  for (const [title, world, noun, hasMission] of INTERESTS) {
+  for (const [title, world, noun] of INTERESTS) {
     await page.getByRole("radio", { name: new RegExp(title) }).check();
     await expect(
       page.getByRole("radio", { name: new RegExp(title) }),
@@ -49,11 +49,12 @@ test("walks through all five interests with changing previews and constant arith
     await expect(page.getByTestId("story")).toContainText(noun);
     await expect(page.getByTestId("number-sentence")).toHaveText("13 − 5 = ?");
     await expect(page.getByTestId("availability")).toContainText(
-      hasMission ? "mission is ready to play" : "not playable yet",
+      "mission is ready to play",
     );
-    expect(
-      await page.getByRole("link", { name: /^Start the .* mission$/ }).count(),
-    ).toBe(hasMission ? 1 : 0);
+    await expect(
+      page.getByRole("link", { name: /^Start the .* mission$/ }),
+    ).toHaveCount(1);
+    await expect(page.locator("body")).not.toContainText(/not playable/i);
     await page.getByRole("button", { name: "Change interest" }).click();
   }
 });

@@ -121,14 +121,22 @@ describe("hint equivalence across themes", () => {
       t.vocabulary.supplyNoun,
     ].reduce((acc, word) => acc.replaceAll(word, "<noun>"), text);
 
-  it.each(ladder)("%s means the same in both themes", (hintId) => {
-    const [a, b] = THEMES.map((t) =>
+  it.each(ladder)("%s means the same in all five themes", (hintId) => {
+    const shown = THEMES.map((t) =>
       presentHint(hintId, strategy, mission.challenge.start, t.vocabulary),
     );
-    expect(a.highlightAbove).toBe(b.highlightAbove);
-    expect(a.text.match(/\d+/g)).toEqual(b.text.match(/\d+/g));
-    expect(neutral(a.text, THEMES[0])).toBe(neutral(b.text, THEMES[1]));
-    expect(a.text).not.toBe(b.text); // themed nouns really differ
+    const [first, ...rest] = shown;
+    rest.forEach((other, i) => {
+      const theme = THEMES[i + 1];
+      expect(other.highlightAbove, theme.id).toBe(first.highlightAbove);
+      expect(other.text.match(/\d+/g), theme.id).toEqual(
+        first.text.match(/\d+/g),
+      );
+      expect(neutral(other.text, theme), theme.id).toBe(
+        neutral(first.text, THEMES[0]),
+      );
+      expect(other.text, theme.id).not.toBe(first.text); // nouns really differ
+    });
   });
 
   it("never states the final answer in any hint", () => {

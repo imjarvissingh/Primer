@@ -5,7 +5,13 @@
  * story come from the server's challenge via the {start} and {takeAway}
  * placeholders. Statically authored; plain strings only.
  */
-export const THEME_IDS = ["block-builder", "space-construction"] as const;
+export const THEME_IDS = [
+  "block-builder",
+  "space-construction",
+  "cricket-academy",
+  "basketball-challenge",
+  "soccer-quest",
+] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 
 /** The only placeholders a story template may contain. */
@@ -105,10 +111,106 @@ export const SPACE_CONSTRUCTION_THEME: ThemeConfig = Object.freeze({
   outcomeThanks: "Thank you for helping the space engineer.",
 });
 
+export const CRICKET_THEME: ThemeConfig = Object.freeze({
+  id: "cricket-academy",
+  displayName: "Cricket Academy",
+  missionTitle: "Practice at the Nets",
+  href: "/cricket",
+  className: "theme-cricket",
+  cardDescription:
+    "Bring practice balls to the nets while practicing subtraction.",
+  cardLinkLabel: "Try Practice at the Nets",
+  intro:
+    "The practice nets are empty! Help the coach bring balls from the basket.",
+  goal: "Your goal: put the practice balls at the nets so the team can start.",
+  startLabel: "Start practice",
+  playHeading: "Fill the practice nets",
+  story:
+    "The coach has {start} practice balls in a basket. {takeAway} of them are taken to the practice nets.",
+  vocabulary: Object.freeze({
+    singular: "ball",
+    plural: "balls",
+    supplyHeading: "Ball basket",
+    supplyNoun: "basket",
+    supplyPlace: "in the basket",
+    builtHeading: "At the nets",
+    builtPlace: "at the nets",
+  }),
+  outcomeTitle: "Practice can begin!",
+  outcomeThanks: "Thank you for helping the coach.",
+});
+
+export const BASKETBALL_THEME: ThemeConfig = Object.freeze({
+  id: "basketball-challenge",
+  displayName: "Basketball Challenge",
+  missionTitle: "Court Practice",
+  href: "/basketball",
+  className: "theme-basketball",
+  cardDescription:
+    "Bring basketballs onto the court while practicing subtraction.",
+  cardLinkLabel: "Try Court Practice",
+  intro:
+    "The court is ready for practice! Help the coach bring basketballs from the rack.",
+  goal: "Your goal: put the basketballs on the court so practice can begin.",
+  startLabel: "Start court practice",
+  playHeading: "Fill the court",
+  story:
+    "The coach has {start} basketballs in the equipment rack. {takeAway} of them are taken onto the court.",
+  vocabulary: Object.freeze({
+    singular: "basketball",
+    plural: "basketballs",
+    supplyHeading: "Equipment rack",
+    supplyNoun: "rack",
+    supplyPlace: "in the rack",
+    builtHeading: "On the court",
+    builtPlace: "on the court",
+  }),
+  outcomeTitle: "The court is ready!",
+  outcomeThanks: "Thank you for helping the coach.",
+});
+
+export const SOCCER_THEME: ThemeConfig = Object.freeze({
+  id: "soccer-quest",
+  displayName: "Soccer Quest",
+  missionTitle: "Training Day",
+  href: "/soccer",
+  className: "theme-soccer",
+  cardDescription:
+    "Bring soccer balls to the training field while practicing subtraction.",
+  cardLinkLabel: "Try Training Day",
+  intro:
+    "The training field is empty! Help the coach bring soccer balls from the storage bag.",
+  goal: "Your goal: put the soccer balls on the field so training can start.",
+  startLabel: "Start training",
+  playHeading: "Set up the field",
+  story:
+    "The coach has {start} soccer balls in a storage bag. {takeAway} of them are taken to the training field.",
+  vocabulary: Object.freeze({
+    singular: "soccer ball",
+    plural: "soccer balls",
+    supplyHeading: "Storage bag",
+    supplyNoun: "bag",
+    supplyPlace: "in the bag",
+    builtHeading: "On the field",
+    builtPlace: "on the field",
+  }),
+  outcomeTitle: "Training can start!",
+  outcomeThanks: "Thank you for helping the coach.",
+});
+
 export const THEMES: readonly ThemeConfig[] = Object.freeze([
   BLOCK_BUILDER_THEME,
   SPACE_CONSTRUCTION_THEME,
+  CRICKET_THEME,
+  BASKETBALL_THEME,
+  SOCCER_THEME,
 ]);
+
+export function getTheme(id: ThemeId): ThemeConfig {
+  const found = THEMES.find((t) => t.id === id);
+  if (found === undefined) throw new Error(`Unknown theme: ${id}`);
+  return found;
+}
 
 /** Fills the two allowed placeholders with numbers from the server's challenge. */
 export function fillStory(

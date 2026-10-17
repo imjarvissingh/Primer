@@ -4,6 +4,10 @@ const ROUTES = [
   "/",
   "/block-builder",
   "/space-construction",
+  "/cricket",
+  "/basketball",
+  "/soccer",
+  "/welcome",
   "/assessment",
   "/demo-progress",
 ];
@@ -34,6 +38,14 @@ test("mission intros show a construction goal", async ({ page }) => {
   await expect(
     page.getByText(/Your goal: add the missing modules/),
   ).toBeVisible();
+  await page.goto("/cricket");
+  await expect(
+    page.getByText(/Your goal: put the practice balls/),
+  ).toBeVisible();
+  await page.goto("/basketball");
+  await expect(page.getByText(/Your goal: put the basketballs/)).toBeVisible();
+  await page.goto("/soccer");
+  await expect(page.getByText(/Your goal: put the soccer balls/)).toBeVisible();
 });
 
 test("reduced motion removes entrance and placement animation", async ({

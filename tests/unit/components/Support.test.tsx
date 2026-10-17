@@ -63,11 +63,13 @@ describe.each(THEMES)("ten-frame hints: $displayName", (theme) => {
     );
     const picture = () => screen.getByRole("img");
     expect(picture().getAttribute("aria-label")).toBe(
-      `13 ${v.plural} shown as one full ten and 3 extra. The 3 extra are marked to take first.`,
+      `A picture of 13 ${v.plural} as one full ten and 3 extra. In the picture, the 3 extra are marked to take first.`,
     );
     expect(document.querySelectorAll('[data-cell="counter"]')).toHaveLength(10);
     expect(document.querySelectorAll('[data-cell="take-now"]')).toHaveLength(3);
-    expect(screen.getByText("✕ means take these first.")).toBeInTheDocument();
+    expect(
+      screen.getByText("In this picture, ✕ means take these first."),
+    ).toBeInTheDocument();
 
     rerender(
       <TenFrames
@@ -78,7 +80,7 @@ describe.each(THEMES)("ten-frame hints: $displayName", (theme) => {
       />,
     );
     expect(picture().getAttribute("aria-label")).toBe(
-      `The 3 extra ${v.plural} are already taken. The full ten has 2 marked to take next.`,
+      `In the picture, the 3 extra ${v.plural} are already taken. The full ten has 2 marked to take next.`,
     );
     expect(document.querySelectorAll('[data-cell="counter"]')).toHaveLength(8);
     expect(document.querySelectorAll('[data-cell="take-now"]')).toHaveLength(2);
@@ -272,7 +274,7 @@ describe.each(THEMES)("prerequisite warm-up: $displayName", (theme) => {
     const warm = await screen.findByRole("heading", { name: "Warm-up" });
     expect(warm).toHaveFocus();
     expect(
-      screen.getByText(new RegExp(`has 10 ${v.plural}`)),
+      screen.getByText(new RegExp(`has 10 [a-z ]*${v.plural}`)),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: supplyRe })).toHaveLength(10);
 

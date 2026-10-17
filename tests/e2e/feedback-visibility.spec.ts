@@ -8,6 +8,9 @@ import { expect, test, type Page } from "@playwright/test";
 const WORLDS = [
   { route: "/block-builder", start: "Start building", item: "Block" },
   { route: "/space-construction", start: "Start the mission", item: "Module" },
+  { route: "/cricket", start: "Start practice", item: "Ball" },
+  { route: "/basketball", start: "Start court practice", item: "Basketball" },
+  { route: "/soccer", start: "Start training", item: "Soccer ball" },
 ] as const;
 const VIEWPORTS = [
   [320, 640],
