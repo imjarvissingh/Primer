@@ -7,7 +7,15 @@ import {
   type PublicChallenge,
   type SupportChallenge,
 } from "@/lib/practice-protocol";
+import Link from "next/link";
 import { AnswerPicker } from "./AnswerPicker";
+import { CricketIntro } from "./cricket/CricketIntro";
+import {
+  CricketAftermath,
+  CricketScoreboard,
+  GroupingChooser,
+  type Grouping,
+} from "./cricket/CricketStation";
 import { ConstructionField } from "./ConstructionField";
 import { GuideStrip, type GuideMood } from "./Guide";
 import { FEEDBACK_ID, FeedbackPanel, takesFocus } from "./FeedbackPanel";
@@ -67,6 +75,11 @@ function MissionBody({ theme }: PracticeMissionProps) {
   const [sessionLost, setSessionLost] = useState(false);
   const [rateLimited, setRateLimited] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Cricket only: how the learner chose to look at the basket, and the size of
+  // the basket for the closing picture. Presentation, never sent anywhere.
+  const [grouping, setGrouping] = useState<Grouping>("loose");
+  const [basketSize, setBasketSize] = useState(0);
+  const isCricket = theme.id === "cricket-academy";
   // A ref, not state, so a rapid second click is blocked before React re-renders.
   const inFlight = useRef(false);
   // Set when the screen changes between mission, offer and warm-up, so focus
@@ -107,10 +120,12 @@ function MissionBody({ theme }: PracticeMissionProps) {
       setNetworkProblem(false);
       setSessionLost(false);
       setRateLimited(false);
+      setGrouping("loose");
     };
   }, []);
 
   function resetLocal() {
+    setGrouping("loose");
     setUsed(new Set());
     setSelected(null);
     setSubmitted(null);
@@ -194,6 +209,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
 
       const next = res.feedback;
       if (res.sessionStatus === "finished") {
+        setBasketSize(session.challenge.start);
         setSubmitted(selected);
         setScreen({ name: "outcome", kind: outcomeFor(next) });
         return;
@@ -259,7 +275,11 @@ function MissionBody({ theme }: PracticeMissionProps) {
       >
         <Scene themeId={theme.id} progress={progress} />
       </div>
-      <GuideStrip guide={theme.guide} mood={mood} />
+      <GuideStrip
+        guide={theme.guide}
+        mood={mood}
+        reaction={isCricket ? used.size : 0}
+      />
     </div>
   );
 
@@ -269,7 +289,15 @@ function MissionBody({ theme }: PracticeMissionProps) {
         aria-labelledby="intro-heading"
         className="grid grid-cols-1 gap-4"
       >
-        {framedScene(NOT_STARTED, "welcome")}
+        {isCricket ? (
+          <div className="stage scene-enter">
+            <CricketIntro>
+              <GuideStrip guide={theme.guide} mood="welcome" />
+            </CricketIntro>
+          </div>
+        ) : (
+          framedScene(NOT_STARTED, "welcome")
+        )}
         <h2
           id="intro-heading"
           tabIndex={-1}
@@ -300,6 +328,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
             {theme.startLabel}
           </button>
         </div>
+        {isCricket && <LabLink />}
       </section>
     );
   }
@@ -322,12 +351,16 @@ function MissionBody({ theme }: PracticeMissionProps) {
           outcomeMood,
           solved,
         )}
+        {isCricket && solved && (
+          <CricketAftermath total={basketSize} used={used} />
+        )}
         <MissionOutcome
           theme={theme}
           kind={screen.kind}
           answer={submitted}
           onRestart={() => restart()}
         />
+        {isCricket && solved && <LabLink />}
       </div>
     );
   }
@@ -429,6 +462,20 @@ function MissionBody({ theme }: PracticeMissionProps) {
         </p>
       </div>
 
+      {isCricket && (
+        <CricketScoreboard
+          start={challenge.start}
+          takeAway={challenge.takeAway}
+          used={used.size}
+        />
+      )}
+      {isCricket && !inSupport && challenge.start > 10 && (
+        <GroupingChooser
+          value={grouping}
+          onChange={setGrouping}
+          disabled={busy}
+        />
+      )}
       <ConstructionField
         vocabulary={v}
         art={theme.itemArt}
@@ -437,6 +484,8 @@ function MissionBody({ theme }: PracticeMissionProps) {
         onToggle={toggle}
         highlightAbove={hintCue}
         disabled={busy}
+        grouping={isCricket && !inSupport ? grouping : "loose"}
+        targets={isCricket ? challenge.takeAway : undefined}
       />
       <div role="status" aria-live="polite" className="card p-3">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -533,6 +582,22 @@ function MissionBody({ theme }: PracticeMissionProps) {
         </button>
       </div>
     </section>
+  );
+}
+
+/**
+ * Adult-facing pointer to the separate, draft make-ten lab. It is not part of
+ * the practice, never changes a hint, and is labelled as unreviewed.
+ */
+function LabLink() {
+  return (
+    <p className="text-sm">
+      For a grown-up:{" "}
+      <Link href="/cricket/make-ten-lab" className="underline">
+        preview a draft make-ten activity
+      </Link>{" "}
+      (separate from this practice, not reviewed by an educator).
+    </p>
   );
 }
 

@@ -222,3 +222,14 @@ A new built slot plays a 220 ms `slot-in` settle, only inside `prefers-reduced-m
 ## Implementation status (Milestone 4, 2026-10-17): layered scenes and motion
 
 `scenes/` now has `parts.tsx` (frame, `GoalPad`, `Glow`, `Shadow`, `Celebrate`) and one file per world (`CricketScene`, `BridgeScene`, `SpaceScene`, `BasketballScene`, `SoccerScene`); `scenes/progress.ts` still derives everything from the session's own selection. `ConstructionField` animates a pressed object with the Web Animations API from its previous position (decorative; state is final first). The stage exposes `data-complete` (exactly the goal number placed) and `data-solved` (server-confirmed right answer). `InterestScene` on the welcome screens renders the mission scene. Server, domain, API and assessment code are unchanged.
+
+## Implementation status (Cricket vertical slice, 2026-10-17)
+Presentation only; no change to `src/domain`, `src/server`, `src/lib/practice-protocol.ts` or any API.
+- `src/components/practice/cricket/CricketIntro.tsx`: timeline of four beats (camera pan over parallax layers, walking coach). Local state only; autoplay unless `prefers-reduced-motion`, then step buttons. Draws no moved or remaining balls.
+- `cricket/CricketStation.tsx`: `CricketScoreboard` (start, used, left shown as "?"), `GroupingChooser` (view choice), `CricketAftermath` (derived from the learner's real selection, rendered only on server-confirmed success).
+- `ConstructionField` gained two optional props, `grouping` and `targets`; defaults leave the other four worlds byte-identical in behaviour.
+- `PracticeMission` switches the cricket extras on with `theme.id === "cricket-academy"`; everything else (sessions, `act`, feedback, restart) is shared and untouched. `GuideStrip` gained an optional `reaction` counter that replays the guide's hop for each real ball moved (cricket only).
+- `CricketScene` gained a bunting layer and CSS ball roll-in, both visible only under `data-solved="true"` (server-confirmed).
+- `/cricket/make-ten-lab`: `MakeTenLab` plus pure rules in `src/lib/make-ten-lab.ts`. Fixed demo numbers (13, 10, 5), no network calls, no storage, not importable by the tutor. It is a draft instructional hypothesis (educator packet 6B, C5), not a policy.
+- Integration boundary: connecting the lab's sequence to the tutor would change the authoritative hint policy. **Not done; needs explicit approval after educator review.**
+- Reusable later: scoreboard, grouping and aftermath take only `start`, `takeAway` and the selection set, so they can move to other worlds once the mechanic is reviewed.

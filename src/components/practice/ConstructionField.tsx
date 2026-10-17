@@ -16,6 +16,13 @@ interface ConstructionFieldProps {
   /** Outline supply items numbered above this value (a hint cue). */
   highlightAbove: number | null;
   disabled: boolean;
+  /**
+   * How the waiting items are laid out. "ten" racks the first ten and leaves the
+   * rest as extras. A view choice only: the same buttons, the same selection.
+   */
+  grouping?: "loose" | "ten";
+  /** Draws this many empty spots in the construction area (the places to fill). */
+  targets?: number;
 }
 
 /**
@@ -33,6 +40,8 @@ export function ConstructionField({
   onToggle,
   highlightAbove,
   disabled,
+  grouping = "loose",
+  targets,
 }: ConstructionFieldProps) {
   const items = Array.from({ length: total }, (_, i) => i + 1);
   const root = useRef<HTMLDivElement>(null);
@@ -104,6 +113,36 @@ export function ConstructionField({
     rows.push(items.slice(i, i + PER_ROW));
   }
   const name = capitalize(v.singular);
+  const ten = grouping === "ten" && total > 10;
+  const groups: {
+    kind: "all" | "rack" | "extras";
+    label: string | null;
+    rows: number[][];
+  }[] = ten
+    ? [
+        { kind: "rack", label: "Rack of ten", rows: rows.slice(0, 2) },
+        { kind: "extras", label: `Extra ${v.plural}`, rows: rows.slice(2) },
+      ]
+    : [{ kind: "all", label: null, rows }];
+  const renderSupplyItem = (b: number) => {
+    const cued = highlightAbove !== null && b > highlightAbove;
+    return used.has(b) ? (
+      <span key={b} aria-hidden="true" className="item item-slot" />
+    ) : (
+      <button
+        key={b}
+        type="button"
+        data-item={b}
+        data-place="supply"
+        disabled={disabled}
+        onClick={() => press(b)}
+        aria-label={`${name} ${b}, ${v.supplyPlace}${cued ? ", outlined by the hint" : ""}. Press to put it ${v.builtPlace}.`}
+        className={`item item-supply ${cued ? "item-cue" : ""}`}
+      >
+        <ItemArt art={art} />
+      </button>
+    );
+  };
 
   // Two columns only when each column fits a row of five items (about 736px up).
   // 200% zoom on a 1280px screen is a 640px page, which must stay stacked.
@@ -128,32 +167,31 @@ export function ConstructionField({
           aria-labelledby="supply-heading"
           aria-describedby="supply-help"
         >
-          {rows.map((row) => (
-            <div
-              key={row[0]}
-              className="tray-row flex flex-wrap gap-1 sm:gap-2"
-            >
-              {row.map((b) => {
-                const cued = highlightAbove !== null && b > highlightAbove;
-                return used.has(b) ? (
-                  <span key={b} aria-hidden="true" className="item item-slot" />
-                ) : (
-                  <button
-                    key={b}
-                    type="button"
-                    data-item={b}
-                    data-place="supply"
-                    disabled={disabled}
-                    onClick={() => press(b)}
-                    aria-label={`${name} ${b}, ${v.supplyPlace}${cued ? ", outlined by the hint" : ""}. Press to put it ${v.builtPlace}.`}
-                    className={`item item-supply ${cued ? "item-cue" : ""}`}
-                  >
-                    <ItemArt art={art} />
-                  </button>
-                );
-              })}
-            </div>
-          ))}
+          {groups.map((group) => {
+            const body = group.rows.map((row) => (
+              <div
+                key={row[0]}
+                className="tray-row flex flex-wrap gap-1 sm:gap-2"
+              >
+                {row.map(renderSupplyItem)}
+              </div>
+            ));
+            return group.label === null ? (
+              body
+            ) : (
+              <div
+                key={group.label}
+                className={`tray-group tray-group-${group.kind}`}
+                role="group"
+                aria-label={group.label}
+              >
+                <p className="tray-group-label" aria-hidden="true">
+                  {group.label}
+                </p>
+                {body}
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -191,6 +229,18 @@ export function ConstructionField({
               </span>
             </button>
           ))}
+          {/* The places still to fill: drawn, so "how many are needed" is seen, not read. */}
+          {targets !== undefined &&
+            Array.from(
+              { length: Math.max(0, targets - built.length) },
+              (_, i) => (
+                <span
+                  key={`spot-${i}`}
+                  aria-hidden="true"
+                  className="item item-target"
+                />
+              ),
+            )}
         </div>
       </section>
     </div>

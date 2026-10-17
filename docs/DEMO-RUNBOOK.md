@@ -85,3 +85,11 @@ Each world is a layered illustrated scene. Press an object and it flies to its p
 ## RC1 (2026-10-17)
 
 Use the operator script, route checklist and recording plan in [RC1.md](RC1.md). The warm-up offer now says that "Not now" ends the practice. On a shared machine, pick a free port: an older server may already hold 3000/3200 and serve stale code.
+
+## Cricket vertical slice (2026-10-17)
+1. Open `/cricket`. Watch the story (about 15 s) or press **Skip story**; **Replay story** restarts it; press **Start practice** at any time.
+2. Optionally press **Make a ten** to rack the first ten balls. Tap five balls; note the scoreboard keeps "Left in the basket" as "?".
+3. Answer 9 to see neutral feedback and the existing hints; answer 8 for the finale. **Start over** begins a fresh session.
+4. For a grown-up: the link under the start button opens `/cricket/make-ten-lab`, a draft, unreviewed, local-only activity. It shows the answer at the end, so run it after the mission. Do not present it as validated.
+5. Reduced motion: enable it in the OS; the story then steps with Next/Back and no motion plays.
+Recording note: no video was recorded by the agent. Record the screen with macOS Shift-Cmd-5 while following steps 1 to 3.

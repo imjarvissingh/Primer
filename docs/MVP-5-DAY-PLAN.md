@@ -34,3 +34,6 @@ Educator review (external; #16, #17, #19, #20, #22 partly). Legal/consent review
 
 ## Cut rules
 Cut in this order: sound, asset optimization, advanced animation, extra polish, then the last themed mission(s). A theme that is not playable stays labelled "not playable yet". Never cut: server-side scoring, assessment separation, accessibility basics, honest labelling, tests of what ships.
+
+## Update: Cricket vertical slice (2026-10-17)
+Focused interlude requested by the founder: one outstanding Cricket experience before any other world changes. See issue #38, `docs/TASKS.md` and `docs/ARCHITECTURE.md`. Cut rules unchanged; sound and other worlds remain cut until the founder reviews it. Day 5 deployment and recording are unaffected.
