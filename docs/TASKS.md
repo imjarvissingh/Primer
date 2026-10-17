@@ -69,6 +69,6 @@ Still open: external educator review (nothing approved); the five pedagogical de
 
 ## Phase 8F status (2026-10-17)
 
-Done: A11Y-11 fixed (CSS only). Cause was the mission grid's implicit column growing to the non-wrapping resource rows at large text, not the SVG art; also fixed homepage wordmark, long headings and button labels at 320 px. New `tests/e2e/text-scaling.spec.ts` (23 tests; 11 fail on the 8E code). Evidence in `docs/ACCESSIBILITY-AUDIT.md`.
+Done: A11Y-11 fixed (CSS only). Cause was the mission grid's implicit column growing to the non-wrapping resource rows at large text, not the SVG art; also fixed homepage wordmark, long headings and button labels at 320 px. New `tests/e2e/text-scaling.spec.ts` (25 tests; 11 fail on the 8E code). Evidence in `docs/ACCESSIBILITY-AUDIT.md`.
 
 Still open: external educator review (nothing approved) and its five pedagogical decisions; screen-reader, real-zoom, Safari/Firefox and physical-device testing (none done).

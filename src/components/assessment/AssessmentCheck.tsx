@@ -153,7 +153,10 @@ export function AssessmentCheck() {
 
   if (screen.name === "intro") {
     return (
-      <section aria-labelledby="intro-heading" className="grid gap-4">
+      <section
+        aria-labelledby="intro-heading"
+        className="grid grid-cols-1 gap-4"
+      >
         <h2 id="intro-heading" className="text-2xl font-extrabold">
           Try some on your own
         </h2>
@@ -182,7 +185,10 @@ export function AssessmentCheck() {
 
   if (screen.name === "done") {
     return (
-      <section aria-labelledby="done-heading" className="grid gap-4">
+      <section
+        aria-labelledby="done-heading"
+        className="grid grid-cols-1 gap-4"
+      >
         <h2
           id="done-heading"
           ref={heading}
@@ -215,7 +221,10 @@ export function AssessmentCheck() {
 
   const { question } = screen;
   return (
-    <section aria-labelledby="question-heading" className="grid gap-5">
+    <section
+      aria-labelledby="question-heading"
+      className="grid grid-cols-1 gap-5"
+    >
       <div>
         {/* Position only: the heading below says the same in words. */}
         <div aria-hidden="true" className="flex gap-1.5">
@@ -247,7 +256,7 @@ export function AssessmentCheck() {
         </p>
       </div>
       <form
-        className="grid gap-4"
+        className="grid grid-cols-1 gap-4"
         onSubmit={(e) => {
           e.preventDefault();
           if (selected !== null && !busy) void act(screen, "answer");

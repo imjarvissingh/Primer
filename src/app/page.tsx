@@ -35,7 +35,7 @@ export default function Home() {
         <p className="inline-block rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold">
           Draft demonstration &middot; not a finished product
         </p>
-        <h1 className="mt-4 text-5xl sm:text-6xl">
+        <h1 className="mt-4 text-[min(3rem,15vw)] sm:text-6xl">
           <Wordmark />
         </h1>
         <p className="mt-4 max-w-2xl text-2xl font-semibold leading-snug sm:text-3xl">
@@ -52,7 +52,7 @@ export default function Home() {
         <h2 id="steps" className="sr-only">
           How Primer works
         </h2>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {STEPS.map(([title, text], i) => (
             <div key={title} className="card p-4">
               <p className="text-sm font-bold text-muted">
@@ -69,7 +69,7 @@ export default function Home() {
         <h2 id="experiences" className="text-3xl font-bold">
           Choose a world
         </h2>
-        <ul className="mt-5 grid gap-5 sm:grid-cols-2">
+        <ul className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
           {THEMES.map((theme) => (
             <ExperienceCard
               key={theme.id}

@@ -430,7 +430,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
       )}
 
       <form
-        className="card grid gap-4 p-4"
+        className="card grid grid-cols-1 gap-4 p-4"
         onSubmit={(e) => {
           e.preventDefault();
           if (ready && selected !== null && !busy) void act(session, "attempt");

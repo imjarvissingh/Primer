@@ -154,7 +154,7 @@ body {
 h1,
 h2,
 h3 {
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* ---- Shared controls --------------------------------------------------- */
@@ -175,7 +175,7 @@ h3 {
   touch-action: manipulation;
   /* Large text: wrap the label inside the button rather than widen the page. */
   max-width: 100%;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 .btn-primary {
   background: var(--accent);

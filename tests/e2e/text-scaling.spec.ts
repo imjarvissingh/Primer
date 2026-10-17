@@ -143,3 +143,25 @@ for (const w of WORLDS) {
     await expectNoOverflow(page, "after start over");
   });
 }
+
+// Font metrics differ by OS (CI's Linux fonts are wider than a Mac's), so the
+// tightest case is also checked with a deliberately wide face.
+for (const w of WORLDS) {
+  test(`${w.route}: a wide font at 320px and 200% text still has no sideways scroll`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 760 });
+    for (const route of ["/", w.route]) {
+      await page.goto(route);
+      await page.addStyleTag({
+        content:
+          "body{font-family:Verdana,'DejaVu Sans',sans-serif !important}",
+      });
+      await setScale(page, 200);
+      await expectNoOverflow(page, `${route} wide font`);
+    }
+    await page.getByRole("button", { name: w.start }).click();
+    await page.getByRole("heading", { level: 2 }).first().waitFor();
+    await expectNoOverflow(page, "playing, wide font");
+  });
+}
