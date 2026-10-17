@@ -177,3 +177,23 @@ Feedback renders below the answer form. The learner's viewport sits at the "Chec
 **Remaining.** Selection rows may now be 2 to 3 per row at large text on phones (more scrolling, no sideways scroll). No screen reader, real zoom, other browser or device checks. Forced-colors and reduced motion were not re-run beyond the existing suites. No colours were changed.
 
 **8F follow-up (CI finding).** The first 8F push passed locally on macOS but failed CI at 320 px / 200%: GitHub's Linux fonts are wider, so the homepage "Primer" title (61 px over) and the practice answer card (9 px over) still overflowed. Fixes: the remaining implicit-column grids (answer card, assessment screens, homepage) got `grid-cols-1`; headings and buttons use `overflow-wrap: anywhere` (it also lowers min-content, so containers can shrink); the homepage title is `min(3rem, 15vw)` (unchanged at 100% text, smaller only when large text meets a narrow screen). A wide-font stress test now guards this on any OS. Lesson: overflow results depend on the font stack; only Chromium on macOS and Linux CI were exercised. A third CI failure (/demo-progress, 26 px at 320 px) was a long word ("demonstration") in the synthetic-data notice; body text now has `overflow-wrap: anywhere`, and the wide-font stress covers the homepage, assessment and adult summary as well.
+
+## Learning Experience 2.2: draft make-ten lab (2026-10-18)
+
+**Scope:** `/cricket/make-ten-lab` and the shared answer picker it uses. Developer checks with automated and scripted tools only. **Not a conformance claim and not a screen-reader audit.**
+
+| Item | What was done | Result |
+| --- | --- | --- |
+| Browsers | Playwright's Chromium, Firefox and WebKit builds, headless, macOS. The Cricket specs (intro, play, draft lab, new lab interaction/motion/layout specs; 46 tests) run on all three with `PRIMER_E2E_CROSS_BROWSER=1`; the full suite (450 tests, five worlds) runs on Chromium in CI. | All pass |
+| axe-core 4.10.2 (installed in a scratch directory, not added to `package.json`), tags wcag2a/2aa/21a/21aa/22aa/best-practice | 14 states of the lab (start, ten built, wrong answer, right answer, extras sent, take from the ten, marked, recap, unguided try, right) at 320×568 light, 390×664 light and dark, 1440×900 light, in all three browsers: 168 states | **0 violations** after the fix below |
+| Defect found by axe (pre-existing, also in the mission in all five worlds) | After a number was chosen, its chip showed white text on a pale fill (contrast 1.05:1) because an unlayered `.answer-chip` background beat the selected-state utility | Fixed (`AnswerPicker.tsx`, `globals.css`); e2e test asserts the chosen chip's fill differs |
+| Defect found by an independent code review (also in the mission) | At 200% text on a phone, five columns made each number about 25 px wide and broke two-digit numbers across lines | Fixed with a container query; e2e at 320 and 390 px, 200% text: every number whole, at least 44 px, no sideways scroll |
+| Widths | 320, 390, 768, 1024 and 1440 px through every step (no sideways scroll); 200% text at 320 px | Pass in Chromium, Firefox and WebKit |
+| Target size | Objects 44 px on phones (48 to 52 px from 40 rem); numbers at least 44 px; buttons unchanged | Measured in e2e |
+| Keyboard | Objects are buttons; Enter/Space move or mark; focus follows the work; the question takes focus when it opens; the step heading takes focus on Next/Back (a restored, already-answered step no longer steals it); arrow keys choose a number | Scripted e2e in all three browsers |
+| Status announcements | One polite live region for moves, hidden from sight; the number form has its own for feedback; counts sit in headings, not in live regions. "No duplicates" was checked by structure (a single live region in the lab outside a question), not by listening | Pass by structure; not heard |
+| Reduced motion | The same click sequence ends in an identical state with and without the preference; no object animates under the preference | Pass (e2e) |
+| Pinned board | Pinned only when 15 rem remain below it, so a tall board (large text, short screen) scrolls normally; focus scroll padding set to the board height | Layout tested at 320×568, 390×664, 390×844 |
+| **Real screen reader (VoiceOver, NVDA, TalkBack)** | **NOT run.** The accessibility tree was not read aloud by any assistive technology | **Open (#24)** |
+| Physical phones/tablets, real browser zoom, switch access, forced colors for this page | **NOT tested** (emulated viewports and root font-size only) | **Open (#24)** |
+

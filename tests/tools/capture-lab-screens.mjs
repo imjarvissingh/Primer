@@ -85,6 +85,7 @@ const all = [
   "1b-five-in-rack",
   "1c-ten-question",
   "1d-feedback-ten",
+  "1d2-marked-outside",
   "1e-right",
   "2a-nets-arrive",
   "2b-extras-sent-question",

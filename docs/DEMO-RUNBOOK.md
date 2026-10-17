@@ -97,7 +97,7 @@ Recording note: no video was recorded by the agent. Record the screen with macOS
 ## Draft make-ten lab, Learning Experience 2.2 (2026-10-18)
 1. Run the Cricket mission at `/cricket` first (the lab uses the same 13 − 5).
 2. Open `/cricket/make-ten-lab`. Step 1: tap ten balls into the rack, answer "how many are outside?" (try 10 first to see the feedback, tap one loose ball to see the counting mark, then 3). Step 2: tap the three loose balls, answer "how many more?" (2). Step 3: tap balls in the rack to fill the empty spots (two). Step 4: optionally mark rack balls, answer 8; the recap appears only now. Step 5: send 4 of 11 balls, answer 7. Answer one question wrongly three times to see the added support lines.
-3. **Back a step**, **Start again** and **Leave the activity** work at any point; tapping a moved ball again puts it back. Say on camera that it is a draft no educator has reviewed and that nothing is saved.
+3. **Start again** and **Leave the activity** are always there, and **Back a step** appears once you have moved past step 1; tapping a moved ball again puts it back. Say on camera that it is a draft no educator has reviewed and that nothing is saved.
 4. On a phone, the objects stay pinned above the question while a number is chosen; on a very short screen or at large text they scroll with the page instead.
 5. For an educator: send `docs/LAB-REVIEW-KIT.md` (message, route, questions, template) and the `m390-*` screenshots in `docs/cricket-lab-screens/`.
 

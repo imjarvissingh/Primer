@@ -115,6 +115,39 @@ test.describe("lab layout on phones", () => {
     });
   }
 
+  for (const w of [320, 390]) {
+    test(`200% text at ${w}px: every number is whole, at least 44px, and nothing scrolls sideways`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: w, height: 800 });
+      await page.goto("/cricket/make-ten-lab");
+      await page.evaluate(() => {
+        document.documentElement.style.fontSize = "200%";
+      });
+      await toStep(page, 1);
+      const chips = await page.locator(".answer-chip").evaluateAll((els) =>
+        els.map((e) => {
+          const r = e.getBoundingClientRect();
+          return {
+            w: r.width,
+            h: r.height,
+            clipped: e.scrollWidth > e.clientWidth,
+            lines: Math.round(
+              r.height / parseFloat(getComputedStyle(e).lineHeight || "1"),
+            ),
+          };
+        }),
+      );
+      expect(chips).toHaveLength(14);
+      for (const c of chips) {
+        expect(c.w).toBeGreaterThanOrEqual(43.5);
+        expect(c.h).toBeGreaterThanOrEqual(43.5);
+        expect(c.clipped).toBe(false);
+      }
+      await noOverflow(page);
+    });
+  }
+
   test("the nets show three and two as two groups on one row at 320px", async ({
     page,
   }) => {
@@ -158,6 +191,33 @@ test.describe("lab layout on phones", () => {
 });
 
 test.describe("lab interaction under stress", () => {
+  test("the chosen number is visibly selected (not white on a pale chip)", async ({
+    page,
+  }) => {
+    await page.goto("/cricket/make-ten-lab");
+    await toStep(page, 1);
+    await page
+      .locator("label")
+      .filter({ has: page.getByRole("radio", { name: "4", exact: true }) })
+      .click();
+    const [on, off] = await Promise.all(
+      ["4", "5"].map((n) =>
+        page
+          .locator("label")
+          .filter({ has: page.getByRole("radio", { name: n, exact: true }) })
+          .locator(".answer-chip")
+          .evaluate((el) => {
+            const c = getComputedStyle(el);
+            return { bg: c.backgroundColor, fg: c.color };
+          }),
+      ),
+    );
+    expect(on.bg).not.toBe(off.bg);
+    // Text and fill of the chosen chip must differ (they were both near white).
+    expect(on.fg).not.toBe(on.bg);
+    expect(on.bg).not.toBe("rgb(246, 251, 239)");
+  });
+
   test("rapid taps keep every object, once", async ({ page }) => {
     await page.goto("/cricket/make-ten-lab");
     // Tap 13 times without waiting for any animation; only the first 10 fit.

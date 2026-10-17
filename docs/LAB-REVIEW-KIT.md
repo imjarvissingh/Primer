@@ -23,7 +23,7 @@ Before sending: attach this file, the screenshots in `docs/cricket-lab-screens/`
 
 ## 2. What the activity is, in one paragraph
 
-A grown-up runs it with a child, or a reviewer runs it alone. Coach Bails has 13 cricket balls. (1) The learner taps balls into a rack that holds ten, then says how many balls are outside it. (2) The learner sends those balls to the nets (which have five spots) and says how many more are needed. (3) The learner takes that many from the rack. (4) The learner says how many balls are still in the rack. (5) A new problem, 11 − 4, with no rack and no hints. Every number the learner gives is checked only against the balls on the screen; the screen never states a result first. Details of each step are in section 4.
+A grown-up runs it with a child, or a reviewer runs it alone. Coach Bails has 13 cricket balls. (1) The learner taps balls into a rack that holds ten, then says how many balls are outside it. (2) The learner sends those balls to the nets (which have five spots) and says how many more are needed. (3) The learner takes that many from the rack. (4) The learner says how many balls are still in the rack. (5) A new problem, 11 − 4, with no rack, no strategy words and no counting aid (a wrong answer only points back at the objects). Every number the learner gives is checked only against the objects and empty spots on the screen at that moment (never against a stored answer); the screen never states a result first. Details of each step are in section 4.
 
 **Not in scope of your review:** the scored practice, the hints in the tutor, the independent check and the parent summary. They exist separately and are unchanged. Two open questions about them are in the packet (sections 3 and 4).
 
@@ -42,8 +42,8 @@ Run at `/cricket/make-ten-lab` (adults only). Try each step once as a learner wo
 | 7 | Choose **5**, then **2**. | Feedback for 5; the picture "5 is 3 and 2". | `m390-2c-feedback-five`, `m390-2d-right` |
 | 8 | Next. Take balls from the rack to fill the empty spots. | The instruction does not say how many; the empty spots show it. | `m390-3a-take-from-ten`, `m390-3c-three-and-two` |
 | 9 | Next. Tap rack balls to mark them. Choose **5**, then **8**. | The nets keep "3 | 2" apart from the rack. The recap appears only after 8. | `m390-4a-question` … `m390-4d-recap` |
-| 10 | Next. Send four balls, choose **4**, then **7**. | No rack, no strategy words, no hint. | `m390-5a-unguided-start` … `m390-5d-unguided-right` |
-| 11 | Press **Back a step** and **Start again** at any point. | Nothing is lost or left over. | — |
+| 10 | Next. Send four balls, choose **4**, then **7**. | No rack, no strategy words, no counting aid. A wrong number gets "look again at the balls that are not at the nets". | `m390-5a-unguided-start` … `m390-5d-unguided-right` |
+| 11 | Press **Back a step** (it appears once you have moved past step 1) and **Start again** (always there). | Nothing is lost or left over. | — |
 
 Wrong-answer support: answer the same question wrongly three times. The wording after the second and third wrong tries (counting slowly; a grown-up can count with you) is a hypothesis for you to judge (question P2).
 
@@ -55,7 +55,7 @@ Wrong-answer support: answer the same question wrongly three times. The wording 
 | 2 | Send the loose balls to the nets (the rack is locked). Then: how many more are needed (0–13). | The moves are forced (only loose balls move). The number can be guessed as above. | Nets show filled and empty spots; picture "5 is 3 and 2". | Header "At the nets: 3 of 5" is visible before the question, so subtraction 5 − 3 is available without counting. This is a question for you (P4). |
 | 3 | How many balls to take from the rack. The number is not given; the nets show the empty spots. | Tapping any two rack balls fills the spots. A third cannot be taken. | Two balls move; the nets separate "3 | 2". | Nothing until Next. |
 | 4 | How many are still in the rack (0–13). Optionally mark balls while counting. | Guessable, as above. | Recap only after a right answer. | Wrong 5: "how many went to the nets". Wrong 13: "how many at the start". Wrong 10: "some spots are empty". |
-| 5 | Which four balls to send; how many are left (0–11). | Guessable. | None beyond the picture. | Right: "matches the balls that are left". Wrong: "look again at the balls not at the nets". No strategy cue. |
+| 5 | Which four balls to send; how many are left (0–11). | Guessable. | None beyond the picture. | Right: "matches the balls that are left". Wrong: "look again at the balls not at the nets" (it points back at the objects; there is no strategy cue, counting aid or extra support in this step). |
 
 Whether the lack of a limit on retries is acceptable is question P2.
 
@@ -123,5 +123,7 @@ Answers to P1–P6 (any form):
 A change to wording, feedback or sequence is accepted, deferred or declined after your findings, and the result is written next to the finding in the packet (section 8). A change to the tutor itself (hints, progression, assessment) is never made from this review alone and needs its own explicit decision. Accept, revise and reject criteria proposed for you to amend: packet 6C.8.
 
 ## 8. Privacy and honesty
+
+The page has no application data requests (nothing is sent, saved or scored), but it is a normal web page and is not access-gated: it relies on its wording and a no-index tag. It is for adult-operated demonstration only and must not be put in front of children, or deployed for them, without a separate decision.
 
 The repository is public. Reviewer names, contact details and notes are kept in a private copy; only findings the reviewer approves, anonymised, are committed. The review gate (educator approval) stays open until a real reviewer's findings are recorded.

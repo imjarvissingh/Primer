@@ -382,9 +382,6 @@ h3 {
 }
 
 /* Answer choices */
-.answer-chip {
-  background: var(--surface);
-}
 /* Five columns on phones (rows read like a ten-frame), seven when there is room.
    Every cell stays at least 3rem (48px) tall and wide enough for two digits. */
 .answer-grid {
@@ -401,6 +398,18 @@ h3 {
 @media (min-width: 40rem) {
   .answer-grid {
     grid-template-columns: repeat(7, minmax(0, 3.5rem));
+  }
+}
+/* At large text on a phone five columns leave each number about 25px wide, so a
+   two-digit number breaks across two lines. When the picker is too narrow for
+   five 44px cells, fit as many cells of at least 2.75rem as there is room for
+   (rem follows the text size, so this only applies when text is enlarged). */
+.answer-box {
+  container-type: inline-size;
+}
+@container (max-width: 13rem) {
+  .answer-grid {
+    grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
   }
 }
 
@@ -1197,6 +1206,14 @@ h3 {
   border: 4px solid #7a4f22;
   border-radius: 0.5rem;
   background: repeating-linear-gradient(45deg, #ebc98f 0 7px, #dcb273 7px 14px);
+}
+/* In the Cricket mission the supply panel is the woven ball basket. Here the
+   objects outside the rack sit on a plain field, so only the rack looks like a
+   rack and "outside the rack" never reads as a second one. */
+.lab .field-supply {
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--field-supply-bg);
 }
 /* Rows of five, like a ten-frame, so every group can be counted at a glance.
    Wide enough for five objects and never six (3rem or 3.25rem each); at very
