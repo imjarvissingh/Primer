@@ -33,3 +33,6 @@ All five interests (Cricket, Building, Space, Basketball, Soccer) start a real, 
 
 ## Milestone 3 status (2026-10-17)
 In all five worlds the thirteen objects are drawn, separate and countable in a themed container; five move to the destination as the same objects; the guide reacts to real events; the finished world stays on screen. The welcome page has a five-point "How Primer works" for parents (what is chosen, what stays the same, guided versus independent, cautious summary). Verified in real Chrome, Firefox and WebKit (geometry only) and by automated tests; not tested with screen readers, real devices or children. Art is better but still flat SVG; premium art is a separate dependency.
+
+## Milestone 4 status (2026-10-17)
+The five worlds are layered illustrated scenes (about a third of a phone screen), the guide characters have more identity, pressed objects fly to their place, the finished world celebrates a confirmed right answer, the welcome cards preview the real scenes, and the adult summary opens with a plain-language lead and a practice-versus-check comparison. The art is hand-authored vector, not commissioned or generated illustration; it is a better baseline, not a premium finish.

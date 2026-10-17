@@ -1,7 +1,9 @@
 import type { ThemeId } from "@/themes";
 import { BridgeScene } from "./BridgeScene";
 import { SpaceScene } from "./SpaceScene";
-import { BasketballScene, CricketScene, SoccerScene } from "./SportsScenes";
+import { BasketballScene } from "./BasketballScene";
+import { CricketScene } from "./CricketScene";
+import { SoccerScene } from "./SoccerScene";
 import type { ConstructionProgress } from "./progress";
 
 const SCENES: Record<

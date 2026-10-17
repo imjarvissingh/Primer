@@ -20,7 +20,7 @@ Connected navigation -> shared theme contract -> Cricket -> Basketball and Socce
 - Day 1 (Oct 17): governance, connected journey for Building and Space, reliable suite. Founder review.
 - Day 2 (Oct 18): shared contract, Cricket playable, session lifecycle, prototype decision. **Status:** all five worlds playable on branch `milestone2/five-worlds` (pulled forward from Day 3); prototype decision (#4) and session lifecycle polish (#5) still open.
 - Day 3 (Oct 19): Basketball and Soccer playable, visual identity, parent copy. **Status:** Basketball and Soccer shipped in Milestone 2; countable objects, guides, motion and parent copy are on branch `milestone3/countable-worlds` (pulled forward). Premium art is still open.
-- Day 4 (Oct 20): animation, accessibility, integrity review, snapshot polish.
+- Day 4 (Oct 20): animation, accessibility, integrity review, snapshot polish. **Status:** layered scenes, flying objects, celebration and summary polish are on branch `milestone4/game-art` (pulled forward); accessibility with real assistive technology is still open.
 - Day 5 (Oct 21): deployment (if approved), smoke tests, recording, YC materials.
 
 ## Founder checkpoints
