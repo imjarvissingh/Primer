@@ -171,16 +171,19 @@ function Body({ state }: { state: State }) {
             </caption>
             <thead>
               <tr className="border-b-2 border-border">
-                <th scope="col" className="py-2 pr-3">
+                <th scope="col" className="whitespace-nowrap py-2 pr-3">
                   #
                 </th>
                 <th scope="col" className="whitespace-nowrap py-2 pr-3">
                   Question
                 </th>
-                <th scope="col" className="py-2 pr-3">
+                <th
+                  scope="col"
+                  className="hidden whitespace-nowrap py-2 pr-3 min-[30rem]:table-cell"
+                >
                   Skill sampled
                 </th>
-                <th scope="col" className="min-w-[5.5rem] py-2">
+                <th scope="col" className="whitespace-nowrap py-2">
                   Result
                 </th>
               </tr>
