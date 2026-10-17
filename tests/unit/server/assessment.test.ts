@@ -591,6 +591,25 @@ describe("start rate limit", () => {
     expect(limiter.allow(1_000 + START_WINDOW_MS)).toBe(true);
   });
 
+  it("has no configuration path: the cap is a constant and no env var, header or test mode can change it", () => {
+    expect(START_LIMIT).toBe(120);
+    expect(START_WINDOW_MS).toBe(60_000);
+    const src = readFileSync(
+      path.resolve(process.cwd(), "src/server/rate-limit.ts"),
+      "utf8",
+    );
+    expect(src).not.toMatch(/process\.env|PRIMER_START_LIMIT|NODE_ENV/);
+    // Nothing in the app or its tests may reintroduce an override.
+    for (const f of [
+      "src/app/api/assessment/route.ts",
+      "src/app/api/practice/mission/route.ts",
+      "playwright.config.ts",
+    ]) {
+      const text = readFileSync(path.resolve(process.cwd(), f), "utf8");
+      expect(text, f).not.toMatch(/PRIMER_START_LIMIT/);
+    }
+  });
+
   it("is applied to starts only and reads no client identifier", () => {
     for (const file of [
       "src/app/api/assessment/route.ts",

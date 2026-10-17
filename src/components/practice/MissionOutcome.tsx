@@ -120,13 +120,14 @@ export function MissionOutcome({
           (a new, separate practice).
         </p>
       )}
-      <button
-        type="button"
-        onClick={onRestart}
-        className="btn btn-primary mt-5"
-      >
-        Start over
-      </button>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <button type="button" onClick={onRestart} className="btn btn-primary">
+          Start over
+        </button>
+        <Link href="/welcome" className="btn btn-secondary">
+          Change interest
+        </Link>
+      </div>
     </section>
   );
 }

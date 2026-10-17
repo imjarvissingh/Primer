@@ -6,6 +6,13 @@ const PORT = Number(process.env.PRIMER_E2E_PORT ?? 3100);
 export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: true,
+  // One worker on purpose. The server caps session starts at 120 per minute per
+  // process and the suite starts many sessions; with 2-3 workers bursts exceed
+  // the cap and tests fail with "Lots of people are trying this right now".
+  // The production cap is NOT configurable and must not be raised for tests
+  // (see docs/DECISIONS.md, issue #30). If the suite outgrows one worker, shard
+  // it across separate server processes instead.
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["list"]] : "list",

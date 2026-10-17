@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { RouteFocus } from "@/components/brand/RouteFocus";
 
 export const metadata: Metadata = {
   title: "Primer — interest-personalized math for ages 6–9",
@@ -18,6 +19,7 @@ export default function RootLayout({
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
+        <RouteFocus />
         {children}
       </body>
     </html>

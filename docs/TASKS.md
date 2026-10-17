@@ -72,3 +72,15 @@ Still open: external educator review (nothing approved); the five pedagogical de
 Done: A11Y-11 fixed (CSS only). Cause was the mission grid's implicit column growing to the non-wrapping resource rows at large text, not the SVG art; also fixed homepage wordmark, long headings and button labels at 320 px. New `tests/e2e/text-scaling.spec.ts` (25 tests; 11 fail on the 8E code). Evidence in `docs/ACCESSIBILITY-AUDIT.md`.
 
 Still open: external educator review (nothing approved) and its five pedagogical decisions; screen-reader, real-zoom, Safari/Firefox and physical-device testing (none done).
+
+## Five-day MVP sprint (2026-10-17 to 2026-10-21)
+
+Plan: [MVP-5-DAY-PLAN.md](MVP-5-DAY-PLAN.md). Issues: https://github.com/imjarvissingh/Primer/issues (#1 to #30, milestones Day 1 to Day 5).
+
+**Milestone 1 (Day 1) status**, on branch `milestone1/connected-journey`, draft PR #31 (CI green on the PR; not merged, not deployed): welcome and interest selection connected to home, to the two real missions, to the check and to the summary (#1, #2); e2e start-limit exhaustion fixed by serial test runs, with no production override (#3, #30); focus after in-app navigation fixed (#29). Awaiting founder review.
+
+**Not done:** Cricket (#7), Basketball (#8), Soccer (#9) are preview only. Prototype evaluation (#4), educator review (#20), deployment (#26).
+
+**Blocked on external review:** #16, #17, #19, #20, #22 (suggestions).
+
+**Next (Day 2) top priorities:** #6 shared theme contract, #7 Cricket, #5 session lifecycle, #11 Surprise me, #4 prototype decision.

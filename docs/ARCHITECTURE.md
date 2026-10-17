@@ -200,3 +200,13 @@ A new built slot plays a 220 ms `slot-in` settle, only inside `prefers-reduced-m
 - **Assessment is untouched:** no assessment file changed; `/api/assessment` rejects the `support` action; an e2e check confirms no ten-frames or warm-up appear in the independent check.
 - **Evidence:** practice code paths never call the evidence module, so ten-frame use and warm-up completion cannot become independent evidence.
 - **Known limitation:** the `support-offer` / `support-started` responses name numbers (10 and 6) for the warm-up, as the mission's numbers are public; arithmetic answers are not secret from a determined viewer.
+
+## Implementation status (Milestone 1, 2026-10-17): interests and connected navigation
+
+**Two registries, both presentation only.** `src/themes` configures the two playable missions (block-builder, space-construction). `src/interests` configures five welcome previews (cricket, building, space, basketball, soccer). Building and Space map to a theme and its route; the other three have no mission (`existingMission: null`). Neither registry has authority over arithmetic, scoring, tutoring, assessment or evidence, and neither is sent to the server. Merging them into one five-theme contract is issue #6.
+
+**State ownership.** The welcome choice is client component state only: nothing is stored or sent, and it resets when the page is left. Mission and check state is server-owned in memory (unchanged). The summary reads from an opaque session id in the URL (unchanged).
+
+**Integration boundaries.** Navigation between welcome, missions, check and summary is plain links; there is no shared client store. The two mission routes were not changed except for finish-screen and header links.
+
+**Rate limit and tests.** The start cap is a constant (120 per minute per process) with no configuration path. Playwright runs one worker so the suite stays under it. **Navigation focus.** `RouteFocus` moves focus to `main h1` after a client-side path change only.

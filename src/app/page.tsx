@@ -46,6 +46,11 @@ export default function Home() {
           within 20. Instead of one story for everyone, practice happens inside
           a world the child cares about, with the same careful math underneath.
         </p>
+        <p className="mt-6">
+          <Link href="/welcome" className="btn btn-primary">
+            Start: choose what your child loves
+          </Link>
+        </p>
       </header>
 
       <section aria-labelledby="steps" className="mt-10">
