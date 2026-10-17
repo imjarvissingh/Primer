@@ -77,7 +77,7 @@ Still open: external educator review (nothing approved) and its five pedagogical
 
 Plan: [MVP-5-DAY-PLAN.md](MVP-5-DAY-PLAN.md). Issues: https://github.com/imjarvissingh/Primer/issues (#1 to #30, milestones Day 1 to Day 5).
 
-**Milestone 1 (Day 1) status**, on local branch `milestone1/connected-journey` (not pushed, no PR): welcome and interest selection connected to home, to the two real missions, to the check and to the summary (#1, #2); e2e start-limit exhaustion fixed (#3). Awaiting founder review.
+**Milestone 1 (Day 1) status**, on local branch `milestone1/connected-journey` (not pushed, no PR): welcome and interest selection connected to home, to the two real missions, to the check and to the summary (#1, #2); e2e start-limit exhaustion fixed by serial test runs, with no production override (#3, #30); focus after in-app navigation fixed (#29). Awaiting founder review.
 
 **Not done:** Cricket (#7), Basketball (#8), Soccer (#9) are preview only. Prototype evaluation (#4), educator review (#20), deployment (#26).
 

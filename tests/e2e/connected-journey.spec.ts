@@ -163,3 +163,43 @@ test("leaving a mission midway and returning starts clean, with a way back to in
     page.getByRole("button", { name: "Start building" }),
   ).toBeVisible();
 });
+
+test.describe("focus after in-app navigation (issue #29)", () => {
+  test("moves to the new page heading after a keyboard link activation, not on a hard load", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    // A hard load leaves focus alone: the skip link must still be the first Tab stop.
+    expect(await page.evaluate(() => document.activeElement?.tagName)).toBe(
+      "BODY",
+    );
+    await page
+      .getByRole("link", { name: /choose what your child loves/ })
+      .focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/\/welcome$/);
+    await expect(
+      page.getByRole("heading", { level: 1, name: /what your child loves/i }),
+    ).toBeFocused();
+
+    // Same from a mission page, and the next Tab moves on from the heading.
+    await page.goto("/block-builder");
+    await page.getByRole("link", { name: "Choose an interest" }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/\/welcome$/);
+    await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(
+      page.getByRole("button", { name: "Choose an interest" }),
+    ).toBeFocused();
+  });
+
+  test("ordinary updates inside a page do not steal focus", async ({
+    page,
+  }) => {
+    await page.goto("/welcome");
+    await page.getByRole("button", { name: "Choose an interest" }).click();
+    await page.getByRole("radio", { name: /Building/ }).check();
+    await expect(page.getByRole("radio", { name: /Building/ })).toBeFocused();
+  });
+});

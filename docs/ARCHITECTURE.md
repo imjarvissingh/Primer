@@ -209,4 +209,4 @@ A new built slot plays a 220 ms `slot-in` settle, only inside `prefers-reduced-m
 
 **Integration boundaries.** Navigation between welcome, missions, check and summary is plain links; there is no shared client store. The two mission routes were not changed except for finish-screen and header links.
 
-**Test server.** `PRIMER_START_LIMIT` (validated whole number, 1 to 100000) overrides the start cap and is set only by `playwright.config.ts`.
+**Rate limit and tests.** The start cap is a constant (120 per minute per process) with no configuration path. Playwright runs one worker so the suite stays under it. **Navigation focus.** `RouteFocus` moves focus to `main h1` after a client-side path change only.

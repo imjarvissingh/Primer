@@ -32,7 +32,7 @@ Primer is an early-stage, interest-personalized math game for US children aged 6
 
 ## 4. Commands
 
-`npm ci`, `npm run dev`, `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm test`, `npm run build`, `npm run test:e2e` (builds, then Playwright on the production build; set `PRIMER_E2E_PORT` if 3100 is busy). `npm run validate` runs everything. In a git worktree run `npm ci` there; Turbopack does not follow a symlinked `node_modules`.
+`npm ci`, `npm run dev`, `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm test`, `npm run build`, `npm run test:e2e` (builds, then Playwright on the production build, one worker on purpose; set `PRIMER_E2E_PORT` if 3100 is busy). Never add a way to raise the session-start cap for tests; reduce concurrency instead. `npm run validate` runs everything. In a git worktree run `npm ci` there; Turbopack does not follow a symlinked `node_modules`.
 
 ## 5. Git safety
 
