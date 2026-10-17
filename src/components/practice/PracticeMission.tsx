@@ -356,6 +356,10 @@ function MissionBody({ theme }: PracticeMissionProps) {
           It is a smaller one with the same idea. Then you come back to{" "}
           {theme.missionTitle}.
         </p>
+        <p className="text-base">
+          If you choose Not now, this practice ends. You can start again
+          whenever you like.
+        </p>
         <div className="flex flex-wrap gap-3">
           <button
             type="button"

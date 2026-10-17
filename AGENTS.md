@@ -23,11 +23,11 @@ Primer is an early-stage, interest-personalized math game for US children aged 6
 ## 3. Repository overview
 
 - `src/domain/` pure curriculum, math evaluator, tutoring policy, assessment, evidence. Holds answer keys; never imported by client code.
-- `src/server/` session stores, services, validation, rate limit (in memory, single instance).
+- `src/server/` session stores, services, validation, rate limit (in memory, single instance; hosting rules in `docs/DEPLOYMENT.md`).
 - `src/app/api/` practice (`/api/practice/mission`) and assessment (`/api/assessment`) route handlers.
 - `src/themes/` presentation-only mission themes. `src/interests/` presentation-only welcome registry.
 - `src/components/` UI. `src/lib/` client-safe protocol types and the ten-frame helper.
-- Routes: `/`, `/welcome`, `/cricket`, `/block-builder`, `/space-construction`, `/basketball`, `/soccer`, `/assessment`, `/demo-progress?session=...`. `/prototype/...` exists only on a separate prototype branch.
+- Routes: `/`, `/welcome`, `/cricket`, `/block-builder`, `/space-construction`, `/basketball`, `/soccer`, `/assessment`, `/demo-progress?session=...`, `/api/health` (liveness only). `/prototype/...` exists only on a separate prototype branch.
 - Next.js here is **not** the version you know. Read `node_modules/next/dist/docs/` before changing framework-level code.
 
 ## 4. Commands
