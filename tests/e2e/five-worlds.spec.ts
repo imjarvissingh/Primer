@@ -534,6 +534,32 @@ test("the adult summary leads in plain words, compares practice and check, and o
   await expect(page.getByTestId("summary-lead")).toContainText(
     "4 of 4 questions were answered independently, with no hints",
   );
+  // No table header breaks mid-word at narrow widths (it once read "happene d").
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    const broken = await page.evaluate(() => {
+      // A word split across two lines has more than one client rect.
+      const split: string[] = [];
+      for (const th of document.querySelectorAll("thead th")) {
+        const node = th.firstChild;
+        if (!node || node.nodeType !== Node.TEXT_NODE) continue;
+        const text = node.textContent ?? "";
+        for (const m of text.matchAll(/\S+/g)) {
+          const r = document.createRange();
+          r.setStart(node, m.index ?? 0);
+          r.setEnd(node, (m.index ?? 0) + m[0].length);
+          if (r.getClientRects().length > 1) split.push(m[0]);
+        }
+      }
+      return split;
+    });
+    expect(broken, `${width}px`).toEqual([]);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - innerWidth,
+      ),
+    ).toBeLessThanOrEqual(0);
+  }
   await expect(
     page.getByText("Guided practice", { exact: true }),
   ).toBeVisible();

@@ -180,8 +180,8 @@ function Body({ state }: { state: State }) {
                 <th scope="col" className="py-2 pr-3">
                   Skill sampled
                 </th>
-                <th scope="col" className="py-2">
-                  What happened
+                <th scope="col" className="min-w-[5.5rem] py-2">
+                  Result
                 </th>
               </tr>
             </thead>
@@ -193,7 +193,9 @@ function Body({ state }: { state: State }) {
                   </th>
                   <td className="py-2 pr-3">{item.expression}</td>
                   <td className="py-2 pr-3">{item.skill}</td>
-                  <td className="py-2">{OUTCOME[item.outcome]}</td>
+                  <td className="min-w-[5.5rem] py-2">
+                    {OUTCOME[item.outcome]}
+                  </td>
                 </tr>
               ))}
             </tbody>
