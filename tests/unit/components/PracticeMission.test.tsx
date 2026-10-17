@@ -275,6 +275,99 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
     });
   });
 
+  describe("moving objects and celebrating (Milestone 4)", () => {
+    const stage = () => document.querySelector(".stage-scene") as HTMLElement;
+
+    it("celebrates only after the server confirms a right answer, never for filling the picture", async () => {
+      mockServer((r) =>
+        r.action === "start"
+          ? started
+          : r.action === "attempt" && r.answer === 9
+            ? reply(1, { kind: "neutral-feedback" })
+            : reply(2, { kind: "correct" }, true),
+      );
+      const user = await start();
+      expect(stage().getAttribute("data-solved")).toBe("false");
+      await build(user);
+      // Five placed: the pad is complete, but nothing is solved or celebrated.
+      expect(stage().getAttribute("data-complete")).toBe("true");
+      expect(stage().getAttribute("data-solved")).toBe("false");
+      await submit(user, 9);
+      await screen.findByText(/Not quite yet/);
+      expect(stage().getAttribute("data-solved")).toBe("false");
+      await submit(user, 8);
+      await screen.findByRole("heading", { name: theme.outcomeTitle });
+      expect(stage().getAttribute("data-solved")).toBe("true");
+    });
+
+    it("flies a pressed object from where it was to where it lands, without blocking input", async () => {
+      const animate = vi.fn();
+      const original = Element.prototype.getBoundingClientRect;
+      Object.defineProperty(HTMLElement.prototype, "animate", {
+        configurable: true,
+        value: animate,
+      });
+      Element.prototype.getBoundingClientRect = function () {
+        const place = (this as HTMLElement).getAttribute?.("data-place");
+        const left = place === "built" ? 110 : place === "supply" ? 10 : 0;
+        const top = place === "built" ? 60 : place === "supply" ? 10 : 0;
+        return {
+          left,
+          top,
+          right: left + 48,
+          bottom: top + 48,
+          width: 48,
+          height: 48,
+          x: left,
+          y: top,
+          toJSON() {},
+        } as DOMRect;
+      };
+      try {
+        const user = await start();
+        await user.click(item(1, "supply"));
+        expect(animate).toHaveBeenCalledTimes(1);
+        const [frames] = animate.mock.calls[0];
+        expect(frames[0].transform).toBe(
+          "translate(-100px, -50px) scale(1.12)",
+        );
+        expect(frames[1].transform).toBe("translate(0, 0) scale(1)");
+        // The state is final immediately: no waiting for the animation.
+        expect(built()).toHaveLength(1);
+        expect(supply()).toHaveLength(12);
+        await user.click(item(2, "supply"));
+        expect(built()).toHaveLength(2);
+      } finally {
+        Element.prototype.getBoundingClientRect = original;
+        // @ts-expect-error test cleanup of the stubbed method
+        delete HTMLElement.prototype.animate;
+      }
+    });
+
+    it("does not animate movement at all when the user prefers reduced motion", async () => {
+      const animate = vi.fn();
+      Object.defineProperty(HTMLElement.prototype, "animate", {
+        configurable: true,
+        value: animate,
+      });
+      vi.stubGlobal("matchMedia", (q: string) => ({
+        matches: q.includes("reduce"),
+        media: q,
+        addEventListener() {},
+        removeEventListener() {},
+      }));
+      try {
+        const user = await start();
+        await user.click(item(1, "supply"));
+        expect(built()).toHaveLength(1);
+        expect(animate).not.toHaveBeenCalled();
+      } finally {
+        // @ts-expect-error test cleanup of the stubbed method
+        delete HTMLElement.prototype.animate;
+      }
+    });
+  });
+
   describe("guide reactions (Milestone 3)", () => {
     const mood = () =>
       document.querySelector(".guide-strip")?.getAttribute("data-guide-mood");

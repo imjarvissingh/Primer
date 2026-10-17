@@ -3,11 +3,9 @@ import { Wordmark } from "@/components/brand/Wordmark";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { BridgeScene } from "@/components/practice/scenes/BridgeScene";
 import { SpaceScene } from "@/components/practice/scenes/SpaceScene";
-import {
-  BasketballScene,
-  CricketScene,
-  SoccerScene,
-} from "@/components/practice/scenes/SportsScenes";
+import { BasketballScene } from "@/components/practice/scenes/BasketballScene";
+import { CricketScene } from "@/components/practice/scenes/CricketScene";
+import { SoccerScene } from "@/components/practice/scenes/SoccerScene";
 import { THEMES, type ThemeId } from "@/themes";
 
 const ART: Record<ThemeId, React.ReactNode> = {

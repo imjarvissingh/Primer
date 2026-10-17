@@ -110,6 +110,13 @@ function Body({ state }: { state: State }) {
   const s = state.summary;
   return (
     <>
+      {/* Plain-language lead. It restates the counts shown just below; it computes nothing. */}
+      <p className="text-lg" data-testid="summary-lead">
+        In this short check, <strong>{s.counts.answered}</strong> of{" "}
+        <strong>{s.counts.total}</strong> questions were answered independently,
+        with no hints. Here is exactly what was recorded, and what it cannot
+        tell you.
+      </p>
       <section
         aria-labelledby="counts-heading"
         className="grid grid-cols-1 gap-3"
@@ -167,7 +174,7 @@ function Body({ state }: { state: State }) {
                 <th scope="col" className="py-2 pr-3">
                   #
                 </th>
-                <th scope="col" className="py-2 pr-3">
+                <th scope="col" className="whitespace-nowrap py-2 pr-3">
                   Question
                 </th>
                 <th scope="col" className="py-2 pr-3">
@@ -258,32 +265,59 @@ function Body({ state }: { state: State }) {
 
 function Explanation() {
   return (
-    <section
-      aria-labelledby="limits-heading"
-      className="grid grid-cols-1 gap-2"
-    >
-      <h2 id="limits-heading" className="text-xl font-semibold">
-        Practice is not the same as this check
-      </h2>
-      <ul className="list-disc pl-6">
-        <li>
-          In guided practice, a learner can get hints and feedback. That helps
-          learning but does not show what they can do alone, so it is never
-          counted here.
-        </li>
-        <li>
-          This check gives no hints and no right-or-wrong feedback, and counts
-          only the first answer to each question.
-        </li>
-        <li>
-          This demo does not link a practice session to a check. Nothing from
-          practice appears in this summary.
-        </li>
-        <li>
-          Results are kept in memory for a short time and then disappear. This
-          is not a record, a diagnosis or a prediction.
-        </li>
-      </ul>
-    </section>
+    <>
+      <section
+        aria-labelledby="limits-heading"
+        className="grid grid-cols-1 gap-3"
+      >
+        <h2 id="limits-heading" className="text-xl font-semibold">
+          Practice is not the same as this check
+        </h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="card p-4">
+            <p className="text-sm font-bold uppercase tracking-wide text-muted">
+              Guided practice
+            </p>
+            <p className="mt-1">
+              A learner can get hints and feedback. That helps learning but does
+              not show what they can do alone, so it is never counted here.
+            </p>
+          </div>
+          <div className="card p-4">
+            <p className="text-sm font-bold uppercase tracking-wide text-muted">
+              This independent check
+            </p>
+            <p className="mt-1">
+              No hints and no right-or-wrong feedback. It counts only the first
+              answer to each question.
+            </p>
+          </div>
+        </div>
+        <ul className="list-disc pl-6">
+          <li>
+            This demo does not link a practice session to a check. Nothing from
+            practice appears in this summary.
+          </li>
+          <li>
+            Results are kept in memory for a short time and then disappear. This
+            is not a record, a diagnosis or a prediction.
+          </li>
+        </ul>
+      </section>
+      <nav
+        aria-label="Where to next"
+        className="flex flex-wrap items-center gap-3 border-t border-border pt-4"
+      >
+        <Link href="/welcome" className="btn btn-primary">
+          Choose another interest
+        </Link>
+        <Link href="/assessment" className="btn btn-secondary">
+          Take the check again
+        </Link>
+        <Link href="/" className="btn btn-secondary">
+          Back to Primer home
+        </Link>
+      </nav>
+    </>
   );
 }

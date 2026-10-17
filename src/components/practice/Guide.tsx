@@ -204,6 +204,16 @@ function Orbi({ mood }: { mood: GuideMood }) {
     <g>
       <ellipse cx="60" cy="132" rx="32" ry="5" fill="#000" opacity="0.2" />
       <Arms mood={mood} y={90} spread={30} color="#cbd5ff" />
+      <ellipse
+        cx="60"
+        cy="96"
+        rx="48"
+        ry="9"
+        fill="none"
+        stroke="var(--guide-accent)"
+        strokeWidth="3"
+        opacity="0.8"
+      />
       <ellipse cx="60" cy="96" rx="34" ry="32" fill="var(--guide-main)" />
       <ellipse cx="60" cy="84" rx="26" ry="12" fill="#fff" opacity="0.2" />
       <circle cx="60" cy="108" r="8" fill="#1e1b4b" />
@@ -231,6 +241,8 @@ function Coach({ mood, look }: { mood: GuideMood; look: GuideLook }) {
       <Arms mood={mood} y={84} spread={24} color="#f1c9a0" />
       <rect x="44" y="108" width="12" height="22" rx="5" fill="#1e3a8a" />
       <rect x="64" y="108" width="12" height="22" rx="5" fill="#1e3a8a" />
+      <rect x="40" y="126" width="16" height="6" rx="3" fill="#0f172a" />
+      <rect x="64" y="126" width="16" height="6" rx="3" fill="#0f172a" />
       <rect
         x="34"
         y="62"
@@ -240,6 +252,77 @@ function Coach({ mood, look }: { mood: GuideMood; look: GuideLook }) {
         fill="var(--guide-main)"
       />
       <path d="M60 62 V114" stroke="#fff" strokeWidth="2" opacity="0.35" />
+      {look === "coach-cap" && (
+        <>
+          {/* Sweater vest and a clipboard */}
+          <path
+            d="M44 66 L60 92 L76 66"
+            fill="none"
+            stroke="var(--guide-accent)"
+            strokeWidth="5"
+            strokeLinejoin="round"
+          />
+          <rect
+            x="86"
+            y="82"
+            width="18"
+            height="24"
+            rx="3"
+            fill="#fef3c7"
+            stroke="#92400e"
+            strokeWidth="2"
+          />
+          <path
+            d="M90 90 H100 M90 96 H100 M90 102 H97"
+            stroke="#92400e"
+            strokeWidth="1.4"
+          />
+        </>
+      )}
+      {look === "coach-headband" && (
+        <>
+          {/* Jersey stripes, wristbands and a whistle on a lanyard */}
+          <path
+            d="M34 84 H86 M34 96 H86"
+            stroke="var(--guide-accent)"
+            strokeWidth="4"
+            opacity="0.9"
+          />
+          <path
+            d="M52 62 Q60 84 68 62"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2"
+          />
+          <rect
+            x="56"
+            y="82"
+            width="12"
+            height="7"
+            rx="3"
+            fill="#facc15"
+            stroke="#854d0e"
+            strokeWidth="1.5"
+          />
+        </>
+      )}
+      {look === "coach-beanie" && (
+        <>
+          {/* Scarf and a training cone */}
+          <path
+            d="M40 66 Q60 78 80 66 V74 Q60 86 40 74Z"
+            fill="var(--guide-accent)"
+          />
+          <path d="M76 74 V94 H84 V78Z" fill="var(--guide-accent)" />
+          <path
+            d="M90 108 L98 84 L106 108Z"
+            fill="#fb923c"
+            stroke="#9a3412"
+            strokeWidth="1.5"
+          />
+          <path d="M94 98 H102" stroke="#fff" strokeWidth="2.5" />
+        </>
+      )}
       <circle cx="60" cy="42" r="22" fill="#f5c9a0" />
       {look === "coach-cap" && (
         <>
@@ -261,6 +344,7 @@ function Coach({ mood, look }: { mood: GuideMood; look: GuideLook }) {
             fill="var(--guide-accent)"
             opacity="0.85"
           />
+          <circle cx="60" cy="22" r="3" fill="#fff" opacity="0.8" />
         </>
       )}
       {look === "coach-headband" && (
@@ -274,6 +358,7 @@ function Coach({ mood, look }: { mood: GuideMood; look: GuideLook }) {
             rx="4"
             fill="var(--guide-accent)"
           />
+          <path d="M82 32 l8 -4 l-2 10Z" fill="var(--guide-accent)" />
         </>
       )}
       {look === "coach-beanie" && (
@@ -292,14 +377,6 @@ function Coach({ mood, look }: { mood: GuideMood; look: GuideLook }) {
         </>
       )}
       <Face mood={mood} cx={60} cy={46} eye="#1f2937" />
-      <circle
-        cx="82"
-        cy="100"
-        r="4"
-        fill="#facc15"
-        stroke="#854d0e"
-        strokeWidth="1.5"
-      />
     </g>
   );
 }

@@ -275,7 +275,12 @@ test("a lost session mid-mission in a new world explains itself and offers a fre
 
 /** Waits until nothing is animating, so sizes and states are final, not mid-motion. */
 const settled = (page: Page) =>
-  page.waitForFunction(() => document.getAnimations().length === 0);
+  // Ambient scenery loops forever by design; only finite (event) motion must end.
+  page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every((a) => a.effect?.getComputedTiming().iterations === Infinity),
+  );
 
 for (const w of WORLDS) {
   test.describe(`${w.route}: countable objects and a guide that reacts`, () => {
@@ -390,3 +395,158 @@ for (const w of WORLDS) {
     });
   });
 }
+
+for (const w of WORLDS) {
+  test.describe(`${w.route}: game scene presence (Milestone 4)`, () => {
+    for (const [width, height, minShare] of [
+      [320, 640, 0.3],
+      [390, 844, 0.3],
+      [768, 1024, 0.2],
+    ] as const) {
+      test(`the scene fills at least ${minShare * 100}% of a ${width}px viewport, with every goal place on screen`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width, height });
+        await page.goto(w.route);
+        await page.getByRole("button", { name: w.start }).click();
+        await expect(supply(page, w)).toHaveCount(13);
+        await placeFive(page, w);
+        await settled(page);
+        await page.evaluate(() => window.scrollTo(0, 0));
+        const m = await page.evaluate(() => {
+          const scene = document
+            .querySelector(".stage-scene")!
+            .getBoundingClientRect();
+          const places = [
+            ...document.querySelectorAll("svg[data-scene] [data-slot]"),
+          ].map((e) => {
+            const r = e.getBoundingClientRect();
+            return [r.left, r.right, r.top, r.bottom];
+          });
+          return { h: scene.height, vh: innerHeight, vw: innerWidth, places };
+        });
+        expect(m.h / m.vh).toBeGreaterThanOrEqual(minShare);
+        expect(m.places).toHaveLength(5);
+        for (const [l, r, t, b] of m.places) {
+          expect(l).toBeGreaterThanOrEqual(0);
+          expect(r).toBeLessThanOrEqual(m.vw);
+          expect(t).toBeGreaterThanOrEqual(0);
+          expect(b).toBeLessThanOrEqual(m.vh);
+        }
+      });
+    }
+
+    test("celebrates only a server-confirmed right answer, not a filled picture or a wrong answer", async ({
+      page,
+    }) => {
+      await page.goto(w.route);
+      await page.getByRole("button", { name: w.start }).click();
+      await expect(supply(page, w)).toHaveCount(13);
+      const stage = page.locator(".stage-scene");
+      await expect(stage).toHaveAttribute("data-solved", "false");
+      await placeFive(page, w);
+      await expect(stage).toHaveAttribute("data-complete", "true");
+      await expect(stage).toHaveAttribute("data-solved", "false");
+      await expect(page.locator(".celebrate")).toHaveCSS("opacity", "0");
+      await submit(page, 9);
+      await expect(page.getByText(/Not quite yet/)).toBeVisible();
+      await expect(stage).toHaveAttribute("data-solved", "false");
+      await submit(page, 8);
+      await expect(page.getByRole("heading", { name: w.done })).toBeVisible();
+      await expect(stage).toHaveAttribute("data-solved", "true");
+      await expect(page.locator(".celebrate")).toHaveCSS("opacity", "1");
+    });
+
+    test("rapid presses never block, and the counts end exactly right", async ({
+      page,
+    }) => {
+      await page.goto(w.route);
+      await page.getByRole("button", { name: w.start }).click();
+      await expect(supply(page, w)).toHaveCount(13);
+      // Hammer the first five without waiting for any motion, then undo one and redo it.
+      for (let n = 1; n <= 5; n++) {
+        await page
+          .getByRole("button", { name: new RegExp(`^${w.item} ${n}, in the`) })
+          .click({ delay: 0 });
+      }
+      await page
+        .getByRole("button", { name: new RegExp(`^${w.item} 3, (on|at) the`) })
+        .click();
+      await page
+        .getByRole("button", { name: new RegExp(`^${w.item} 3, in the`) })
+        .click();
+      await settled(page);
+      await expect(supply(page, w)).toHaveCount(8);
+      await expect(slots(page, "built")).toHaveCount(5);
+      // Final layout is stable: nothing is left displaced by a transform.
+      const displaced = await page.evaluate(
+        () =>
+          [...document.querySelectorAll("button.item")].filter(
+            (b) => getComputedStyle(b).transform !== "none",
+          ).length,
+      );
+      expect(displaced).toBe(0);
+    });
+
+    test("needs no downloaded art: no image, media or font requests, and the scene is inline", async ({
+      page,
+    }) => {
+      const requested: string[] = [];
+      page.on("request", (r) => {
+        if (["image", "media", "font"].includes(r.resourceType())) {
+          requested.push(`${r.resourceType()} ${r.url()}`);
+        }
+      });
+      await page.goto(w.route);
+      await page.getByRole("button", { name: w.start }).click();
+      await expect(supply(page, w)).toHaveCount(13);
+      expect(requested).toEqual([]);
+      await expect(page.locator("svg[data-scene]")).toHaveCount(1);
+    });
+  });
+}
+
+test("the scene is not the only thing: with reduced motion nothing loops or moves", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const w of WORLDS) {
+    await page.goto(w.route);
+    await page.getByRole("button", { name: w.start }).click();
+    await expect(supply(page, w)).toHaveCount(13);
+    expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+  }
+});
+
+test("the adult summary leads in plain words, compares practice and check, and offers a way on", async ({
+  page,
+}) => {
+  await page.goto("/assessment");
+  await page.getByRole("button", { name: "Start" }).click();
+  for (const [i, v] of RIGHT.entries()) {
+    await expect(
+      page.getByRole("heading", { name: `Question ${i + 1} of 4` }),
+    ).toBeFocused();
+    await pick(page, v).check({ force: true });
+    await page.getByRole("button", { name: "Save my answer" }).click();
+  }
+  await page.getByRole("link", { name: /Summary for a grown-up/ }).click();
+  await expect(page.getByTestId("summary-lead")).toContainText(
+    "4 of 4 questions were answered independently, with no hints",
+  );
+  await expect(
+    page.getByText("Guided practice", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("This independent check", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Mastery: not awarded" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Choose another interest" }),
+  ).toHaveAttribute("href", "/welcome");
+  await expect(page.locator("body")).not.toContainText(
+    /mastered|improved|trend|progress over time chart/i,
+  );
+});

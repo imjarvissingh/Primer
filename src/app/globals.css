@@ -463,10 +463,33 @@ h3 {
   background: var(--surface);
   box-shadow: var(--shadow);
 }
-.stage-scene svg {
+.scene-svg {
   display: block;
   width: 100%;
   height: auto;
+}
+/* The game picture is the star of the screen. On phones the frame is nearly as
+   tall as it is wide and the artwork slices its sides (everything essential
+   sits in the centre band), so it stays large instead of shrinking to a strip. */
+.stage-scene {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+}
+.stage-scene .scene-svg {
+  height: 100%;
+}
+@media (min-width: 40rem) {
+  .stage-scene {
+    aspect-ratio: 600 / 340;
+  }
+}
+/* Celebration pieces exist only in the finished picture. */
+.celebrate {
+  opacity: 0;
+}
+.stage-scene[data-solved="true"] .celebrate {
+  opacity: 1;
 }
 .guide-strip {
   display: flex;
@@ -476,16 +499,25 @@ h3 {
   border-top: 3px solid var(--border);
   background: var(--panel-bg);
 }
+.guide-strip {
+  position: relative;
+}
+/* The guide steps up into the bottom of the scene, so it stands in the world. */
 .guide-figure {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
-  width: 4.5rem;
-  height: 5.25rem;
+  width: 5.5rem;
+  height: 6.4rem;
+  margin-top: -2.75rem;
   overflow: visible;
+  filter: drop-shadow(0 3px 2px rgb(0 0 0 / 0.25));
 }
 @media (min-width: 40rem) {
   .guide-figure {
-    width: 6rem;
-    height: 7rem;
+    width: 8rem;
+    height: 9.3rem;
+    margin-top: -4.5rem;
   }
 }
 .guide-bubble {
@@ -536,21 +568,6 @@ h3 {
     transform: translateY(8px);
   }
 }
-@keyframes item-drop {
-  from {
-    opacity: 0.3;
-    transform: translateY(-22px) scale(0.8);
-  }
-  60% {
-    transform: translateY(3px) scale(1.04);
-  }
-}
-@keyframes item-pop {
-  from {
-    opacity: 0.4;
-    transform: scale(0.55);
-  }
-}
 @keyframes guide-hop {
   0% {
     transform: translateY(6px) scale(0.94);
@@ -569,6 +586,37 @@ h3 {
   }
   50% {
     transform: rotate(14deg);
+  }
+}
+@keyframes drift {
+  to {
+    transform: translateX(26px);
+  }
+}
+@keyframes twinkle {
+  to {
+    opacity: 0.55;
+  }
+}
+@keyframes ripple {
+  to {
+    transform: translateX(-18px);
+  }
+}
+@keyframes flag {
+  to {
+    transform: skewY(7deg);
+  }
+}
+@keyframes pad-pulse {
+  50% {
+    opacity: 0.62;
+  }
+}
+@keyframes spark-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.3);
   }
 }
 @keyframes scene-celebrate {
@@ -592,13 +640,7 @@ h3 {
   .scene-enter {
     animation: scene-in 400ms ease-out;
   }
-  /* A placed object drops into its spot; one put back pops into the tray. */
-  .item-built {
-    animation: item-drop 340ms ease-out;
-  }
-  .item-supply {
-    animation: item-pop 220ms ease-out;
-  }
+
   .guide-figure {
     transform-origin: 50% 100%;
     animation: guide-hop 420ms ease-out;
@@ -608,8 +650,32 @@ h3 {
     transform-origin: 0% 100%;
     animation: guide-wave 800ms ease-in-out 2;
   }
-  .stage-scene[data-complete="true"] svg {
+  .stage-scene[data-solved="true"] svg {
     animation: scene-celebrate 900ms ease-out;
+  }
+  /* Slow ambient life: decorative, far from the goal, never blocks input. */
+  .drift {
+    animation: drift 40s ease-in-out infinite alternate;
+  }
+  .twinkle {
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+  .ripple {
+    animation: ripple 5s ease-in-out infinite alternate;
+  }
+  .flag {
+    transform-box: fill-box;
+    transform-origin: left center;
+    animation: flag 2.4s ease-in-out infinite alternate;
+  }
+  /* The goal pad breathes while it is waiting to be filled; it stops when finished. */
+  .stage-scene[data-complete="false"] .goal-pad {
+    animation: pad-pulse 2.4s ease-in-out infinite;
+  }
+  .stage-scene[data-solved="true"] .spark {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spark-rise 1.2s ease-out backwards;
   }
   button.item {
     transition: transform 120ms ease-out;

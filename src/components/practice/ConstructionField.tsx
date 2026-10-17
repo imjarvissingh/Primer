@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { capitalize, type ItemArtId, type ThemeVocabulary } from "@/themes";
 import { ItemArt } from "./ItemArt";
 
@@ -57,7 +57,42 @@ export function ConstructionField({
         ) ?? find(want.item, "built"))
     )?.focus();
   }, [used]);
+  // Where each pressed object was before it moved, so it can visibly travel to
+  // where it lands. Purely decorative: the counts come from `used`, which has
+  // already changed, so no frame can show an impossible quantity; the animation
+  // never blocks input and ends in the same final layout.
+  const from = useRef(new Map<number, DOMRect>());
+  useLayoutEffect(() => {
+    const moved = from.current;
+    if (moved.size === 0) return;
+    from.current = new Map();
+    const reduce =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    for (const [item, was] of moved) {
+      const el = root.current?.querySelector<HTMLElement>(
+        `button[data-item="${item}"]`,
+      );
+      if (!el || typeof el.animate !== "function") continue;
+      const now = el.getBoundingClientRect();
+      const dx = was.left - now.left;
+      const dy = was.top - now.top;
+      if (dx === 0 && dy === 0) continue;
+      el.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px) scale(1.12)`, zIndex: 5 },
+          { transform: "translate(0, 0) scale(1)", zIndex: 5 },
+        ],
+        { duration: 380, easing: "cubic-bezier(0.2, 0.8, 0.25, 1)" },
+      );
+    }
+  }, [used]);
   const press = (item: number) => {
+    const el = root.current?.querySelector<HTMLElement>(
+      `button[data-item="${item}"]`,
+    );
+    if (el) from.current.set(item, el.getBoundingClientRect());
     // Pressing a supply object moves on to the next one still in the supply;
     // pressing a moved object follows it back into the supply.
     refocus.current = { item, place: used.has(item) ? "supply" : "built" };

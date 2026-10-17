@@ -244,11 +244,18 @@ function MissionBody({ theme }: PracticeMissionProps) {
 
   // The artwork shows the same selection the resource field shows. It only
   // reads it: `placed` is derived from `used`, never stored separately.
-  const framedScene = (progress: ConstructionProgress, mood: GuideMood) => (
+  const framedScene = (
+    progress: ConstructionProgress,
+    mood: GuideMood,
+    solved = false,
+  ) => (
     <div className="stage scene-enter">
       <div
         className="stage-scene"
         data-complete={isComplete(progress) ? "true" : "false"}
+        // Celebration is for a right answer the server confirmed, never for
+        // merely filling the picture.
+        data-solved={solved ? "true" : "false"}
       >
         <Scene themeId={theme.id} progress={progress} />
       </div>
@@ -313,6 +320,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
             ? { placed: used.size, required: used.size }
             : { placed: 0, required: null },
           outcomeMood,
+          solved,
         )}
         <MissionOutcome
           theme={theme}
