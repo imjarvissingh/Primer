@@ -422,13 +422,16 @@ export function GuideFigure({
 export function GuideStrip({
   guide,
   mood,
+  reaction = 0,
 }: {
   guide: ThemeGuide;
   mood: GuideMood;
+  /** A counter of real events (e.g. objects moved): each change replays the guide's hop. */
+  reaction?: number;
 }) {
   return (
     <div className="guide-strip" data-guide-mood={mood}>
-      <GuideFigure key={mood} look={guide.look} mood={mood} />
+      <GuideFigure key={`${mood}:${reaction}`} look={guide.look} mood={mood} />
       <div className="guide-bubble">
         <p className="guide-name">{guide.name}</p>
         <p data-testid="guide-line">{guideLine(guide, mood)}</p>

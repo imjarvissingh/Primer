@@ -133,6 +133,34 @@ Please answer on the record in section 8. Mark each: _appropriate / needs change
 | 6 | Age appropriateness | Targeted at ages 6–9 | Narrower band; reading level; audio | |
 | 7 | Clarity of assisted vs independent learning | Practice says it is "not a test"; check shows no hints and no correctness | Wording; parent explanation; labels | |
 
+## 6B. Cricket Academy vertical slice (2026-10-17) — three categories, kept apart
+
+Issue #38. **Nothing below is educator-reviewed.** No AI agent has certified any of it.
+
+**A. Existing approved software behaviour (unchanged).** Server-side evaluation, attempt counting, the fixed hint ladder (neutral → Hint 1 → Hint 2 → warm-up offer), session lifecycle, assessment isolation. Not touched by this slice. (Software behaviour only; the wording and pedagogy inside it are category B.)
+
+**B. Existing draft educational content (unchanged, still pending).** Make-ten Hint 1 and Hint 2 wording, the warm-up, and the construction-vs-hint mismatch in section 6A.
+
+**C. New instructional hypotheses added in the Cricket slice (all pending review):**
+
+| # | Hypothesis | Where | Connected to scoring or hints? |
+| --- | --- | --- | --- |
+| C1 | Seeing the quantities apart (at the start / sent to the nets / left, shown as "?") helps separate whole, part taken, and part left | Scoreboard on `/cricket` | No. Display only. |
+| C2 | Letting the learner regroup 13 balls into a rack of ten plus extras ("Make a ten") before or while moving balls supports later ten-based strategies | `/cricket`, optional toggle, default off | No. Same buttons, same selection. |
+| C3 | Drawing five empty places at the nets makes "how many are needed" visible without a numeral | `/cricket` | No. |
+| C4 | Showing the learner's own five balls and the balls really left after a server-confirmed success connects action to result | Finale on `/cricket` | Shown only after a server "correct". |
+| C5 | A four-step make-ten sequence: fill a rack of ten → take the three extras → work out how many more are needed to reach five → take them from the ten → count what is left | `/cricket/make-ten-lab` (separate, adult-operated) | **No.** Client only, no API calls, nothing saved. Not linked from any hint. |
+
+**Interactive sequence (C5), learner action at each step.** 1. Tap balls into a rack that holds ten (observe/organise). 2. Tap the three loose balls to the nets, then choose how many more the coach needs (decide). Wrong choice: "Look at the nets. Count the empty spots." (neutral, local check, nothing scored). 3. Tap two balls from the rack (manipulate). 4. Tap each ball left in the rack to count it (demonstrate). Then: "13 take away 5: you took 3, then 2 more from the ten, and counted 8 left. This is one way. Taking any 5 balls leaves the same number."
+
+**Prior knowledge assumed:** counting to 13, knowing a ten-frame/rack of ten, 3 + 2 = 5.
+
+**Likely misconceptions to watch:** (a) the lab's 3-then-2 order becomes the only "right" way to subtract (the closing line tries to prevent it); (b) "make a ten" is read as "always take from ten"; (c) the child reads the shown "13" and "5" as the whole task and skips counting; (d) the "?" is read as a hidden number the app knows, not a question for them.
+
+**Accessibility barriers noticed (not yet tested with assistive technology):** the story animation is non-essential and every beat is reachable with Next/Back; balls are buttons, but a child who cannot tap precisely has no drag alternative; the lab's counting uses toggle buttons, not speech. Screen readers, physical devices and children: not tested.
+
+**Questions for the reviewer:** Is C2 helpful or does it pre-empt the strategy choice? Should the lab's sequence ever be offered inside the tutor (that would need a policy change and explicit approval; it was **not** done)? Is showing the remainder after success (C4) fine, or does it encourage reading rather than counting? Is the "How many more does the coach need?" step age-appropriate? Should the make-ten steps ask the learner to find the three extras rather than tapping them?
+
 ## 7. How to run it yourself (adult, synthetic data only)
 
 `npm ci && npm run build && npm start -- --port 3000`, then open `/block-builder`: tap blocks 1–5, answer 9 four times to see every step above, then accept the warm-up (tap 6 blocks, answer 4), re-place 5 blocks and answer 8. The independent check is at `/assessment`. See `docs/DEMO-RUNBOOK.md`. **Do not enter real child information; do not observe a real child with this build.**

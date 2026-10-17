@@ -158,3 +158,13 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Hosting is single-process only.** In-memory sessions and the per-process limiter mean one always-on instance and no serverless hosting for the demo; restarts end sessions. The limiter stays fixed at 120 starts per minute with no override. A shared store is a separate, unapproved redesign. See [DEPLOYMENT.md](DEPLOYMENT.md).
 - **Hardening headers and `/api/health`.** Added frame, permissions, referrer and noindex headers and a data-free liveness route. No CSP yet (needs a tested nonce policy).
 - **Nothing deployed, merged or approved.** No hosting, DNS or payment was set up; no educator, screen-reader or child testing occurred.
+
+## Cricket vertical slice decisions (2026-10-17, issue #38) — all provisional
+- Cricket is the only world upgraded; the others stay on the stable shared presentation until a reviewer approves the mechanic.
+- Server remains the sole authority for correctness, hints and attempts. No new hint state machine is connected to production.
+- The make-ten sequence is an isolated, adult-operated, educator-review-gated draft at `/cricket/make-ten-lab`. It states plainly that it is a different way to take the same balls and never claims the learner did it.
+- Grouping is a learner-chosen view (default "Just the balls"), implemented with toggle buttons (not radios) so the answer picker stays the only radio group the existing tests count.
+- The intro draws a basket whose balls cannot be counted and no moved balls, so it cannot animate a remainder (AGENTS.md section 8).
+- The remainder is drawn only after the server confirms a correct answer, and only from the learner's actual selection.
+- No new dependencies, no 3D engine, no audio, no storage.
+- Art is code-drawn SVG. It is not premium. A real art pass needs: a designed coach character with expressions, a ball-bowling/batting animation set, a station prop set, sound (optional), and a tuned phone composition (#12, #15, #35).

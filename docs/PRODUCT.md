@@ -36,3 +36,6 @@ In all five worlds the thirteen objects are drawn, separate and countable in a t
 
 ## Milestone 4 status (2026-10-17)
 The five worlds are layered illustrated scenes (about a third of a phone screen), the guide characters have more identity, pressed objects fly to their place, the finished world celebrates a confirmed right answer, the welcome cards preview the real scenes, and the adult summary opens with a plain-language lead and a practice-versus-check comparison. The art is hand-authored vector, not commissioned or generated illustration; it is a better baseline, not a premium finish.
+
+## Cricket vertical slice status (2026-10-17, issue #38)
+Cricket Academy (`/cricket`) now opens with a short animated story (skippable, pausable, replayable, captioned, no audio), shows start / sent / left as separate quantities, lets the learner regroup the basket into a rack of ten and extras, draws the five places to fill, and ends with a finale showing the learner's own balls and what really remains (after a server-confirmed correct answer only). A separate adult-operated draft, `/cricket/make-ten-lab`, walks through one make-ten sequence. Scoring, hints and the independent check are unchanged. Educator-unreviewed; not tested with children or assistive technology. The other four worlds are unchanged and were deliberately not upgraded.

@@ -96,3 +96,6 @@ Branch `milestone4/game-art` (draft PR; not merged). Done and tested: layered sc
 
 ## RC1 (Oct 17, 2026): stabilization and deployment readiness
 Branch `rc1/stabilization` (draft PR; not merged, not deployed). Report: [RC1.md](RC1.md); hosting plan: [DEPLOYMENT.md](DEPLOYMENT.md). Done: real-browser audit of all five worlds, compact answer grid with unchanged answer set, honest warm-up "Not now" label, hardening headers, `/api/health`, demo script, route checklist, recording plan. Open: educator review (#16 to #20), screen-reader and device testing (#24, #29, #32), scene size and art (#35, #12), hosting authorization (#26), CSP, YC founder items and recordings (#27, #28). Not started: next milestone.
+
+## Cricket vertical slice (Oct 17, 2026, issue #38)
+Branch `feature/cricket-academy-vertical-slice` (draft PR; not merged, not deployed). Done and tested: animated skippable intro (#13), scoreboard, rack-of-ten view, drawn target places, finale from the learner's real selection, draft make-ten lab (#16/#17 stay open and gated), cricket e2e and unit suites. Open: educator review (#16 to #20), original art pass (#12, #15), phone scene size (#35), screen-reader and device testing (#24), YC recording (#28). Not started: other worlds on this mechanic.

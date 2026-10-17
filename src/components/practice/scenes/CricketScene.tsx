@@ -206,6 +206,29 @@ export function CricketScene({
         ))}
       </g>
       <Celebrate />
+      {/* Bunting strung over the nets: shown only once the server confirms a right answer. */}
+      <g className="cricket-win">
+        <path
+          d="M110 40 Q300 92 490 40"
+          fill="none"
+          stroke="#475569"
+          strokeWidth="2"
+        />
+        {Array.from({ length: 11 }, (_, i) => {
+          const t = (i + 0.5) / 11;
+          const x = 110 + t * 380;
+          const y = 40 + 4 * 26 * t * (1 - t) * 2;
+          return (
+            <path
+              key={i}
+              className="bunting-flag"
+              style={{ animationDelay: `${i * 70}ms` }}
+              d={`M${x - 11} ${y} H${x + 11} L${x} ${y + 24}Z`}
+              fill={["#c0262d", "#1d4ed8", "#facc15", "#16a34a"][i % 4]}
+            />
+          );
+        })}
+      </g>
     </SceneFrame>
   );
 }

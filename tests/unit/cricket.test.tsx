@@ -1,0 +1,225 @@
+import { act, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PracticeMission } from "@/components/practice/PracticeMission";
+import { CricketIntro } from "@/components/practice/cricket/CricketIntro";
+import { CricketAftermath } from "@/components/practice/cricket/CricketStation";
+import { MakeTenLab } from "@/components/practice/cricket/MakeTenLab";
+import { CRICKET_THEME } from "@/themes";
+
+function mockMatchMedia(reduce: boolean) {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockImplementation((q: string) => ({
+      matches: reduce && q.includes("reduce"),
+      media: q,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    })),
+  );
+}
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+describe("Cricket introduction", () => {
+  beforeEach(() => mockMatchMedia(false));
+
+  it("plays through four captioned beats on its own and then offers a replay", () => {
+    vi.useFakeTimers();
+    render(<CricketIntro />);
+    const section = document.querySelector("[data-intro-beat]")!;
+    expect(section.getAttribute("data-intro-beat")).toBe("arrive");
+    const seen = [section.getAttribute("data-intro-beat")];
+    for (let i = 0; i < 3; i++) {
+      act(() => void vi.advanceTimersByTime(3800));
+      seen.push(section.getAttribute("data-intro-beat"));
+    }
+    expect(seen).toEqual(["arrive", "station", "nets", "job"]);
+    act(() => void vi.advanceTimersByTime(3800));
+    expect(section.getAttribute("data-intro-mode")).toBe("finished");
+    expect(screen.getByRole("button", { name: "Replay story" })).toBeVisible();
+  });
+
+  it("can be skipped to the last frame and replayed from the first", async () => {
+    const user = userEvent.setup();
+    render(<CricketIntro />);
+    await user.click(screen.getByRole("button", { name: "Skip story" }));
+    expect(screen.getByTestId("intro-caption")).toHaveTextContent(/Your job/);
+    await user.click(screen.getByRole("button", { name: "Replay story" }));
+    expect(screen.getByTestId("intro-caption")).toHaveTextContent(/Welcome/);
+  });
+
+  it("draws a basket mound whose ball count is not the answer", () => {
+    const { container } = render(<CricketIntro />);
+    const heap = container.querySelectorAll(".intro-basket clipPath + g > g");
+    expect(heap.length).toBeGreaterThan(0);
+    expect(heap.length).not.toBe(8);
+    expect(heap.length).not.toBe(13);
+  });
+
+  it("announces story captions politely", () => {
+    render(<CricketIntro />);
+    expect(screen.getByTestId("intro-caption")).toHaveAttribute(
+      "aria-live",
+      "polite",
+    );
+  });
+
+  it("never draws numerals or a remainder in its captions", () => {
+    render(<CricketIntro />);
+    expect(screen.getByTestId("intro-caption").textContent).not.toMatch(
+      /\d{2}|\b8\b/,
+    );
+  });
+});
+
+describe("Cricket introduction with reduced motion", () => {
+  beforeEach(() => mockMatchMedia(true));
+
+  it("does not autoplay; steps with buttons and keeps every frame reachable", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<CricketIntro />);
+    act(() => void vi.advanceTimersByTime(20000));
+    expect(screen.getByTestId("intro-caption")).toHaveTextContent(/Welcome/);
+    expect(screen.queryByRole("button", { name: /Pause story/ })).toBeNull();
+    for (let i = 0; i < 3; i++)
+      await user.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.getByTestId("intro-caption")).toHaveTextContent(/Your job/);
+    expect(screen.getByRole("button", { name: "Replay story" })).toBeVisible();
+  });
+});
+
+describe("Cricket mission presentation", () => {
+  const SESSION = "123e4567-e89b-42d3-a456-426614174000";
+  beforeEach(() => {
+    mockMatchMedia(false);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_u: string, init: RequestInit) => {
+        const req = JSON.parse(init.body as string);
+        const body =
+          req.action === "start"
+            ? {
+                ok: true,
+                sessionId: SESSION,
+                seq: 0,
+                challenge: {
+                  missionId: "subtract-practice",
+                  start: 13,
+                  takeAway: 5,
+                  maxAnswer: 20,
+                },
+              }
+            : {
+                ok: true,
+                seq: 1,
+                feedback: { kind: "correct" },
+                sessionStatus: "finished",
+              };
+        return { json: async () => body } as Response;
+      }),
+    );
+  });
+
+  async function play() {
+    const user = userEvent.setup();
+    render(<PracticeMission theme={CRICKET_THEME} />);
+    await user.click(screen.getByRole("button", { name: "Start practice" }));
+    await screen.findByRole("heading", { name: "Fill the practice nets" });
+    return user;
+  }
+
+  it("keeps start, used and left apart, and never shows a remainder", async () => {
+    const user = await play();
+    const board = screen.getByLabelText("Scoreboard");
+    expect(within(board).getByText("13")).toBeInTheDocument();
+    expect(
+      board.querySelector('[data-board="left"] [aria-hidden]'),
+    ).toHaveTextContent("?");
+    for (let n = 1; n <= 5; n++)
+      await user.click(
+        screen.getByRole("button", { name: new RegExp(`^Ball ${n}, in the`) }),
+      );
+    expect(board.querySelector('[data-board="used"]')).toHaveTextContent(
+      "5 of 5",
+    );
+    expect(board.textContent).not.toMatch(/\b8\b/);
+  });
+
+  it("'Make a ten' regroups the same balls without changing the selection", async () => {
+    const user = await play();
+    await user.click(screen.getByRole("button", { name: /^Ball 3, in the/ }));
+    await user.click(screen.getByRole("button", { name: "Make a ten" }));
+    const rack = screen.getByRole("group", { name: "Rack of ten" });
+    // Ball 3 left the rack (it is at the nets), so nine balls remain in the rack.
+    expect(within(rack).getAllByRole("button")).toHaveLength(9);
+    expect(
+      screen
+        .getByRole("group", { name: "Extra balls" })
+        .querySelectorAll("button"),
+    ).toHaveLength(3);
+    expect(
+      screen.getAllByRole("button", { name: /^Ball \d+, in the basket/ }),
+    ).toHaveLength(12);
+    await user.click(screen.getByRole("button", { name: "Just the balls" }));
+    expect(
+      screen.getAllByRole("button", { name: /^Ball \d+, in the basket/ }),
+    ).toHaveLength(12);
+  });
+
+  it("shows the real remaining balls only after the server confirms success", async () => {
+    const user = await play();
+    expect(document.querySelector("[data-aftermath]")).toBeNull();
+    for (const n of [1, 4, 7, 10, 13])
+      await user.click(
+        screen.getByRole("button", { name: new RegExp(`^Ball ${n}, in the`) }),
+      );
+    await user.click(screen.getByRole("radio", { name: "8" }));
+    await user.click(screen.getByRole("button", { name: "Check my answer" }));
+    await screen.findByText("Practice can begin!");
+    const nets = document.querySelector('[data-aftermath="nets"]')!;
+    const basket = document.querySelector('[data-aftermath="basket"]')!;
+    expect(nets.querySelectorAll(".item")).toHaveLength(5);
+    expect(basket.querySelectorAll(".item")).toHaveLength(8);
+  });
+});
+
+describe("Cricket aftermath", () => {
+  it("draws exactly the learner's own selection and the rest", () => {
+    render(<CricketAftermath total={13} used={new Set([2, 3, 5, 8, 13])} />);
+    expect(screen.getByRole("figure")).toHaveTextContent(
+      "5 balls at the nets, 8 balls left",
+    );
+  });
+});
+
+describe("Draft make-ten lab page", () => {
+  it("only enables balls that can act in the current step", async () => {
+    render(<MakeTenLab />);
+    // Step 1: every loose ball can go to the rack.
+    expect(
+      screen
+        .getAllByRole("button", { name: /in the pile/ })
+        .every((b) => !(b as HTMLButtonElement).disabled),
+    ).toBe(true);
+  });
+
+  it("labels its status, fills the rack by tapping, and shows no scoring", async () => {
+    const user = userEvent.setup();
+    render(<MakeTenLab />);
+    for (let n = 1; n <= 10; n++)
+      await user.click(
+        screen.getByRole("button", {
+          name: new RegExp(`^Ball ${n}, in the pile`),
+        }),
+      );
+    expect(screen.getByTestId("lab-status")).toHaveTextContent(
+      "In the rack: 10",
+    );
+    await user.click(screen.getByRole("button", { name: "Next step" }));
+    expect(screen.getByRole("heading", { name: /Step 2/ })).toBeInTheDocument();
+  });
+});
