@@ -46,6 +46,8 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  /* Large text: a long word wraps at the container edge as a last resort. */
+  overflow-wrap: anywhere;
   font-family:
     system-ui,
     -apple-system,

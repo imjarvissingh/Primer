@@ -151,7 +151,7 @@ for (const w of WORLDS) {
     page,
   }) => {
     await page.setViewportSize({ width: 320, height: 760 });
-    for (const route of ["/", w.route]) {
+    for (const route of ["/", "/assessment", "/demo-progress", w.route]) {
       await page.goto(route);
       await page.addStyleTag({
         content:
