@@ -4,7 +4,7 @@
 
 ## Hard constraint: one long-lived Node process
 
-Practice sessions, assessment sessions and the 120-starts-per-minute limiter live in the memory of one server process (`src/server/ttl-store.ts`, `rate-limit.ts`). Therefore:
+Practice sessions, assessment sessions and the start limiters (120 starts per minute per process, one fixed-window limiter each for practice and for the check) live in the memory of one server process (`src/server/ttl-store.ts`, `rate-limit.ts`). Therefore:
 
 - **Run exactly one instance.** With two or more, a learner's next request can reach a process that never saw their session ("session lost"), and the start limit becomes per instance.
 - **Do not use serverless or per-request hosting** (functions that spin up per request or scale to zero between calls): each cold instance starts with empty sessions. A platform that "scales to zero" must be set to always-on with a minimum and maximum of one instance.
@@ -28,7 +28,7 @@ Avoid for the hosted demo: Vercel/Netlify-style serverless functions (session lo
 
 ## Response headers (verified locally on the production build)
 
-Every route: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, a restrictive `Permissions-Policy`, `X-Robots-Tag: noindex, nofollow`, no `X-Powered-By`. API replies and `/demo-progress`: `Cache-Control: no-store`; `/demo-progress` also `Referrer-Policy: no-referrer`. **No Content-Security-Policy is set**: Next.js inline scripts need a nonce-based policy that has not been built or tested. That is a known gap, not a claim of coverage. Tests: `tests/e2e/release-candidate.spec.ts`.
+Every route: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, a restrictive `Permissions-Policy`, `X-Robots-Tag: noindex, nofollow`, no `X-Powered-By`. API replies and `/demo-progress`: `Cache-Control: no-store`; `/demo-progress` also `Referrer-Policy: no-referrer`. **No Content-Security-Policy is set**: Next.js inline scripts need a nonce-based policy that has not been built or tested. That is a known gap, not a claim of coverage. The rule is global in `next.config.ts`; `tests/e2e/release-candidate.spec.ts` asserts it on every page route, `/api/health` and the practice API.
 
 ## Dependencies
 

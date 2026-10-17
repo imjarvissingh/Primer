@@ -12,7 +12,7 @@ Adult-operated demonstration, synthetic data only. **Not ready for real children
 | [DEPLOYMENT.md](DEPLOYMENT.md): single-process constraint, setup, rollback, verification. Nothing deployed.                                                                                                                                                                                                            | #26 (stays open)   | Docs                |
 | New tests: `tests/e2e/release-candidate.spec.ts`.                                                                                                                                                                                                                                                                      | #24, #26           | Tests               |
 
-Not changed on purpose: hint text and eligibility, attempt counts, the ladder, the warm-up and what declining does, mastery rules, the assessment, scoring, the server, the rate limiter (120 starts per minute per process, no override), any API shape.
+Not changed on purpose: hint text and eligibility, attempt counts, the ladder, the warm-up and what declining does, mastery rules, the assessment, scoring, the server, the rate limiters (120 starts per minute per process for each of practice and the check, no override), any API shape.
 
 ### Answer-entry design decision
 

@@ -5,7 +5,18 @@ import { expect, test } from "@playwright/test";
  * a presentation change only, so these tests also pin that it still offers
  * exactly 0 to 20, in order, with nothing pre-selected or highlighted.
  */
-const ROUTES = ["/", "/welcome", "/cricket", "/assessment", "/demo-progress"];
+const ROUTES = [
+  "/",
+  "/welcome",
+  "/cricket",
+  "/block-builder",
+  "/space-construction",
+  "/basketball",
+  "/soccer",
+  "/assessment",
+  "/demo-progress",
+  "/api/health",
+];
 
 for (const route of ROUTES) {
   test(`${route}: hardening headers are present and the page is not indexable`, async ({
@@ -21,6 +32,19 @@ for (const route of ROUTES) {
     expect(h["referrer-policy"]).toBeTruthy();
   });
 }
+
+test("the practice API reply carries the hardening headers and is no-store", async ({
+  request,
+}) => {
+  const res = await request.post("/api/practice/mission", {
+    data: { action: "nonsense" },
+  });
+  const h = res.headers();
+  expect(res.status()).toBe(400);
+  expect(h["cache-control"]).toContain("no-store");
+  expect(h["x-frame-options"]).toBe("DENY");
+  expect(h["x-content-type-options"]).toBe("nosniff");
+});
 
 test("the summary stays no-store with no-referrer", async ({ request }) => {
   const h = (await request.get("/demo-progress")).headers();
