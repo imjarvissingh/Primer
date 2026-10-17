@@ -16,6 +16,10 @@ Dependencies: the founder's personal facts and the portal's real questions gate 
 | Oct 30–31 | **Submit** | Final read in the portal; submit; save confirmation | Confirmation received |
 | Nov 1–2 | Buffer | Emergencies only; co-founder profiles; update form if needed | Submitted before Nov 2 8pm PT |
 
+## Product readiness (RC1, 2026-10-17)
+
+The demo build, operator script and recording plan are in [RC1.md](RC1.md). Not done: the recording itself, the founder video, the founder facts, the portal questions. No educator review, traction or outcome exists.
+
 ## Founder-input checklist (nothing here is in the repo)
 
 - [ ] Legal name(s), location, roles of each founder; any co-founder (they must complete their own profile)

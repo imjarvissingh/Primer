@@ -150,3 +150,11 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Welcome and interest cards reuse the mission scenes**, so previews and games cannot drift apart; the older separate welcome art was removed.
 - **Summary polish only.** A plain-language lead restating the counts, a two-card comparison of guided practice and the independent check, a no-wrap header fix, and next-step links. No evidence calculation, count or wording about mastery changed. A draft home activity was not added (educator-blocked, #22).
 - **Not done on purpose:** no tutoring, hint-ladder or answer-picker change (proposals recorded on #16/#17), no sound, no new dependency, no 3D, no rate-limit change.
+
+## RC1 decisions (2026-10-17)
+
+- **Answer entry: presentation only.** The picker keeps exactly 0–20 as radio buttons, now in a grid (5 columns on phones, 7 from 640 px). A smaller option set, typed entry, a stepper or a number line would change cueing, difficulty or assessment conditions, so they are **not** implemented and are recorded as educator questions (#17, #20). Details in [RC1.md](RC1.md).
+- **"Not now" is described, not changed.** The offer says the practice ends; the state machine, ladder, thresholds and hint text are untouched. Whether declining should return to the question stays open (#19).
+- **Hosting is single-process only.** In-memory sessions and the per-process limiter mean one always-on instance and no serverless hosting for the demo; restarts end sessions. The limiter stays fixed at 120 starts per minute with no override. A shared store is a separate, unapproved redesign. See [DEPLOYMENT.md](DEPLOYMENT.md).
+- **Hardening headers and `/api/health`.** Added frame, permissions, referrer and noindex headers and a data-free liveness route. No CSP yet (needs a tested nonce policy).
+- **Nothing deployed, merged or approved.** No hosting, DNS or payment was set up; no educator, screen-reader or child testing occurred.

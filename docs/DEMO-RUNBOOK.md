@@ -81,3 +81,7 @@ In any world the thirteen objects are drawn in a tray (basket, crate, rack, bag,
 
 ## Milestone 4 look and feel (2026-10-17)
 Each world is a layered illustrated scene. Press an object and it flies to its place; nothing blocks while it moves. The goal pad breathes until it is filled; filling it turns its ring green but does not celebrate. Only a confirmed right answer brings the sparkles and the guide's celebration. Say plainly on camera that the art is hand-made vector, not commissioned illustration. Welcome cards show the same scenes. The adult summary opens with a plain-language lead and compares guided practice with the independent check.
+
+## RC1 (2026-10-17)
+
+Use the operator script, route checklist and recording plan in [RC1.md](RC1.md). The warm-up offer now says that "Not now" ends the practice. On a shared machine, pick a free port: an older server may already hold 3000/3200 and serve stale code.

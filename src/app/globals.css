@@ -385,6 +385,24 @@ h3 {
 .answer-chip {
   background: var(--surface);
 }
+/* Five columns on phones (rows read like a ten-frame), seven when there is room.
+   Every cell stays at least 3rem (48px) tall and wide enough for two digits. */
+.answer-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  /* 0.25rem keeps each cell at 44px or more at 320px; wider screens get more air. */
+  gap: 0.25rem;
+}
+@media (min-width: 24rem) {
+  .answer-grid {
+    gap: 0.5rem;
+  }
+}
+@media (min-width: 40rem) {
+  .answer-grid {
+    grid-template-columns: repeat(7, minmax(0, 3.5rem));
+  }
+}
 
 /* ---- Trays: the container the objects are really in ---------------------- */
 .tray-label {
