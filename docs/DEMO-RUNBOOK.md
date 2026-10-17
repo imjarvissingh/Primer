@@ -93,3 +93,10 @@ Use the operator script, route checklist and recording plan in [RC1.md](RC1.md).
 4. For a grown-up: the link under the start button opens `/cricket/make-ten-lab`, a draft, unreviewed, local-only activity. It shows the answer at the end, so run it after the mission. Do not present it as validated.
 5. Reduced motion: enable it in the OS; the story then steps with Next/Back and no motion plays.
 Recording note: no video was recorded by the agent. Record the screen with macOS Shift-Cmd-5 while following steps 1 to 3.
+
+## Draft make-ten lab, Learning Experience 2.1 (2026-10-18)
+1. Run the Cricket mission at `/cricket` first (the lab uses the same 13 − 5).
+2. Open `/cricket/make-ten-lab`. Step 1: tap ten balls into the rack, answer "how many are outside?" (try 10 first to see the feedback, then 3). Step 2: tap the three loose balls, answer "how many more?" (2). Step 3: tap two balls in the rack. Step 4: optionally tap balls to mark them, answer 8; the recap appears only now. Step 5: send 4 of 11 balls, answer 7.
+3. **Back a step**, **Start again** and **Leave the activity** work at any point. Say on camera that it is a draft no educator has reviewed and that nothing is saved.
+
+**Adult usability script (first-time adult participant; not for children).** Do not record names or personal details. Say: "This is an unfinished math activity for 6–9-year-olds. Please think aloud. There are no wrong moves; I am testing the activity, not you." Tasks without help: (1) "Start the activity and do what you think it asks." Note the first action and any hesitation. (2) "At the question, pick a number you think a child might wrongly choose." Note whether the feedback is understood. (3) "Go back one step." (4) "Finish the activity." (5) Repeat step 1 on a phone. Ask after: What was the activity trying to teach? Where did you feel you were watching rather than doing? What would confuse a 6-year-old? Record observations only from real sessions; none have been run.

@@ -20,11 +20,12 @@ export default function MakeTenLabPage() {
         Make a ten with the coach
       </h1>
       <p className="notice mt-2 px-3 py-2 text-sm sm:mt-3 sm:px-4 sm:py-3">
-        Draft activity for a grown-up to run. This way of taking balls away is a
-        proposal that no educator has reviewed. It is separate from the practice
-        and the independent check: nothing here is scored, saved or counted as
-        evidence, and it does not change any hint. It shows an answer at the
-        end, so use it after the mission, not before.
+        Draft activity for a grown-up to run. These five steps are a proposal
+        that no educator has reviewed. They are separate from the practice and
+        the independent check: nothing here is scored, saved or counted as
+        evidence, and nothing changes any hint. The lesson uses the
+        mission&apos;s numbers (13 take away 5), so run it after the mission,
+        not before.
       </p>
       <div className="mt-4 sm:mt-6">
         <MakeTenLab />

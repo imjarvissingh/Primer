@@ -99,3 +99,6 @@ Branch `rc1/stabilization` (draft PR; not merged, not deployed). Report: [RC1.md
 
 ## Cricket vertical slice (Oct 17, 2026, issue #38)
 Branch `feature/cricket-academy-vertical-slice` (draft PR; not merged, not deployed). Done and tested: animated skippable intro (#13), scoreboard, rack-of-ten view, drawn target places, finale from the learner's real selection, draft make-ten lab (#16/#17 stay open and gated), cricket e2e and unit suites. Open: educator review (#16 to #20), original art pass (#12, #15), phone scene size (#35), screen-reader and device testing (#24), YC recording (#28). Not started: other worlds on this mechanic.
+
+## Learning Experience 2.1 (Oct 18, 2026): Cricket make-ten lab
+Branch `feature/cricket-make-ten-lab-2-1`, stacked on PR #39's head (draft PR; not merged, not deployed). Done and tested: preliminary AI-assisted audit of the 13 − 5 lesson (packet §6C.2), five-step draft lab where the learner names the extras, the part still needed and the remainder, an unguided 11 − 4 try, Back/Start again, keyboard focus, reduced motion, presentation-neutral model. Open: **qualified educator review** (§6C.7 questions, #16–#20), real VoiceOver and device testing (#24), merge of PR #39 (founder action), adult usability sessions with real participants (script in `docs/DEMO-RUNBOOK.md`), any reuse in other worlds or the tutor (needs approval).

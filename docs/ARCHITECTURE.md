@@ -233,3 +233,19 @@ Presentation only; no change to `src/domain`, `src/server`, `src/lib/practice-pr
 - `/cricket/make-ten-lab`: `MakeTenLab` plus pure rules in `src/lib/make-ten-lab.ts`. Fixed demo numbers (13, 10, 5), no network calls, no storage, not importable by the tutor. It is a draft instructional hypothesis (educator packet 6B, C5), not a policy.
 - Integration boundary: connecting the lab's sequence to the tutor would change the authoritative hint policy. **Not done; needs explicit approval after educator review.**
 - Reusable later: scoreboard, grouping and aftermath take only `start`, `takeAway` and the selection set, so they can move to other worlds once the mechanic is reviewed.
+
+## Implementation status (Learning Experience 2.1, 2026-10-18): reusable draft make-ten activity
+Presentation and a client-only draft; no change to `src/domain`, `src/server`, `src/lib/practice-protocol.ts`, any API, the tutor or the check.
+
+**Presentation-neutral activity description** (`src/lib/make-ten-lab.ts`, no theme words):
+- *Quantities:* a problem `{ total, take }` validated by `isCrossTenProblem` (11–19, take larger than the extras, at most 10); a holder of `RACK = 10`. Lesson 13 − 5; unguided try 11 − 4.
+- *Places:* every object is in exactly one of `pile`, `rack`, `nets`. Conservation and limits (rack ≤ 10, nets ≤ take) hold in every state (randomised unit test).
+- *Permitted manipulations per step:* 1 pile↔rack; 2 pile↔nets (rack locked); 3 rack→nets and back, only for objects moved in step 3; 4 mark/unmark rack objects (no quantity change); 5 pile↔nets (no rack).
+- *Decision points (questions):* `extras` (outside the full ten), `more` (still needed), `left` (in the rack), `apply` (unguided). A question opens only when the picture is ready (`openQuestion`).
+- *Checks:* `shownBy` reads the number from the current arrangement; `isRight` compares the learner's number with it. There is no stored answer and no arithmetic on bank items, so this is not a second evaluator; it decides nothing outside the page.
+- *Representation transitions:* `advance` (keeps a snapshot), `back` (restores it exactly), moving an object clears the answer about that picture, `recap` (only after a right `left`).
+- *Feedback events:* move announced in a live region; right/wrong per question with number-specific wording for likely confusions; part-whole picture after a right `extras` / `more`.
+- *Theme-owned:* `LabWords` (guide, one/many, rack, destination) and an `ItemArtId`, passed to `MakeTenLab`. Cricket supplies `CRICKET_LAB_WORDS` and `cricket-ball`. Another world would pass, for example, "block / crate / the bridge"; nothing else changes.
+- *Accessibility contract:* objects are buttons; focus follows the work (next object in the same place, else the question, else Next); the step heading takes focus on Next/Back; motion is decorative (Web Animations travel and a CSS reveal) and off under reduced motion; panels hold a full row of five or wrap at very large text.
+
+**Boundaries kept:** one server evaluator; one tutor state machine; no theme-specific answers; no evidence written; the lab is not linked from any hint and is not imported by the tutor. Only Cricket mounts it. Wiring other worlds or the tutor to it needs educator review and an explicit decision.
