@@ -16,7 +16,11 @@ import { presentHint } from "./hints";
 import { capitalize, countOf, fillStory, type ThemeConfig } from "@/themes";
 import { sendPractice } from "./api";
 import { Scene } from "./scenes";
-import { NOT_STARTED, type ConstructionProgress } from "./scenes/progress";
+import {
+  isComplete,
+  NOT_STARTED,
+  type ConstructionProgress,
+} from "./scenes/progress";
 
 interface Session {
   id: string;
@@ -244,11 +248,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
     <div className="stage scene-enter">
       <div
         className="stage-scene"
-        data-complete={
-          progress.required !== null && progress.placed >= progress.required
-            ? "true"
-            : "false"
-        }
+        data-complete={isComplete(progress) ? "true" : "false"}
       >
         <Scene themeId={theme.id} progress={progress} />
       </div>

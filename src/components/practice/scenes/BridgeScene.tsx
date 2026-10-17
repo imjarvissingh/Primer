@@ -1,4 +1,5 @@
 import {
+  isComplete,
   slotLayout,
   slotStates,
   NOT_STARTED,
@@ -17,7 +18,7 @@ export function BridgeScene({
 }) {
   const states = slotStates(progress);
   const slots = slotLayout(states.length, 224, 152, 3);
-  const complete = states.length > 0 && states.every(Boolean);
+  const complete = isComplete(progress);
   return (
     <svg
       data-scene="bridge"

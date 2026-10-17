@@ -41,3 +41,15 @@ export function slotLayout(
     w,
   }));
 }
+
+/**
+ * True only when exactly the required number are placed. Placing too many does
+ * not finish the picture: the scene caps its slots at the goal, so it must not
+ * also look finished while the tray still shows one too many.
+ */
+export function isComplete({
+  placed,
+  required,
+}: ConstructionProgress): boolean {
+  return required !== null && required > 0 && placed === required;
+}

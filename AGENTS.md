@@ -94,3 +94,7 @@ State uncertainty instead of inventing facts, traction, interviews, educator end
 ## Adding or changing a themed world
 
 A world is a `ThemeConfig` (strings only), a CSS palette class, a scene in `src/components/practice/scenes/`, a route page, and an entry in `src/interests`. Do not add a theme field to any API or tutoring code. Scenes must not draw the supply in a countable way or print the remainder. Hint wording may describe a strategy picture but must never say what the learner did ("you took"). Keep the cross-theme invariance test over all themes passing.
+
+## Countable objects and guides
+
+Resources are individually drawn, separate buttons that mirror the session's own selection; never draw the remaining set inside a scene or container that could disagree with the session, never print a numeral on an object, and never state the remainder in text, names or descriptions before the learner answers. Guide lines are fixed authored strings keyed to real events (welcome, working, again, done): no generated dialogue, no praise or judgment after a wrong answer, no claims about ability. Keep motion in `prefers-reduced-motion: no-preference` and test final states, not timing.

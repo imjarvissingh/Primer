@@ -75,3 +75,6 @@ Start: `npm run dev` (or `npm run build && npm start`), open `/`. Path: "Start: 
 
 ## Five worlds (Milestone 2, 2026-10-17)
 Routes: `/cricket`, `/block-builder`, `/space-construction`, `/basketball`, `/soccer`. In each: press the start button, tap five balls (or blocks, or modules) to move them, pick how many are left, "Check my answer". A wrong answer gives neutral feedback, then Hint 1 and Hint 2 (framed as "the same subtraction another way"). "Start over" on the finish screen replays with a fresh server session; "Choose an interest" in the header switches. Then the finish screen's "Independent check" -> "Summary for a grown-up". Automated: `tests/e2e/five-worlds.spec.ts`.
+
+## Countable worlds (Milestone 3, 2026-10-17)
+In any world the thirteen objects are drawn in a tray (basket, crate, rack, bag, storage bay). Tap or press Enter/Space on five: each becomes a ringed, ticked copy in the second area and leaves an empty dashed place. Count what is still in the tray, pick that number, "Check my answer". The guide beside the scene reacts (welcome, working, encouraging after a not-yet-right answer, celebrating a right one). With keyboard only, focus moves on to the next object after each press. Welcome page: "How Primer works" explains the parent journey. Say plainly on camera that the art is basic SVG.

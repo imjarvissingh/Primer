@@ -353,8 +353,9 @@ h3 {
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 9999px;
-  background: var(--built-border);
-  color: #ffffff;
+  border: 2px solid var(--built-border);
+  background: var(--built-bg);
+  color: var(--built-fg);
   font-size: 0.7rem;
   font-weight: 800;
   line-height: 1;

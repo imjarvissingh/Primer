@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { capitalize, type ItemArtId, type ThemeVocabulary } from "@/themes";
 import { ItemArt } from "./ItemArt";
 
@@ -34,6 +35,34 @@ export function ConstructionField({
   disabled,
 }: ConstructionFieldProps) {
   const items = Array.from({ length: total }, (_, i) => i + 1);
+  const root = useRef<HTMLDivElement>(null);
+  // Where keyboard focus should land after the pressed object moves. The pressed
+  // button is replaced by an empty place, so without this focus would drop to
+  // the page and Tab would restart from the top.
+  const refocus = useRef<{ item: number; place: "supply" | "built" } | null>(
+    null,
+  );
+  useEffect(() => {
+    const want = refocus.current;
+    if (want === null) return;
+    refocus.current = null;
+    const find = (item: number, place: string) =>
+      root.current?.querySelector<HTMLElement>(
+        `button[data-item="${item}"][data-place="${place}"]`,
+      ) ?? null;
+    (want.place === "supply"
+      ? find(want.item, "supply")
+      : (root.current?.querySelector<HTMLElement>(
+          'button[data-place="supply"]',
+        ) ?? find(want.item, "built"))
+    )?.focus();
+  }, [used]);
+  const press = (item: number) => {
+    // Pressing a supply object moves on to the next one still in the supply;
+    // pressing a moved object follows it back into the supply.
+    refocus.current = { item, place: used.has(item) ? "supply" : "built" };
+    onToggle(item);
+  };
   const built = items.filter((b) => used.has(b));
   const rows: number[][] = [];
   for (let i = 0; i < items.length; i += PER_ROW) {
@@ -44,7 +73,7 @@ export function ConstructionField({
   // Two columns only when each column fits a row of five items (about 736px up).
   // 200% zoom on a 1280px screen is a 640px page, which must stay stacked.
   return (
-    <div className="grid grid-cols-1 gap-4 min-[47rem]:grid-cols-2">
+    <div ref={root} className="grid grid-cols-1 gap-4 min-[47rem]:grid-cols-2">
       <section
         aria-labelledby="supply-heading"
         className="field-panel field-supply"
@@ -77,8 +106,10 @@ export function ConstructionField({
                   <button
                     key={b}
                     type="button"
+                    data-item={b}
+                    data-place="supply"
                     disabled={disabled}
-                    onClick={() => onToggle(b)}
+                    onClick={() => press(b)}
                     aria-label={`${name} ${b}, ${v.supplyPlace}${cued ? ", outlined by the hint" : ""}. Press to put it ${v.builtPlace}.`}
                     className={`item item-supply ${cued ? "item-cue" : ""}`}
                   >
@@ -112,8 +143,10 @@ export function ConstructionField({
             <button
               key={b}
               type="button"
+              data-item={b}
+              data-place="built"
               disabled={disabled}
-              onClick={() => onToggle(b)}
+              onClick={() => press(b)}
               aria-label={`${name} ${b}, ${v.builtPlace}. Press to put it back ${v.supplyPlace}.`}
               className="item item-built"
             >

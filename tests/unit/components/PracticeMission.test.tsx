@@ -220,14 +220,58 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       );
     });
 
-    it("works from the keyboard with Enter and Space", async () => {
+    it("works from the keyboard with Enter and Space, and focus follows so Tab never restarts", async () => {
       const user = await start();
       item(1, "supply").focus();
       await user.keyboard("{Enter}");
       expect(built()).toHaveLength(1);
-      item(2, "supply").focus();
+      // Focus moved on to the next object still in the tray: no manual re-focus.
+      expect(document.activeElement).toBe(item(2, "supply"));
       await user.keyboard(" ");
       expect(built()).toHaveLength(2);
+      expect(document.activeElement).toBe(item(3, "supply"));
+      // Returning an object follows it back into the tray.
+      item(1, "built").focus();
+      await user.keyboard("{Enter}");
+      expect(document.activeElement).toBe(item(1, "supply"));
+      expect(built()).toHaveLength(1);
+    });
+
+    it("never marks the picture finished when too many are moved, and tells the learner to put one back", async () => {
+      const user = await start();
+      await build(user, 6);
+      expect(built()).toHaveLength(6);
+      expect(
+        document.querySelector(".stage-scene")?.getAttribute("data-complete"),
+      ).toBe("false");
+      expect(slots("built")).toHaveLength(5);
+      expect(
+        sceneEl().querySelector(
+          'rect[stroke="#15803d"], rect[stroke="#15803d"]',
+        ),
+      ).toBeNull();
+      await user.click(item(6, "built"));
+      expect(
+        document.querySelector(".stage-scene")?.getAttribute("data-complete"),
+      ).toBe("true");
+    });
+
+    it("gives every object an accessible name of exactly the shape name, number and place, and nothing else", async () => {
+      const user = await start();
+      await build(user);
+      const names = [
+        ...document.querySelectorAll(
+          ".tray button.item, .field-built button.item",
+        ),
+      ].map((b) => b.getAttribute("aria-label") ?? "");
+      expect(names).toHaveLength(13);
+      for (const n of names) {
+        expect(n).toMatch(
+          new RegExp(
+            `^${Name} \\d+, (${v.supplyPlace}\\. Press to put it ${v.builtPlace}|${v.builtPlace}\\. Press to put it back ${v.supplyPlace})\\.$`,
+          ),
+        );
+      }
     });
   });
 

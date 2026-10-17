@@ -369,10 +369,12 @@ for (const w of WORLDS) {
       await page.goto(w.route);
       await page.getByRole("button", { name: w.start }).click();
       await expect(supply(page, w)).toHaveCount(13);
+      // Focus the first object once, then only press keys: focus must follow
+      // each moved object on to the next one in the tray.
+      await page
+        .getByRole("button", { name: new RegExp(`^${w.item} 1, in the`) })
+        .focus();
       for (let n = 1; n <= 5; n++) {
-        await page
-          .getByRole("button", { name: new RegExp(`^${w.item} ${n}, in the`) })
-          .focus();
         await page.keyboard.press(n % 2 === 0 ? "Space" : "Enter");
       }
       await expect(supply(page, w)).toHaveCount(8);

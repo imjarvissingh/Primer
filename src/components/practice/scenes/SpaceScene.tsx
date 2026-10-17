@@ -1,4 +1,5 @@
 import {
+  isComplete,
   slotLayout,
   slotStates,
   NOT_STARTED,
@@ -17,7 +18,7 @@ export function SpaceScene({
 }) {
   const states = slotStates(progress);
   const slots = slotLayout(states.length, 392, 176, 4);
-  const complete = states.length > 0 && states.every(Boolean);
+  const complete = isComplete(progress);
   const stars: [number, number, number][] = [
     [40, 30, 1.5],
     [110, 74, 1],

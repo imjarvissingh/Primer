@@ -87,3 +87,6 @@ Plan: [MVP-5-DAY-PLAN.md](MVP-5-DAY-PLAN.md). Issues: https://github.com/imjarvi
 
 ## Milestone 2 (Oct 17, 2026): five playable worlds
 Branch `milestone2/five-worlds` (draft PR; not merged). Done and verified locally: three new worlds on the shared engine (#6, #7, #8, #9), Surprise me (#11), previews use the mission story (#10), hint framing, replay and switching tests. Open: premium art and animation (#12, #13), educator review (#16 to #20), accessibility pass (#24, #29, #32), deployment (#26). Day 3 priorities: visual identity and guide characters (#12), tactile animation with reduced-motion equivalents (#13), parent copy (#21), accessibility (#24).
+
+## Milestone 3 (Oct 17, 2026): real-browser audit, countable worlds
+Branch `milestone3/countable-worlds` (draft PR; not merged). Audit: [AUDIT-M3.md](AUDIT-M3.md). Done and tested: countable drawn objects and themed trays (#12, #18), reacting guides (#12), tactile CSS motion (#13), finished world on screen, parent explanation (#21), keyboard focus follows moved objects. Open: premium art pipeline (#12), educator review (#16 to #20), screen-reader and device testing (#24, #29, #32), prototype reuse (#4), session lifecycle audit (#5), deployment (#26). Not started: next milestone.

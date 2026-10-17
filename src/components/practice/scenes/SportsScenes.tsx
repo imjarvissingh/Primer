@@ -1,4 +1,5 @@
 import {
+  isComplete,
   NOT_STARTED,
   slotLayout,
   slotStates,
@@ -113,7 +114,7 @@ function Slots({
   // Before a mission starts there are no slots yet, only one outline of the area.
   const slots =
     states.length === 0 ? [] : slotLayout(states.length, x, width, 8);
-  const complete = states.length > 0 && states.every(Boolean);
+  const complete = isComplete(progress);
   return (
     <>
       {states.length === 0 && (
