@@ -218,3 +218,7 @@ A new built slot plays a 220 ms `slot-in` settle, only inside `prefers-reduced-m
 ## Implementation status (Milestone 3, 2026-10-17): countable objects, guides, motion
 
 `ThemeConfig` gained two presentation-only fields: `itemArt` (which drawing the resources use) and `guide` (name, look and four fixed lines). `ConstructionField` renders one `ItemArt` button per resource from the session's own `used` set; scenes (`scenes/*`) draw only the goal's slots, via `slotStates`/`isComplete` in `scenes/progress.ts`. `Guide.tsx` maps real events to four moods (`guideMoodFor`). Layout is a `.stage` card (scene + guide strip) over the tray and destination. Nothing new reaches the server: the request shape is unchanged and still tested to exclude themes and counts.
+
+## Implementation status (Milestone 4, 2026-10-17): layered scenes and motion
+
+`scenes/` now has `parts.tsx` (frame, `GoalPad`, `Glow`, `Shadow`, `Celebrate`) and one file per world (`CricketScene`, `BridgeScene`, `SpaceScene`, `BasketballScene`, `SoccerScene`); `scenes/progress.ts` still derives everything from the session's own selection. `ConstructionField` animates a pressed object with the Web Animations API from its previous position (decorative; state is final first). The stage exposes `data-complete` (exactly the goal number placed) and `data-solved` (server-confirmed right answer). `InterestScene` on the welcome screens renders the mission scene. Server, domain, API and assessment code are unchanged.

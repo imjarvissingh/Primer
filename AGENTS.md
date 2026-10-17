@@ -98,3 +98,7 @@ A world is a `ThemeConfig` (strings only), a CSS palette class, a scene in `src/
 ## Countable objects and guides
 
 Resources are individually drawn, separate buttons that mirror the session's own selection; never draw the remaining set inside a scene or container that could disagree with the session, never print a numeral on an object, and never state the remainder in text, names or descriptions before the learner answers. Guide lines are fixed authored strings keyed to real events (welcome, working, again, done): no generated dialogue, no praise or judgment after a wrong answer, no claims about ability. Keep motion in `prefers-reduced-motion: no-preference` and test final states, not timing.
+
+## Scenes and motion
+
+Scenes live in `src/components/practice/scenes/`, are decorative and aria-hidden, and must keep the goal pad in the centre band (x 110..490 of a 600 x 340 viewBox, `slice` on phones). They draw only the places to fill, never resource-like loose objects, never numerals. Celebration is tied to `data-solved` (server-confirmed), never to a filled picture. Animation is decorative: state must be final before it starts, it must never block input, and it must be skipped or static under `prefers-reduced-motion`. Tests wait for finite animations only (ambient scenery loops by design). Do not claim art is premium; record what an art pass still needs.

@@ -90,3 +90,6 @@ Branch `milestone2/five-worlds` (draft PR; not merged). Done and verified locall
 
 ## Milestone 3 (Oct 17, 2026): real-browser audit, countable worlds
 Branch `milestone3/countable-worlds` (draft PR; not merged). Audit: [AUDIT-M3.md](AUDIT-M3.md). Done and tested: countable drawn objects and themed trays (#12, #18), reacting guides (#12), tactile CSS motion (#13), finished world on screen, parent explanation (#21), keyboard focus follows moved objects. Open: premium art pipeline (#12), educator review (#16 to #20), screen-reader and device testing (#24, #29, #32), prototype reuse (#4), session lifecycle audit (#5), deployment (#26). Not started: next milestone.
+
+## Milestone 4 (Oct 17, 2026): game art, motion, parent polish
+Branch `milestone4/game-art` (draft PR; not merged). Done and tested: layered scenes, phone composition (#35, partly), flying objects and celebration timing (#13), richer guides (#12), unified welcome art, summary polish (#22 polish only), assets-independent rendering. Open: real art pass (#12), scene still not full-screen on phones (#35), educator review (#16 to #20), screen-reader and device testing (#24, #29, #32), sound (#14), deployment (#26). Final stabilization milestone priorities: full device and browser pass, accessibility fixes from real assistive technology, YC recording, deployment decision.
