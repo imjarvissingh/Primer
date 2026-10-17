@@ -1,4 +1,5 @@
 import {
+  isComplete,
   NOT_STARTED,
   slotLayout,
   slotStates,
@@ -9,10 +10,11 @@ import {
  * Decorative, original artwork for the three ball worlds. Hidden from assistive
  * tech: the buttons, the story and the progress text carry the meaning.
  *
- * Two rules keep the pictures honest. (1) They draw only the slots to fill, one
- * per ball the story asks to place, and never the balls still in the supply, so
- * the remainder cannot be counted off the artwork before the learner answers.
- * (2) Filling every slot is not a correct answer; only the server decides that.
+ * Two rules keep the pictures honest. (1) The scene draws only the places to
+ * fill, one per ball the story asks to place. The balls still to be counted are
+ * the real, separate, individually visible objects in the tray below the scene
+ * (never a drawing that could disagree with the session). (2) Filling every
+ * slot is not a correct answer; only the server decides that.
  */
 type Sport = "cricket" | "basketball" | "soccer";
 
@@ -112,7 +114,7 @@ function Slots({
   // Before a mission starts there are no slots yet, only one outline of the area.
   const slots =
     states.length === 0 ? [] : slotLayout(states.length, x, width, 8);
-  const complete = states.length > 0 && states.every(Boolean);
+  const complete = isComplete(progress);
   return (
     <>
       {states.length === 0 && (
@@ -163,38 +165,6 @@ function Slots({
   );
 }
 
-function Coach({
-  x,
-  y,
-  shirt,
-  hat,
-}: {
-  x: number;
-  y: number;
-  shirt: string;
-  hat: string;
-}) {
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      <rect x="-16" y="30" width="32" height="40" rx="8" fill={shirt} />
-      <circle cx="0" cy="18" r="16" fill="#f5c9a0" />
-      <path d="M-18 14 a18 14 0 0 1 36 0 Z" fill={hat} />
-      <rect x="-20" y="12" width="40" height="5" rx="2" fill={hat} />
-      <circle cx="-5" cy="20" r="2" fill="#1f2937" />
-      <circle cx="5" cy="20" r="2" fill="#1f2937" />
-      <path
-        d="M-5 27 q5 4 10 0"
-        fill="none"
-        stroke="#1f2937"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <rect x="-10" y="68" width="8" height="12" rx="3" fill="#1e3a8a" />
-      <rect x="2" y="68" width="8" height="12" rx="3" fill="#1e3a8a" />
-    </g>
-  );
-}
-
 export function CricketScene({ progress = NOT_STARTED }: SceneProps) {
   return (
     <svg
@@ -236,22 +206,7 @@ export function CricketScene({ progress = NOT_STARTED }: SceneProps) {
           <path key={`h${i}`} d={`M380 ${120 + i * 26} H590`} />
         ))}
       </g>
-      {/* Basket: a solid mound, so the balls inside cannot be counted */}
-      <path
-        d="M28 158 H150 L138 214 H40Z"
-        fill="#c68a4a"
-        stroke="#7a4f22"
-        strokeWidth="3"
-      />
-      <path
-        d="M34 128 Q90 96 144 128 V158 H34Z"
-        fill="#c0262d"
-        stroke="#7f1d1d"
-        strokeWidth="2"
-      />
-      <path d="M38 178 H146 M42 196 H142" stroke="#7a4f22" strokeWidth="2" />
       <Slots sport="cricket" progress={progress} x={390} width={190} />
-      <Coach x={236} y={76} shirt="#ffffff" hat="#1d4ed8" />
     </svg>
   );
 }
@@ -320,30 +275,7 @@ export function BasketballScene({ progress = NOT_STARTED }: SceneProps) {
         strokeWidth="1.5"
       />
       <rect x="531" y="74" width="8" height="44" fill="#64748b" />
-      {/* Rack: shelves only, so the balls on it cannot be counted */}
-      <g stroke="#475569" strokeWidth="4" fill="none">
-        <path d="M28 70 V214 M150 70 V214 M28 70 H150 M28 112 H150 M28 154 H150 M28 196 H150" />
-      </g>
-      <rect
-        x="34"
-        y="76"
-        width="110"
-        height="30"
-        rx="10"
-        fill="#ea7a1c"
-        opacity="0.9"
-      />
-      <rect
-        x="34"
-        y="118"
-        width="110"
-        height="30"
-        rx="10"
-        fill="#ea7a1c"
-        opacity="0.9"
-      />
       <Slots sport="basketball" progress={progress} x={230} width={190} />
-      <Coach x={440} y={96} shirt="#1d4ed8" hat="#ef4444" />
     </svg>
   );
 }
@@ -382,28 +314,8 @@ export function SoccerScene({ progress = NOT_STARTED }: SceneProps) {
           <path key={`h${i}`} d={`M472 ${64 + i * 14} H578`} />
         ))}
       </g>
-      {/* Storage bag: a closed sack, so the balls inside cannot be counted */}
-      <path
-        d="M28 110 Q20 160 40 208 H140 Q160 160 150 110 Q90 96 28 110Z"
-        fill="#3b82f6"
-        stroke="#1e3a8a"
-        strokeWidth="3"
-      />
-      <path
-        d="M30 118 Q90 134 148 118"
-        fill="none"
-        stroke="#1e3a8a"
-        strokeWidth="3"
-      />
-      <path
-        d="M62 150 H116"
-        stroke="#ffffff"
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
       <Slots sport="soccer" progress={progress} x={230} width={190} />
       <path d="M440 176 L452 148 L464 176Z" fill="#f97316" />
-      <Coach x={190} y={72} shirt="#16a34a" hat="#facc15" />
     </svg>
   );
 }

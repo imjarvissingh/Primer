@@ -7,7 +7,7 @@ export function MissionPage({ theme }: { theme: ThemeConfig }) {
   return (
     <main
       id="main"
-      className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6"
+      className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6"
     >
       <SiteHeader />
       <h1 className="mt-6 text-3xl font-extrabold tracking-tight sm:text-4xl">

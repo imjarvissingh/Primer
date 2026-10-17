@@ -1,4 +1,5 @@
 import {
+  isComplete,
   slotLayout,
   slotStates,
   NOT_STARTED,
@@ -17,7 +18,7 @@ export function BridgeScene({
 }) {
   const states = slotStates(progress);
   const slots = slotLayout(states.length, 224, 152, 3);
-  const complete = states.length > 0 && states.every(Boolean);
+  const complete = isComplete(progress);
   return (
     <svg
       data-scene="bridge"
@@ -133,31 +134,6 @@ export function BridgeScene({
       {/* Flag on the far bank: where the bridge leads */}
       <rect x="440" y="76" width="4" height="42" fill="#6b4423" />
       <path d="M444 78 H478 L468 88 L478 98 H444Z" fill="#ef4444" />
-      {/* Builder */}
-      <g transform="translate(86 52)">
-        <rect x="-16" y="30" width="32" height="40" rx="8" fill="#f97316" />
-        <circle cx="0" cy="18" r="16" fill="#f5c9a0" />
-        <path d="M-18 14 a18 14 0 0 1 36 0 Z" fill="#facc15" />
-        <rect x="-20" y="12" width="40" height="5" rx="2" fill="#eab308" />
-        <circle cx="-5" cy="20" r="2" fill="#1f2937" />
-        <circle cx="5" cy="20" r="2" fill="#1f2937" />
-        <path
-          d="M-5 27 q5 4 10 0"
-          fill="none"
-          stroke="#1f2937"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-        <rect x="-10" y="68" width="8" height="12" rx="3" fill="#1e3a8a" />
-        <rect x="2" y="68" width="8" height="12" rx="3" fill="#1e3a8a" />
-        {/* Clipboard held out toward the gap */}
-        <rect x="14" y="38" width="16" height="20" rx="2" fill="#fef3c7" />
-        <path
-          d="M17 44 H27 M17 49 H27 M17 54 H24"
-          stroke="#92400e"
-          strokeWidth="1.5"
-        />
-      </g>
     </svg>
   );
 }

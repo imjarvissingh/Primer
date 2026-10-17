@@ -272,3 +272,121 @@ test("a lost session mid-mission in a new world explains itself and offers a fre
   await expect(page.getByText(/no longer available/)).toBeVisible();
   await expect(page.getByRole("button", { name: w.start })).toBeVisible();
 });
+
+/** Waits until nothing is animating, so sizes and states are final, not mid-motion. */
+const settled = (page: Page) =>
+  page.waitForFunction(() => document.getAnimations().length === 0);
+
+for (const w of WORLDS) {
+  test.describe(`${w.route}: countable objects and a guide that reacts`, () => {
+    test("thirteen drawn objects, no numerals, five move and stay recognisably the same objects", async ({
+      page,
+    }) => {
+      await page.goto(w.route);
+      await page.getByRole("button", { name: w.start }).click();
+      await expect(supply(page, w)).toHaveCount(13);
+      await settled(page);
+      const objects = supply(page, w);
+      for (let i = 0; i < 13; i++) {
+        const b = objects.nth(i);
+        await expect(b.locator("svg.item-art")).toHaveCount(1);
+        expect((await b.textContent())?.trim()).toBe("");
+      }
+      const drawing = await objects.first().locator("svg.item-art").innerHTML();
+      await placeFive(page, w);
+      await settled(page);
+      // Eight left to count, five moved, five empty places left in the tray.
+      await expect(page.locator(".tray .item-slot")).toHaveCount(5);
+      const moved = page.getByRole("button", {
+        name: new RegExp(`^${w.item} \\d+, (on|at) the`),
+      });
+      await expect(moved).toHaveCount(5);
+      for (let i = 0; i < 5; i++) {
+        await expect(moved.nth(i).locator(".item-check")).toHaveCount(1);
+        expect(await moved.nth(i).locator("svg.item-art").innerHTML()).toBe(
+          drawing,
+        );
+      }
+    });
+
+    test("every object is a comfortable touch target at 320px once settled", async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 320, height: 640 });
+      await page.goto(w.route);
+      await page.getByRole("button", { name: w.start }).click();
+      await expect(supply(page, w)).toHaveCount(13);
+      await settled(page);
+      await placeFive(page, w);
+      await settled(page);
+      const sizes = await page.evaluate(() =>
+        [...document.querySelectorAll("button.item")].map((b) => {
+          const r = b.getBoundingClientRect();
+          return Math.min(r.width, r.height);
+        }),
+      );
+      expect(sizes).toHaveLength(13);
+      expect(Math.min(...sizes)).toBeGreaterThanOrEqual(44);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth - innerWidth,
+        ),
+      ).toBeLessThanOrEqual(0);
+    });
+
+    test("the guide welcomes, works along, encourages after a wrong answer, and celebrates only a right one", async ({
+      page,
+    }) => {
+      await page.goto(w.route);
+      const mood = page.locator(".guide-strip");
+      await expect(mood).toHaveAttribute("data-guide-mood", "welcome");
+      await page.getByRole("button", { name: w.start }).click();
+      await expect(supply(page, w)).toHaveCount(13);
+      await expect(mood).toHaveAttribute("data-guide-mood", "welcome");
+      await placeFive(page, w);
+      await expect(mood).toHaveAttribute("data-guide-mood", "working");
+      await submit(page, 9);
+      await expect(page.getByText(/Not quite yet/)).toBeVisible();
+      await expect(mood).toHaveAttribute("data-guide-mood", "again");
+      // No praise after a wrong answer.
+      await expect(page.getByTestId("guide-line")).not.toContainText(
+        /great|good job|smart|clever|well done|perfect/i,
+      );
+      await submit(page, 8);
+      await expect(page.getByRole("heading", { name: w.done })).toBeVisible();
+      await expect(mood).toHaveAttribute("data-guide-mood", "done");
+      // The world stays on screen at the end, finished.
+      await expect(page.locator(".stage-scene")).toHaveAttribute(
+        "data-complete",
+        "true",
+      );
+    });
+
+    test("works from the keyboard alone, and with reduced motion nothing animates", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto(w.route);
+      await page.getByRole("button", { name: w.start }).click();
+      await expect(supply(page, w)).toHaveCount(13);
+      // Focus the first object once, then only press keys: focus must follow
+      // each moved object on to the next one in the tray.
+      await page
+        .getByRole("button", { name: new RegExp(`^${w.item} 1, in the`) })
+        .focus();
+      for (let n = 1; n <= 5; n++) {
+        await page.keyboard.press(n % 2 === 0 ? "Space" : "Enter");
+      }
+      await expect(supply(page, w)).toHaveCount(8);
+      await expect(slots(page, "built")).toHaveCount(5);
+      expect(await page.evaluate(() => document.getAnimations().length)).toBe(
+        0,
+      );
+      await page.getByRole("radio", { name: "8", exact: true }).focus();
+      await page.keyboard.press("Space");
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Enter");
+      await expect(page.getByRole("heading", { name: w.done })).toBeVisible();
+    });
+  });
+}

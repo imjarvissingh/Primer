@@ -156,6 +156,183 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
     });
   });
 
+  describe("countable objects (Milestone 3)", () => {
+    const art = (el: Element) =>
+      el.querySelector("svg.item-art")?.innerHTML ?? "";
+
+    it("starts with thirteen individually drawn objects and no numerals to read off", async () => {
+      await start();
+      const objects = supply();
+      expect(objects).toHaveLength(13);
+      for (const b of objects) {
+        expect(
+          b.querySelector("svg.item-art"),
+          b.ariaLabel ?? "",
+        ).not.toBeNull();
+        // The drawing is the button: no printed number, so the child counts.
+        expect(b.textContent?.trim()).toBe("");
+      }
+      expect(built()).toHaveLength(0);
+    });
+
+    it("keeps eight drawn objects countable after five move, leaving empty places behind", async () => {
+      const user = await start();
+      await build(user);
+      expect(supply()).toHaveLength(8);
+      expect(built()).toHaveLength(5);
+      // Each moved object leaves a visible empty place in the tray.
+      expect(document.querySelectorAll(".tray .item-slot")).toHaveLength(5);
+    });
+
+    it("draws a moved object as the same object, ringed and ticked, not as a different thing", async () => {
+      const user = await start();
+      const before = art(item(1, "supply"));
+      await user.click(item(1, "supply"));
+      const moved = item(1, "built");
+      expect(art(moved)).toBe(before);
+      expect(moved.className).toContain("item-built");
+      expect(moved.querySelector(".item-check")).not.toBeNull();
+      expect(item(2, "supply").className).not.toContain("item-built");
+    });
+
+    it("puts an object back into the tray when it is pressed again", async () => {
+      const user = await start();
+      await build(user);
+      await user.click(item(5, "built"));
+      expect(supply()).toHaveLength(9);
+      expect(built()).toHaveLength(4);
+      await user.click(item(5, "supply"));
+      expect(supply()).toHaveLength(8);
+    });
+
+    it("tells assistive technology how to count without ever stating the remainder", async () => {
+      const user = await start();
+      await build(user);
+      const group = document.querySelector(".tray") as HTMLElement;
+      const help = document.getElementById(
+        group.getAttribute("aria-describedby") ?? "",
+      );
+      expect(help?.textContent).toMatch(/count/i);
+      expect(help?.textContent).not.toMatch(/\d/);
+      expect(group.getAttribute("aria-label") ?? "").not.toMatch(/\d/);
+      expect(document.body.textContent).not.toMatch(
+        /\b(8|eight)\b\s+(\w+\s+){0,3}(left|remain)/i,
+      );
+    });
+
+    it("works from the keyboard with Enter and Space, and focus follows so Tab never restarts", async () => {
+      const user = await start();
+      item(1, "supply").focus();
+      await user.keyboard("{Enter}");
+      expect(built()).toHaveLength(1);
+      // Focus moved on to the next object still in the tray: no manual re-focus.
+      expect(document.activeElement).toBe(item(2, "supply"));
+      await user.keyboard(" ");
+      expect(built()).toHaveLength(2);
+      expect(document.activeElement).toBe(item(3, "supply"));
+      // Returning an object follows it back into the tray.
+      item(1, "built").focus();
+      await user.keyboard("{Enter}");
+      expect(document.activeElement).toBe(item(1, "supply"));
+      expect(built()).toHaveLength(1);
+    });
+
+    it("never marks the picture finished when too many are moved, and tells the learner to put one back", async () => {
+      const user = await start();
+      await build(user, 6);
+      expect(built()).toHaveLength(6);
+      expect(
+        document.querySelector(".stage-scene")?.getAttribute("data-complete"),
+      ).toBe("false");
+      expect(slots("built")).toHaveLength(5);
+      expect(
+        sceneEl().querySelector(
+          'rect[stroke="#15803d"], rect[stroke="#15803d"]',
+        ),
+      ).toBeNull();
+      await user.click(item(6, "built"));
+      expect(
+        document.querySelector(".stage-scene")?.getAttribute("data-complete"),
+      ).toBe("true");
+    });
+
+    it("gives every object an accessible name of exactly the shape name, number and place, and nothing else", async () => {
+      const user = await start();
+      await build(user);
+      const names = [
+        ...document.querySelectorAll(
+          ".tray button.item, .field-built button.item",
+        ),
+      ].map((b) => b.getAttribute("aria-label") ?? "");
+      expect(names).toHaveLength(13);
+      for (const n of names) {
+        expect(n).toMatch(
+          new RegExp(
+            `^${Name} \\d+, (${v.supplyPlace}\\. Press to put it ${v.builtPlace}|${v.builtPlace}\\. Press to put it back ${v.supplyPlace})\\.$`,
+          ),
+        );
+      }
+    });
+  });
+
+  describe("guide reactions (Milestone 3)", () => {
+    const mood = () =>
+      document.querySelector(".guide-strip")?.getAttribute("data-guide-mood");
+    const line = () => screen.getByTestId("guide-line").textContent;
+
+    it("welcomes, then reacts to real moves, then to an answer that was not yet right", async () => {
+      view();
+      expect(mood()).toBe("welcome");
+      expect(line()).toBe(theme.guide.welcome);
+      const user = userEvent.setup();
+      await user.click(screen.getByRole("button", { name: theme.startLabel }));
+      await screen.findByRole("heading", { name: theme.playHeading });
+      expect(mood()).toBe("welcome");
+      await user.click(item(1, "supply"));
+      expect(mood()).toBe("working");
+      expect(line()).toBe(theme.guide.working);
+      for (let i = 2; i <= 5; i++) await user.click(item(i, "supply"));
+      // Wrong answers only: the guide encourages, it never praises.
+      await submit(user, 9);
+      await screen.findByText(/Not quite yet/);
+      expect(mood()).toBe("again");
+      expect(line()).toBe(theme.guide.again);
+    });
+
+    it("shows the finished world and the done reaction only after the server says the answer is right", async () => {
+      mockServer((r) =>
+        r.action === "start" ? started : reply(1, { kind: "correct" }, true),
+      );
+      const user = await start();
+      await build(user);
+      expect(mood()).toBe("working");
+      await submit(user, 8);
+      await screen.findByRole("heading", { name: theme.outcomeTitle });
+      expect(mood()).toBe("done");
+      expect(line()).toBe(theme.guide.done);
+      expect(sceneEl()).toBeInTheDocument();
+      expect(
+        document.querySelector(".stage-scene")?.getAttribute("data-complete"),
+      ).toBe("true");
+    });
+
+    it("does not show the done reaction when the mission ends without a right answer", async () => {
+      mockServer((r) =>
+        r.action === "start"
+          ? started
+          : reply(1, { kind: "ended", reason: "learner-stopped" }, true),
+      );
+      const user = await start();
+      await build(user);
+      await user.click(screen.getByRole("button", { name: "Stop for now" }));
+      await screen.findByRole("heading", { name: /break/i });
+      expect(mood()).not.toBe("done");
+      expect(
+        document.querySelector(".stage-scene")?.getAttribute("data-complete"),
+      ).toBe("false");
+    });
+  });
+
   describe("scene mirrors the selection", () => {
     it("shows required empty slots at the start, none built", async () => {
       await start();

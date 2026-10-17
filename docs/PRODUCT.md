@@ -30,3 +30,6 @@ Sprint scope and exclusions: [MVP-5-DAY-PLAN.md](MVP-5-DAY-PLAN.md).
 
 ## Milestone 2 status (2026-10-17)
 All five interests (Cricket, Building, Space, Basketball, Soccer) start a real, server-scored 13 - 5 mission from the welcome flow, with hints, replay ("Start over"), interest switching and the existing independent check and synthetic summary. There is no "not playable yet" state. Art is a modest original SVG baseline; premium art and animation are later milestones. Still unvalidated: everything pedagogical (educator review pending), all child-facing claims.
+
+## Milestone 3 status (2026-10-17)
+In all five worlds the thirteen objects are drawn, separate and countable in a themed container; five move to the destination as the same objects; the guide reacts to real events; the finished world stays on screen. The welcome page has a five-point "How Primer works" for parents (what is chosen, what stays the same, guided versus independent, cautious summary). Verified in real Chrome, Firefox and WebKit (geometry only) and by automated tests; not tested with screen readers, real devices or children. Art is better but still flat SVG; premium art is a separate dependency.

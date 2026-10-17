@@ -9,13 +9,18 @@ import {
 } from "@/lib/practice-protocol";
 import { AnswerPicker } from "./AnswerPicker";
 import { ConstructionField } from "./ConstructionField";
+import { GuideStrip, type GuideMood } from "./Guide";
 import { FEEDBACK_ID, FeedbackPanel, takesFocus } from "./FeedbackPanel";
 import { MissionOutcome, type OutcomeKind } from "./MissionOutcome";
 import { presentHint } from "./hints";
 import { capitalize, countOf, fillStory, type ThemeConfig } from "@/themes";
 import { sendPractice } from "./api";
 import { Scene } from "./scenes";
-import { NOT_STARTED, type ConstructionProgress } from "./scenes/progress";
+import {
+  isComplete,
+  NOT_STARTED,
+  type ConstructionProgress,
+} from "./scenes/progress";
 
 interface Session {
   id: string;
@@ -239,9 +244,15 @@ function MissionBody({ theme }: PracticeMissionProps) {
 
   // The artwork shows the same selection the resource field shows. It only
   // reads it: `placed` is derived from `used`, never stored separately.
-  const framedScene = (progress: ConstructionProgress) => (
-    <div className="scene-enter overflow-hidden rounded-xl border-2 border-border">
-      <Scene themeId={theme.id} progress={progress} />
+  const framedScene = (progress: ConstructionProgress, mood: GuideMood) => (
+    <div className="stage scene-enter">
+      <div
+        className="stage-scene"
+        data-complete={isComplete(progress) ? "true" : "false"}
+      >
+        <Scene themeId={theme.id} progress={progress} />
+      </div>
+      <GuideStrip guide={theme.guide} mood={mood} />
     </div>
   );
 
@@ -251,7 +262,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
         aria-labelledby="intro-heading"
         className="grid grid-cols-1 gap-4"
       >
-        {framedScene(NOT_STARTED)}
+        {framedScene(NOT_STARTED, "welcome")}
         <h2
           id="intro-heading"
           tabIndex={-1}
@@ -287,13 +298,29 @@ function MissionBody({ theme }: PracticeMissionProps) {
   }
 
   if (screen.name === "outcome") {
+    // The world stays on screen at the end, with the guide's reaction to what
+    // really happened. Only a right answer shows the finished picture.
+    const solved = screen.kind === "correct";
+    const outcomeMood: GuideMood = solved
+      ? "done"
+      : screen.kind === "easier-practice" || screen.kind === "unproductive"
+        ? "again"
+        : "welcome";
     return (
-      <MissionOutcome
-        theme={theme}
-        kind={screen.kind}
-        answer={submitted}
-        onRestart={() => restart()}
-      />
+      <div className="grid grid-cols-1 gap-5">
+        {framedScene(
+          solved
+            ? { placed: used.size, required: used.size }
+            : { placed: 0, required: null },
+          outcomeMood,
+        )}
+        <MissionOutcome
+          theme={theme}
+          kind={screen.kind}
+          answer={submitted}
+          onRestart={() => restart()}
+        />
+      </div>
     );
   }
 
@@ -309,7 +336,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
         aria-labelledby="offer-heading"
         className="grid grid-cols-1 gap-4"
       >
-        {framedScene(NOT_STARTED)}
+        {framedScene(NOT_STARTED, "again")}
         <h2
           id="offer-heading"
           tabIndex={-1}
@@ -371,7 +398,10 @@ function MissionBody({ theme }: PracticeMissionProps) {
 
   return (
     <section aria-labelledby="play-heading" className="grid grid-cols-1 gap-5">
-      {framedScene({ placed: used.size, required: challenge.takeAway })}
+      {framedScene(
+        { placed: used.size, required: challenge.takeAway },
+        guideMoodFor(used.size, feedback),
+      )}
       <div>
         <h2 id="play-heading" tabIndex={-1} className="text-2xl font-extrabold">
           {inSupport ? "Warm-up" : theme.playHeading}
@@ -389,6 +419,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
 
       <ConstructionField
         vocabulary={v}
+        art={theme.itemArt}
         total={challenge.start}
         used={used}
         onToggle={toggle}
@@ -526,4 +557,26 @@ function readinessMessage(
     return `That is more than ${takeAway}. Put ${countOf(used - takeAway, v)} back ${v.supplyPlace}.`;
   }
   return `${countOf(takeAway, v)} ${v.builtPlace}. Now count the ones left ${v.supplyPlace}.`;
+}
+
+/**
+ * Which reaction the guide shows. Every branch is a real event: nothing placed,
+ * resources being moved, or help/neutral feedback after an answer that was not
+ * yet right. A right answer is handled by the outcome screen. It never depends
+ * on how many tries the learner has used, and nothing here praises or scores.
+ */
+export function guideMoodFor(
+  placed: number,
+  feedback: PracticeFeedback | null,
+): GuideMood {
+  if (
+    feedback !== null &&
+    (feedback.kind === "neutral-feedback" ||
+      feedback.kind === "hint" ||
+      feedback.kind === "offer-skip" ||
+      feedback.kind === "ask-again")
+  ) {
+    return "again";
+  }
+  return placed > 0 ? "working" : "welcome";
 }

@@ -33,6 +33,24 @@ describe("Welcome: parent introduction", () => {
     expect(screen.getByTestId("draft-banner")).toBeVisible();
   });
 
+  it("explains in plain words how Primer works, without claiming results", () => {
+    render(<WelcomePage />);
+    const how = screen.getByTestId("how-it-works");
+    expect(within(how).getAllByRole("listitem")).toHaveLength(5);
+    for (const phrase of [
+      /chooses/i,
+      /math does not/i,
+      /not a test/i,
+      /independent check is different/i,
+      /limited evidence, not mastery/i,
+    ]) {
+      expect(within(how).getByText(phrase, { exact: false })).toBeVisible();
+    }
+    expect(how.textContent).not.toMatch(
+      /improv|proven|learn(s|ed) faster|mastered|progress (chart|over time report)/i,
+    );
+  });
+
   it("asks for no personal information and has no text inputs", () => {
     render(<WelcomePage />);
     expect(screen.queryByRole("textbox")).toBeNull();

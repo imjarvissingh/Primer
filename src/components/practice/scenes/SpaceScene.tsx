@@ -1,4 +1,5 @@
 import {
+  isComplete,
   slotLayout,
   slotStates,
   NOT_STARTED,
@@ -17,7 +18,7 @@ export function SpaceScene({
 }) {
   const states = slotStates(progress);
   const slots = slotLayout(states.length, 392, 176, 4);
-  const complete = states.length > 0 && states.every(Boolean);
+  const complete = isComplete(progress);
   const stars: [number, number, number][] = [
     [40, 30, 1.5],
     [110, 74, 1],
@@ -152,34 +153,6 @@ export function SpaceScene({
           )}
         </>
       )}
-      {/* Space engineer */}
-      <g transform="translate(74 74)">
-        <rect x="-16" y="22" width="32" height="38" rx="10" fill="#f8fafc" />
-        <rect x="-22" y="30" width="8" height="22" rx="4" fill="#e2e8f0" />
-        <rect x="14" y="30" width="8" height="22" rx="4" fill="#e2e8f0" />
-        <circle
-          cx="0"
-          cy="10"
-          r="18"
-          fill="#f8fafc"
-          stroke="#94a3b8"
-          strokeWidth="3"
-        />
-        <rect x="-11" y="2" width="22" height="16" rx="8" fill="#0ea5e9" />
-        <circle cx="-4" cy="8" r="2.5" fill="#e0f2fe" />
-        <rect x="-8" y="52" width="7" height="16" rx="3" fill="#cbd5e1" />
-        <rect x="1" y="52" width="7" height="16" rx="3" fill="#cbd5e1" />
-        <rect x="-8" y="38" width="16" height="8" rx="2" fill="#f97316" />
-        {/* Tether to the station */}
-        <path
-          d="M20 40 Q60 70 96 52"
-          fill="none"
-          stroke="#e2e8f0"
-          strokeWidth="2"
-          strokeDasharray="1 4"
-          strokeLinecap="round"
-        />
-      </g>
     </svg>
   );
 }

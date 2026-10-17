@@ -40,6 +40,29 @@ const PARENT_ROLES = [
   ],
 ] as const;
 
+const HOW_IT_WORKS = [
+  [
+    "Your child chooses",
+    "Pick one of five interests, or let Primer choose. The choice is not saved.",
+  ],
+  [
+    "The world changes; the math does not",
+    "The interest changes the story, the objects and the guide. The question, the checking and the help are the same in every world.",
+  ],
+  [
+    "Practice gives support",
+    "In the guided mission, the child moves objects, counts what is left, and can get gentle hints. It is practice, not a test.",
+  ],
+  [
+    "The independent check is different",
+    "It is a separate short check with no hints and no right-or-wrong feedback, so you can see what was answered alone.",
+  ],
+  [
+    "The summary is cautious",
+    "It shows what one short, made-up demo session recorded. It shows limited evidence, not mastery, and no progress over time.",
+  ],
+] as const;
+
 function StatusBanner() {
   return (
     <p
@@ -183,6 +206,25 @@ function Intro({
             </div>
           ))}
         </div>
+      </section>
+
+      <section
+        aria-labelledby="how"
+        className="mt-8"
+        data-testid="how-it-works"
+      >
+        <h2 id="how" className="text-2xl font-bold">
+          How Primer works
+        </h2>
+        <ol className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {HOW_IT_WORKS.map(([title, text], i) => (
+            <li key={title} className="card p-5">
+              <p className="text-sm font-bold text-muted">Step {i + 1}</p>
+              <h3 className="text-lg font-bold">{title}</h3>
+              <p className="mt-2 text-muted">{text}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <section
