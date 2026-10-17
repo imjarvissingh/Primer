@@ -150,6 +150,13 @@ body {
   outline-offset: 2px;
 }
 
+/* Large text: a long word wraps at the container edge as a last resort, never past it. */
+h1,
+h2,
+h3 {
+  overflow-wrap: break-word;
+}
+
 /* ---- Shared controls --------------------------------------------------- */
 .btn {
   display: inline-flex;
@@ -162,9 +169,13 @@ body {
   border: 2px solid transparent;
   font-weight: 700;
   line-height: 1.2;
+  text-align: center;
   text-decoration: none;
   cursor: pointer;
   touch-action: manipulation;
+  /* Large text: wrap the label inside the button rather than widen the page. */
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 .btn-primary {
   background: var(--accent);

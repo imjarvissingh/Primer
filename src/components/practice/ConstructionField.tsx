@@ -40,7 +40,7 @@ export function ConstructionField({
   // Two columns only when each column fits a row of five items (about 736px up).
   // 200% zoom on a 1280px screen is a 640px page, which must stay stacked.
   return (
-    <div className="grid gap-4 min-[47rem]:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 min-[47rem]:grid-cols-2">
       <section
         aria-labelledby="supply-heading"
         className="field-panel field-supply"
@@ -49,12 +49,12 @@ export function ConstructionField({
           {v.supplyHeading}
         </h3>
         <div
-          className="grid gap-2"
+          className="grid grid-cols-1 gap-2"
           role="group"
           aria-labelledby="supply-heading"
         >
           {rows.map((row) => (
-            <div key={row[0]} className="flex gap-1 sm:gap-2">
+            <div key={row[0]} className="flex flex-wrap gap-1 sm:gap-2">
               {row.map((b) => {
                 const cued = highlightAbove !== null && b > highlightAbove;
                 return used.has(b) ? (

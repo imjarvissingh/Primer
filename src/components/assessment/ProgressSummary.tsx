@@ -66,7 +66,7 @@ export function ProgressSummary() {
   }, []);
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <p className="notice font-semibold" role="note">
         <span className="mr-2 rounded-full bg-foreground px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-background">
           Synthetic data
@@ -84,7 +84,10 @@ function Body({ state }: { state: State }) {
   if (state.name === "loading") return <p role="status">Loading…</p>;
   if (state.name === "none" || state.name === "unavailable") {
     return (
-      <section className="grid gap-3" aria-labelledby="none-heading">
+      <section
+        className="grid grid-cols-1 gap-3"
+        aria-labelledby="none-heading"
+      >
         <h2 id="none-heading" className="text-xl font-semibold">
           No completed check to show
         </h2>
@@ -107,7 +110,10 @@ function Body({ state }: { state: State }) {
   const s = state.summary;
   return (
     <>
-      <section aria-labelledby="counts-heading" className="grid gap-3">
+      <section
+        aria-labelledby="counts-heading"
+        className="grid grid-cols-1 gap-3"
+      >
         <h2 id="counts-heading" className="text-xl font-semibold">
           This short check{s.status === "stopped" ? " (stopped early)" : ""}
         </h2>
@@ -144,7 +150,10 @@ function Body({ state }: { state: State }) {
         </div>
       </section>
 
-      <section aria-labelledby="items-heading" className="grid gap-3">
+      <section
+        aria-labelledby="items-heading"
+        className="grid grid-cols-1 gap-3"
+      >
         <h2 id="items-heading" className="text-xl font-semibold">
           Question by question
         </h2>
@@ -185,11 +194,14 @@ function Body({ state }: { state: State }) {
         </div>
       </section>
 
-      <section aria-labelledby="skills-heading" className="grid gap-3">
+      <section
+        aria-labelledby="skills-heading"
+        className="grid grid-cols-1 gap-3"
+      >
         <h2 id="skills-heading" className="text-xl font-semibold">
           Skills sampled
         </h2>
-        <ul className="grid gap-2">
+        <ul className="grid grid-cols-1 gap-2">
           {s.skills.map((k) => (
             <li key={k.id} className="card p-3">
               <p className="font-semibold">
@@ -204,7 +216,10 @@ function Body({ state }: { state: State }) {
         </ul>
       </section>
 
-      <section aria-labelledby="mastery-heading" className="grid gap-2">
+      <section
+        aria-labelledby="mastery-heading"
+        className="grid grid-cols-1 gap-2"
+      >
         <h2 id="mastery-heading" className="text-xl font-semibold">
           Mastery: not awarded
         </h2>
@@ -217,7 +232,10 @@ function Body({ state }: { state: State }) {
         </p>
       </section>
 
-      <section aria-labelledby="prov-heading" className="grid gap-2">
+      <section
+        aria-labelledby="prov-heading"
+        className="grid grid-cols-1 gap-2"
+      >
         <h2 id="prov-heading" className="text-xl font-semibold">
           Where this comes from
         </h2>
@@ -240,7 +258,10 @@ function Body({ state }: { state: State }) {
 
 function Explanation() {
   return (
-    <section aria-labelledby="limits-heading" className="grid gap-2">
+    <section
+      aria-labelledby="limits-heading"
+      className="grid grid-cols-1 gap-2"
+    >
       <h2 id="limits-heading" className="text-xl font-semibold">
         Practice is not the same as this check
       </h2>

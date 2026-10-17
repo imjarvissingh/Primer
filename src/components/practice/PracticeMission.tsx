@@ -247,7 +247,10 @@ function MissionBody({ theme }: PracticeMissionProps) {
 
   if (screen.name === "intro") {
     return (
-      <section aria-labelledby="intro-heading" className="grid gap-4">
+      <section
+        aria-labelledby="intro-heading"
+        className="grid grid-cols-1 gap-4"
+      >
         {framedScene(NOT_STARTED)}
         <h2
           id="intro-heading"
@@ -302,7 +305,10 @@ function MissionBody({ theme }: PracticeMissionProps) {
 
   if (screen.name === "offer") {
     return (
-      <section aria-labelledby="offer-heading" className="grid gap-4">
+      <section
+        aria-labelledby="offer-heading"
+        className="grid grid-cols-1 gap-4"
+      >
         {framedScene(NOT_STARTED)}
         <h2
           id="offer-heading"
@@ -364,7 +370,7 @@ function MissionBody({ theme }: PracticeMissionProps) {
       : null;
 
   return (
-    <section aria-labelledby="play-heading" className="grid gap-5">
+    <section aria-labelledby="play-heading" className="grid grid-cols-1 gap-5">
       {framedScene({ placed: used.size, required: challenge.takeAway })}
       <div>
         <h2 id="play-heading" tabIndex={-1} className="text-2xl font-extrabold">

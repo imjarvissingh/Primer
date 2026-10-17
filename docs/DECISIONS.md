@@ -103,3 +103,8 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - **Only the learner's own action steals focus.** Focus moves only for responses to "Check my answer", never for passive updates or while typing elsewhere.
 - **Instruction content untouched.** The educator-flagged issues (Hint 1 disclosure, picture vs the learner's taps, warm-up choice, "Not now" ending the mission) are documented in the educator packet, not changed.
 
+
+## Phase 8F decisions (2026-10-17)
+
+- **Fix the track, not the art.** The SVG scenes already scaled; the grid's implicit `auto` column grew to the resource rows' min-content. Mission grids use `grid-cols-1` (`minmax(0, 1fr)`) and rows wrap. No global `overflow-x` rule, because that would hide the problem and clip content.
+- **Wrap before shrinking.** Text and touch targets keep their rem sizes; rows wrap, headings use `overflow-wrap: break-word` and buttons `max-width: 100%`. The five-per-row grouping yields only when five items cannot fit.

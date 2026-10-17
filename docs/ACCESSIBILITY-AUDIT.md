@@ -144,7 +144,7 @@ Feedback renders below the answer form. The learner's viewport sits at the "Chec
 | ID | Severity | Finding | Status |
 | --- | --- | --- | --- |
 | A11Y-07 | Medium (usability) | Hint below the fold on phones. | **Fixed** by focus movement (this phase). Untested with children or a screen reader. |
-| A11Y-11 | Medium | **Pre-existing, found this phase.** At 390 px with the root font at 200%, the page scrolls sideways by about 238 px. The scene artwork ("scene-enter" frame, SVG) is wider than the viewport. It is present on the mission start screen before any feedback, so it is not caused by the feedback change. | **Open, not fixed** (outside this milestone). Needs a reflow fix for the scene panel under large text. |
+| A11Y-11 | Medium | **Pre-existing, found in Phase 8E; fixed in Phase 8F.** At 390 px with the root font at 200% the page scrolled sideways (628 px wide, 238 px over). Phase 8E located it on the start screen; re-measurement in 8F shows the intro screen was already fine and the overflow starts once the mission is playing (see below). Two further overflows of the same family were found: the homepage wordmark (442 px at 390) and, at 320 px, mission titles, buttons and the homepage button. | **Fixed (8F)** for the tested configurations. Verified in Chromium only. |
 | — | Info | The focus ring on the hint is a keyboard-modality ring (`:focus-visible`); a touch or mouse user sees the scrolled hint but no ring. This matches the existing heading focus behaviour. | Accepted. |
 
 ### Not tested (unchanged unknowns)
@@ -153,3 +153,25 @@ Feedback renders below the answer form. The learner's viewport sits at the "Chec
 - No physical phone or tablet; no Safari or Firefox; no real Windows High Contrast; no switch, voice-control or eye-gaze use.
 - No children observed. Whether children notice, read and understand the hint is unknown.
 - An independent accessibility specialist has not reviewed this.
+
+## Phase 8F: text scaling and responsive artwork (A11Y-11)
+
+**Technique.** Root `font-size` set to 200% in Chromium (Playwright), at CSS viewports 320, 360, 390, 768, 1440 px (height 760). This is a text-size test, **not** browser zoom: zoom also shrinks the CSS viewport, so the narrow widths (320 px is a 1280 px screen at 400% zoom) cover that side. Real browser zoom, Safari, Firefox, devices and screen readers were not tested.
+
+**Root cause (measured, not assumed).** The SVG artwork was not the cause: it is `w-full h-auto` with a `viewBox` and scales correctly. The playing-screen `<section class="grid">` had an implicit `auto` column, which grows to the widest child's min-content. The resource rows are `flex` (no wrap) of five fixed `3rem` items; at 200% root that row is about 480 px plus padding, so the grid track, and with it the scene frame (x 64 to 628), became 564 px wide inside a 390 px page. The frame's `overflow-hidden` clipped the art but not its widened box. Both themes were affected identically (shared layout).
+
+**Before and after (`document.documentElement.scrollWidth`, 390 px viewport, 200%).**
+
+| Screen | Before | After |
+| --- | --- | --- |
+| Mission intro (either theme) | 390 | 390 |
+| Playing (either theme) | 628 | 390 |
+| Homepage | 442 | 390 |
+| Adult summary at 320 px | 338 (18 px over) | 320 |
+| Mission playing / outcome at 320 px | not measured before | 320 / 320 |
+
+**Fix (no global `overflow-x` rule).** (1) Mission sections and the construction field grid use `grid-cols-1` (`minmax(0, 1fr)`), so a track can no longer outgrow the page. (2) Resource rows `flex-wrap`, so at large text a row of five wraps instead of widening; the five-per-row grouping is lost only when five cannot fit, and every item keeps its 3rem touch size. Slot and item counts, order and the `placed = used.size` projection are unchanged. (3) Headings get `overflow-wrap: break-word` and `.btn` gets `max-width: 100%` with centred, wrapping labels, so a long word such as "Construction" at 200% on 320 px wraps at the edge instead of overflowing. (4) The homepage wordmark may wrap its icon above the word. (5) The adult summary grids (`ProgressSummary`) get `grid-cols-1` for the same reason; found by the new test at 320 px, 200%.
+
+**Tests.** `tests/e2e/text-scaling.spec.ts` (23 tests): both themes x 5 widths x 100%/200% through intro, playing, partial and full construction, feedback, Hint 1, Hint 2, warm-up offer and warm-up; homepage, assessment and adult summary at 200%; and an end-to-end interaction test at 390 px / 200% (selection moves the artwork's built-slot count, returning a resource lowers it, controls on screen and at least 44 px tall, feedback focused and in view, Start over works). 11 of them fail on the 8E code and pass now. Tolerance is 1 px for subpixel rounding.
+
+**Remaining.** Selection rows may now be 2 to 3 per row at large text on phones (more scrolling, no sideways scroll). No screen reader, real zoom, other browser or device checks. Forced-colors and reduced motion were not re-run beyond the existing suites. No colours were changed.

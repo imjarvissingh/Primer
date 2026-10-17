@@ -6,7 +6,7 @@
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-2 font-extrabold ${className}`}
+      className={`inline-flex flex-wrap items-center gap-x-2 font-extrabold ${className}`}
     >
       <svg
         viewBox="0 0 40 40"

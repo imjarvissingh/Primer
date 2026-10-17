@@ -64,5 +64,11 @@ Still open: **external educator review** (real-world gate; self-review does not 
 
 Done: A11Y-07 fixed. After a wrong answer, keyboard focus moves once to a labelled feedback region (neutral, Hint 1, Hint 2) so it is scrolled into view on phones; not a live region, so no double announcement. No policy, wording, scoring or API change. New regression suite `tests/e2e/feedback-visibility.spec.ts` (22 tests, 320–1440 px, both worlds, reduced motion) plus unit tests. Educator packet gained a reproduction guide, a plain-words statement of the construction-vs-ten-frame mismatch and a blank decision table (section 6A). Accessibility audit has a dated verification section.
 
-Still open: external educator review (nothing approved); the five pedagogical decisions (Hint 1 disclosure, ten-frame vs the learner's taps, warm-up choice, declining the warm-up, age fit); screen-reader and real-device testing (not done); new advisory A11Y-11 (scene overflows at 390 px with 200% text; pre-existing).
+Still open: external educator review (nothing approved); the five pedagogical decisions (Hint 1 disclosure, ten-frame vs the learner's taps, warm-up choice, declining the warm-up, age fit); screen-reader and real-device testing (not done); A11Y-11 (sideways scroll at 200% text) fixed in Phase 8F, Chromium only.
 
+
+## Phase 8F status (2026-10-17)
+
+Done: A11Y-11 fixed (CSS only). Cause was the mission grid's implicit column growing to the non-wrapping resource rows at large text, not the SVG art; also fixed homepage wordmark, long headings and button labels at 320 px. New `tests/e2e/text-scaling.spec.ts` (23 tests; 11 fail on the 8E code). Evidence in `docs/ACCESSIBILITY-AUDIT.md`.
+
+Still open: external educator review (nothing approved) and its five pedagogical decisions; screen-reader, real-zoom, Safari/Firefox and physical-device testing (none done).
