@@ -44,33 +44,13 @@ const supply = (page: Page, w: (typeof WORLDS)[number], n: number) =>
 async function answer(page: Page, n: number) {
   const radio = page.getByRole("radio", { name: String(n), exact: true });
   await expect(radio).toBeEnabled();
-  try {
-    await radio.check({ force: true, timeout: 8000 });
-  } catch (e) {
-    // DIAGNOSTIC (temporary): record geometry when the radio cannot be reached.
-    const info = await page.evaluate(() => {
-      const r = document.querySelector<HTMLInputElement>('input[value="9"]');
-      const rect = (el: Element | null) => {
-        const b = el?.getBoundingClientRect();
-        return b ? [b.x, b.y, b.width, b.height].map(Math.round) : null;
-      };
-      return {
-        scrollY: Math.round(scrollY),
-        scrollX: Math.round(scrollX),
-        iw: innerWidth,
-        ih: innerHeight,
-        sw: document.documentElement.scrollWidth,
-        sh: document.documentElement.scrollHeight,
-        radio: rect(r),
-        label: rect(r?.closest("label") ?? null),
-        panel: rect(document.querySelector("#feedback-panel")),
-        active: document.activeElement?.id || document.activeElement?.tagName,
-        fonts: getComputedStyle(document.body).fontFamily,
-      };
-    });
-    console.log("DIAG", JSON.stringify(info));
-    throw e;
-  }
+  // Tap the visible answer, as a learner does. (Force-checking the 1px
+  // screen-reader-only input is fragile: after a long hint the browser can park
+  // it exactly on the viewport's top edge, where Playwright calls it
+  // "outside of the viewport" although its 56px label is fully reachable.)
+  // Clicking the label also requires it to be visible and to receive events.
+  await radio.locator("xpath=ancestor::label[1]").click();
+  await expect(radio).toBeChecked();
   await page.getByRole("button", { name: "Check my answer" }).click();
 }
 
