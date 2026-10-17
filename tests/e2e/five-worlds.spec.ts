@@ -196,7 +196,10 @@ for (const w of WORLDS) {
       .getByRole("button", { name: new RegExp(`^${w.item} 5, in the`) })
       .click();
     // The scene never states the remainder before the learner answers.
-    await expect(page.locator("main")).not.toContainText(/\b8 (left|remain)/i);
+    // Neither digits nor words state the remainder before the learner answers.
+    await expect(page.locator("main")).not.toContainText(
+      /\b(8|eight)\b(\s+\w+){0,3}\s+(left|remain|remaining|still)\b|\b(there are|you have|leaves?)\s+(8|eight)\b/i,
+    );
     // The only place the answer is decided is the server.
     const scored = page.waitForResponse(
       (r) =>

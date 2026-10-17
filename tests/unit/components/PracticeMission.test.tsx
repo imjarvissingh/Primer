@@ -678,8 +678,15 @@ describe("cross-theme equivalence", () => {
     const requests = await playScript(THEMES[4]);
     const text = JSON.stringify(requests);
     expect(text).not.toMatch(/theme|soccer|cricket|basketball|block|space/i);
+    // Exact allowed shape per action: any new field (an item count, a key, a
+    // theme) fails here until the protocol is consciously changed.
+    const allowed: Record<string, string[]> = {
+      start: ["action", "missionId"],
+      attempt: ["action", "answer", "seq", "sessionId"],
+      stop: ["action", "seq", "sessionId"],
+    };
     for (const r of requests) {
-      expect(Object.keys(r).sort()).not.toContain("expectedAnswer");
+      expect(Object.keys(r).sort(), r.action).toEqual(allowed[r.action]);
     }
   });
 });
