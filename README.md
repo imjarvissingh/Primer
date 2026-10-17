@@ -35,7 +35,7 @@ Tap the 5 blocks (or modules) to put them on the bridge (or station), pick how m
 
 ### Look and feel (Phase 8A)
 
-Primer has an original visual identity: a warm cream/navy/teal system, a wordmark, and two distinct worlds (a sunny bridge-building scene and a space-station scene) on the same mission engine. The independent check is deliberately plainer. It uses system fonts, inline SVG and CSS only, honours reduced-motion settings, and adds no dependencies or data collection.
+Primer has an original visual identity: a warm cream/navy/teal system, a wordmark, and two distinct worlds (a sunny bridge-building scene and a space-station scene) on the same mission engine. The independent check is deliberately plainer. It uses system fonts, inline SVG and CSS only, honours reduced-motion settings, and adds no dependencies and collects no personal data (check answers are held only in short-lived server memory).
 
 ### Independent check and demo summary
 
