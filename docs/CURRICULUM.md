@@ -64,3 +64,6 @@ Hint copy audit: hint 1 and hint 2 text is mathematically correct and was kept u
 
 ## Interests and curriculum (2026-10-17)
 Interest does not change curriculum. All interests present the same single challenge, 13 - 5 = 8, through the same evaluator, tutoring policy and independent check. No new skills, items or hints were added, and nothing here is educator-approved. Open pedagogical questions are tracked in issues #16 to #20.
+
+## Draft lab scope clarification (2026-10-18)
+`/cricket/make-ten-lab` is not a curriculum item and adds no skill, bank item, hint or mastery rule. It illustrates S04 (make ten, decomposing the subtrahend) with 13 − 5 and offers one unguided 11 − 4 try that shares no starting number with any bank. Its results are never evidence. Pending educator review (packet §6C).

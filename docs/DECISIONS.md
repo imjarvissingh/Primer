@@ -168,3 +168,12 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - The remainder is drawn only after the server confirms a correct answer, and only from the learner's actual selection.
 - No new dependencies, no 3D engine, no audio, no storage.
 - Art is code-drawn SVG. It is not premium. A real art pass needs: a designed coach character with expressions, a ball-bowling/batting animation set, a station prop set, sound (optional), and a tuned phone composition (#12, #15, #35).
+
+## Learning Experience 2.1 decisions (2026-10-18) — all provisional, none educator-approved
+- **The lab asks; it does not tell.** Each step ends with a learner decision (extras, still needed, left). The remainder and the recap appear only after the learner gives it. Defect A9 (the old lab counted and printed the result) is fixed.
+- **Checks read the picture, not a key.** A lab answer is right when it matches the objects on screen. No answer is stored; moving an object clears the answer about it. This keeps one authoritative evaluator (the server).
+- **Choice set 0 to the starting amount** in the lab (0–13, 0–11) so the likely confusions (5, 10, 13) can be chosen and get specific feedback. The mission keeps 0–20 (RC1).
+- **One unguided try (11 − 4) in the lab, not evidence.** Chosen because no bank item starts at 11; it is never saved or summarised.
+- **Small theme abstraction only.** `LabWords` + art id; no registry entries, no other world wired, no tutor change.
+- **Production unchanged:** mission, hints, ladder, warm-up, check, summary, sessions, rate limit, other worlds.
+- **PR #39 not merged by the agent.** The merge was blocked by the session's permission policy; this work is stacked on its head `3c3f9dc`.

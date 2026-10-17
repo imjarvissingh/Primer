@@ -200,26 +200,40 @@ describe("Draft make-ten lab page", () => {
   it("only enables balls that can act in the current step", async () => {
     render(<MakeTenLab />);
     // Step 1: every loose ball can go to the rack.
-    expect(
-      screen
-        .getAllByRole("button", { name: /in the pile/ })
-        .every((b) => !(b as HTMLButtonElement).disabled),
-    ).toBe(true);
+    const loose = screen.getAllByRole("button", { name: /outside the rack/ });
+    expect(loose).toHaveLength(13);
+    expect(loose.every((b) => !(b as HTMLButtonElement).disabled)).toBe(true);
   });
 
-  it("labels its status, fills the rack by tapping, and shows no scoring", async () => {
+  it("fills the rack by tapping, then needs the learner's number before going on", async () => {
     const user = userEvent.setup();
     render(<MakeTenLab />);
     for (let n = 1; n <= 10; n++)
       await user.click(
         screen.getByRole("button", {
-          name: new RegExp(`^Ball ${n}, in the pile`),
+          name: new RegExp(`^Ball ${n}, outside the rack`),
         }),
       );
     expect(screen.getByTestId("lab-status")).toHaveTextContent(
-      "In the rack: 10",
+      "The rack is full.",
     );
-    await user.click(screen.getByRole("button", { name: "Next step" }));
-    expect(screen.getByRole("heading", { name: /Step 2/ })).toBeInTheDocument();
+    // The count outside the rack is not printed for the learner.
+    expect(screen.getByTestId("lab-status")).not.toHaveTextContent(/3/);
+    const next = screen.getByRole("button", { name: "Next step" });
+    expect(next).toHaveAttribute("aria-disabled", "true");
+    await user.click(next);
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
+      "Make a ten",
+    );
+    await user.click(screen.getByRole("radio", { name: "3" }));
+    await user.click(screen.getByRole("button", { name: "Check" }));
+    expect(screen.getByTestId("lab-feedback")).toHaveTextContent(
+      "Yes. 13 is 10 and 3.",
+    );
+    await user.click(next);
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
+      "Start with the extras",
+    );
+    expect(screen.queryByTestId("lab-result")).toBeNull();
   });
 });
