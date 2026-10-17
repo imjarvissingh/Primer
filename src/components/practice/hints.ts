@@ -23,7 +23,7 @@ export function presentHint(
     const extrasFrom = start - steps.takeToTen;
     if (hintId === "hint.make-ten.fill-to-ten") {
       return {
-        text: `Try this: take ${countOf(steps.takeToTen, vocab)} first. Then the ${vocab.supplyNoun} is a full ten. The outlined ${vocab.plural} are those ${steps.takeToTen}.`,
+        text: `Let's look at the same subtraction another way. One way to start is to take ${countOf(steps.takeToTen, vocab)}, so the ${vocab.supplyNoun} makes a full ten. The outlined ${vocab.plural} show those ${steps.takeToTen}. This is a picture of the idea, not what you moved.`,
         highlightAbove: extrasFrom,
       };
     }
@@ -32,7 +32,7 @@ export function presentHint(
       steps.takeFromTen !== null
     ) {
       return {
-        text: `You took ${countOf(steps.takeToTen, vocab)} to make a full ten. You still need to take ${steps.takeFromTen} more from the ten. How many are left?`,
+        text: `Another way to see the same subtraction: take ${countOf(steps.takeToTen, vocab)} to make a full ten, then ${steps.takeFromTen} more from the ten. That is the same ${steps.takeToTen + steps.takeFromTen} you are taking away. How many are left?`,
         highlightAbove: extrasFrom,
       };
     }

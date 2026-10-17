@@ -106,29 +106,6 @@ for (const [name, width, height] of [
   });
 }
 
-test("an interest without a mission never starts one and points to the real worlds", async ({
-  page,
-}) => {
-  await page.goto("/welcome");
-  await page.getByRole("button", { name: "Choose an interest" }).click();
-  for (const title of [/Cricket/, /Basketball/, /Soccer/]) {
-    await chooseInterest(page, title);
-    await expect(page.getByTestId("availability")).toContainText(
-      "not playable yet",
-    );
-    await expect(
-      page.getByRole("link", { name: /^Start the .* mission$/ }),
-    ).toHaveCount(0);
-    await page.getByRole("button", { name: "Change interest" }).click();
-  }
-  await chooseInterest(page, /Soccer/);
-  await page.getByRole("link", { name: "Play Space instead" }).click();
-  await expect(page).toHaveURL(/\/space-construction$/);
-  await expect(
-    page.getByRole("button", { name: "Start the mission" }),
-  ).toBeVisible();
-});
-
 test("a missing or invalid summary session explains itself and offers a way on", async ({
   page,
 }) => {

@@ -48,6 +48,14 @@ test("keyboard Tab reaches the demo link, does not trap focus, and page has a ma
   await expect(
     page.getByRole("link", { name: "Try The Space Station Mission" }),
   ).toBeFocused();
+  for (const name of [
+    "Try Practice at the Nets",
+    "Try Court Practice",
+    "Try Training Day",
+  ]) {
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("link", { name })).toBeFocused();
+  }
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Try the independent check" }),

@@ -134,6 +134,69 @@ body {
   --item-radius: 9999px;
 }
 
+.theme-cricket {
+  --panel-bg: #e6f4d7;
+  --foreground: #1d3a12;
+  --muted: #3f5a30;
+  --border: #5b7f45;
+  --surface: #f6fbef;
+  --accent: #b91c1c;
+  --accent-fg: #ffffff;
+  --focus: #a21caf;
+  --cue: #a21caf;
+  --supply-bg: #fca5a5;
+  --supply-border: #7f1d1d;
+  --supply-fg: #111827;
+  --built-bg: #fde68a;
+  --built-border: #854d0e;
+  --built-fg: #111827;
+  --field-supply-bg: #cfe8b8;
+  --field-built-bg: #f3f9d5;
+  --item-radius: 9999px;
+}
+
+.theme-basketball {
+  --panel-bg: #ffe9d2;
+  --foreground: #3b1d0a;
+  --muted: #6b3a17;
+  --border: #b45309;
+  --surface: #fff6ec;
+  --accent: #c2410c;
+  --accent-fg: #ffffff;
+  --focus: #1d4ed8;
+  --cue: #1d4ed8;
+  --supply-bg: #fdba74;
+  --supply-border: #7c2d12;
+  --supply-fg: #111827;
+  --built-bg: #93c5fd;
+  --built-border: #1e3a8a;
+  --built-fg: #111827;
+  --field-supply-bg: #fbd5a5;
+  --field-built-bg: #e0ecfb;
+  --item-radius: 9999px;
+}
+
+.theme-soccer {
+  --panel-bg: #dcfce7;
+  --foreground: #14301f;
+  --muted: #365443;
+  --border: #15803d;
+  --surface: #f2fdf6;
+  --accent: #166534;
+  --accent-fg: #ffffff;
+  --focus: #a21caf;
+  --cue: #a21caf;
+  --supply-bg: #ffffff;
+  --supply-border: #14532d;
+  --supply-fg: #111827;
+  --built-bg: #bbf7d0;
+  --built-border: #14532d;
+  --built-fg: #052e16;
+  --field-supply-bg: #c6f0d2;
+  --field-built-bg: #effcf3;
+  --item-radius: 9999px;
+}
+
 /* The independent check is calmer: plain surface, brand color, no world art. */
 .calm-panel {
   padding: 1rem;

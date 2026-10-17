@@ -56,6 +56,14 @@ const neutralServer: Script = (r) =>
 
 afterEach(() => vi.unstubAllGlobals());
 
+const SCENE_NAME: Record<ThemeConfig["id"], string> = {
+  "block-builder": "bridge",
+  "space-construction": "space",
+  "cricket-academy": "cricket",
+  "basketball-challenge": "basketball",
+  "soccer-quest": "soccer",
+};
+
 describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
   const v = theme.vocabulary;
   const Name = capitalize(v.singular);
@@ -77,7 +85,7 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
   // The artwork is decorative (aria-hidden), so tests read its narrow data hooks.
   const sceneEl = () =>
     document.querySelector<SVGElement>(
-      `[data-scene="${theme.id === "space-construction" ? "space" : "bridge"}"]`,
+      `[data-scene="${SCENE_NAME[theme.id]}"]`,
     ) as SVGElement;
   const slots = (kind: "built" | "empty") =>
     sceneEl().querySelectorAll(`[data-slot="${kind}"]`);
@@ -129,7 +137,7 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
         { action: "start", missionId: "subtract-practice" },
       ]);
       expect(
-        screen.getByText(new RegExp(`has 13 ${v.plural}`)),
+        screen.getByText(new RegExp(`has 13 [a-z ]*${v.plural}`)),
       ).toBeInTheDocument();
     });
 
@@ -447,13 +455,21 @@ describe.each(THEMES)("shared mission engine: $displayName", (theme) => {
       await submit(user, 9);
       expect(await screen.findByText("Hint 1")).toBeInTheDocument();
       expect(
-        screen.getByText(new RegExp(`take 3 ${v.plural} first`, "i")),
+        screen.getByText(/same subtraction another way/i),
+      ).toBeInTheDocument();
+      // The ten-frame idea is a picture; it never claims what the learner did.
+      expect(
+        screen.getByText(new RegExp(`take 3 ${v.plural}`, "i")).textContent,
+      ).not.toMatch(/\byou (took|put)\b|(?<!not what )you moved/i);
+      expect(
+        screen.getByText(/a picture of the idea, not what you moved/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Draft demo hint/)).toBeInTheDocument();
       const outlined = supply().filter((b) => b.className.includes("item-cue"));
       expect(
         outlined.map(
-          (b) => /^\w+ \d+/.exec(b.getAttribute("aria-label") ?? "")?.[0],
+          (b) =>
+            /^[A-Za-z ]+ \d+/.exec(b.getAttribute("aria-label") ?? "")?.[0],
         ),
       ).toEqual([`${Name} 11`, `${Name} 12`, `${Name} 13`]);
     });
@@ -649,11 +665,22 @@ describe("cross-theme equivalence", () => {
     return requests;
   }
 
-  it("sends byte-identical requests to the server for the same learner actions", async () => {
-    const a = await playScript(THEMES[0]);
-    const b = await playScript(THEMES[1]);
-    expect(a).toEqual(b);
-    expect(a.map((r) => r.action)).toEqual(["start", "attempt", "stop"]);
+  it("sends byte-identical requests to the server for the same learner actions, in all five worlds", async () => {
+    expect(THEMES).toHaveLength(5);
+    const first = await playScript(THEMES[0]);
+    expect(first.map((r) => r.action)).toEqual(["start", "attempt", "stop"]);
+    for (const theme of THEMES.slice(1)) {
+      expect(await playScript(theme), theme.id).toEqual(first);
+    }
+  });
+
+  it("never sends a theme, an item count or an answer key: only the learner's own answer", async () => {
+    const requests = await playScript(THEMES[4]);
+    const text = JSON.stringify(requests);
+    expect(text).not.toMatch(/theme|soccer|cricket|basketball|block|space/i);
+    for (const r of requests) {
+      expect(Object.keys(r).sort()).not.toContain("expectedAnswer");
+    }
   });
 });
 
@@ -665,8 +692,9 @@ describe("hint presentations", () => {
       14,
       THEMES[0].vocabulary,
     );
-    expect(h.text).toContain("took 4 blocks");
-    expect(h.text).toContain("take 3 more");
+    expect(h.text).toContain("take 4 blocks");
+    expect(h.text).toContain("then 3 more");
+    expect(h.text).not.toMatch(/\byou (took|put)\b|(?<!not what )you moved/i);
     expect(h.highlightAbove).toBe(10);
   });
 

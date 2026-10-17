@@ -37,6 +37,51 @@ const THEMES = [
     done: "The station is ready!",
     home: "Try The Space Station Mission",
   },
+  {
+    route: "/cricket",
+    name: "Cricket Academy",
+    title: "Practice at the Nets",
+    start: "Start practice",
+    playHeading: "Fill the practice nets",
+    Item: "Ball",
+    plural: "balls",
+    supplyPlace: "in the basket",
+    builtPlace: "at the nets",
+    built: "At the nets",
+    story: /The coach has 13 practice balls in a basket/,
+    done: "Practice can begin!",
+    home: "Try Practice at the Nets",
+  },
+  {
+    route: "/basketball",
+    name: "Basketball Challenge",
+    title: "Court Practice",
+    start: "Start court practice",
+    playHeading: "Fill the court",
+    Item: "Basketball",
+    plural: "basketballs",
+    supplyPlace: "in the rack",
+    builtPlace: "on the court",
+    built: "On the court",
+    story: /The coach has 13 basketballs in the equipment rack/,
+    done: "The court is ready!",
+    home: "Try Court Practice",
+  },
+  {
+    route: "/soccer",
+    name: "Soccer Quest",
+    title: "Training Day",
+    start: "Start training",
+    playHeading: "Set up the field",
+    Item: "Soccer ball",
+    plural: "soccer balls",
+    supplyPlace: "in the bag",
+    builtPlace: "on the field",
+    built: "On the field",
+    story: /The coach has 13 soccer balls in a storage bag/,
+    done: "Training can start!",
+    home: "Try Training Day",
+  },
 ] as const;
 type Theme = (typeof THEMES)[number];
 
@@ -118,7 +163,7 @@ for (const t of THEMES) {
       await answer(page, 9);
       await expect(page.getByText("Hint 1", { exact: true })).toBeVisible();
       await expect(
-        page.getByText(new RegExp(`take 3 ${t.plural} first`, "i")),
+        page.getByText(/same subtraction another way/i),
       ).toBeVisible();
       await expect(page.getByText(/Draft demo hint/)).toBeVisible();
       await answer(page, 7);
@@ -174,7 +219,7 @@ for (const t of THEMES) {
       await expect(frames).toHaveCount(1);
       await expect(frames.getByRole("img")).toHaveAttribute(
         "aria-label",
-        new RegExp(`13 ${t.plural} shown as one full ten and 3 extra`),
+        new RegExp(`A picture of 13 ${t.plural} as one full ten and 3 extra`),
       );
       await expect(frames.locator('[data-cell="counter"]')).toHaveCount(10);
       await expect(frames.locator('[data-cell="take-now"]')).toHaveCount(3);
@@ -185,7 +230,7 @@ for (const t of THEMES) {
       await expect(page.getByText("Hint 2", { exact: true })).toBeVisible();
       await expect(frames.getByRole("img")).toHaveAttribute(
         "aria-label",
-        /already taken.*2 marked to take next/,
+        /In the picture.*already taken.*2 marked to take next/,
       );
       await expect(frames.locator('[data-cell="counter"]')).toHaveCount(8);
       await expect(frames.locator('[data-cell="take-now"]')).toHaveCount(2);

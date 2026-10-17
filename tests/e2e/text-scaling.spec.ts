@@ -11,6 +11,9 @@ import { expect, test, type Page } from "@playwright/test";
 const WORLDS = [
   { route: "/block-builder", start: "Start building", item: "Block" },
   { route: "/space-construction", start: "Start the mission", item: "Module" },
+  { route: "/cricket", start: "Start practice", item: "Ball" },
+  { route: "/basketball", start: "Start court practice", item: "Basketball" },
+  { route: "/soccer", start: "Start training", item: "Soccer ball" },
 ] as const;
 const WIDTHS = [320, 360, 390, 768, 1440] as const;
 const SCALES = [100, 200] as const;
@@ -119,7 +122,9 @@ for (const w of WORLDS) {
     await supply(page, w, 1).click();
     await supply(page, w, 2).click();
     await expect(built()).toHaveCount(2);
-    await page.getByRole("button", { name: /^Block 2, |^Module 2, / }).click();
+    await page
+      .getByRole("button", { name: new RegExp(`^${w.item} 2, (on|at) the`) })
+      .click();
     await expect(built()).toHaveCount(1);
     for (let n = 2; n <= 5; n++) await supply(page, w, n).click();
     await expect(built()).toHaveCount(5);

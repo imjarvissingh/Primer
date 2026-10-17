@@ -210,3 +210,7 @@ A new built slot plays a 220 ms `slot-in` settle, only inside `prefers-reduced-m
 **Integration boundaries.** Navigation between welcome, missions, check and summary is plain links; there is no shared client store. The two mission routes were not changed except for finish-screen and header links.
 
 **Rate limit and tests.** The start cap is a constant (120 per minute per process) with no configuration path. Playwright runs one worker so the suite stays under it. **Navigation focus.** `RouteFocus` moves focus to `main h1` after a client-side path change only.
+
+## Implementation status (Milestone 2, 2026-10-17): five playable worlds
+
+`THEME_IDS` now lists five themes: block-builder, space-construction, cricket-academy, basketball-challenge, soccer-quest, each with a route and a CSS palette class. Interest selection (`src/interests`) maps each interest to one theme's route; the theme supplies presentation only (nouns, story, goal, colors) and the scene supplies artwork (`scenes/BridgeScene`, `SpaceScene`, `SportsScenes`, chosen by a typed `Record<ThemeId, ...>` so a missing scene is a type error). The shared pieces are unchanged: `PracticeMission`, `ConstructionField` (tap or keyboard, no drag), `FeedbackPanel`, `/api/practice/mission` and the domain engine. Mathematics (13 - 5), scoring, hints, sessions and the independent check live only on the server. Remaining visual assets wanted for later milestones are in issue #12.

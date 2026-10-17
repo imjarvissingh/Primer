@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { fillStory } from "@/themes";
+import { fillStory, getTheme } from "@/themes";
 import {
   DEMO_NUMBERS,
   INTERESTS,
@@ -14,12 +14,6 @@ import {
   type InterestId,
 } from "@/interests";
 import { InterestScene, SurpriseArt } from "./InterestArt";
-
-const PLAYABLE = INTERESTS.flatMap((i) =>
-  i.existingMission === null
-    ? []
-    : [{ id: i.id, title: i.title, href: i.existingMission.href }],
-);
 
 type Step = "intro" | "choose" | "preview";
 
@@ -361,8 +355,9 @@ function Preview({
   onChange: () => void;
   onAnother: () => void;
 }) {
-  const story = fillStory(interest.story, DEMO_NUMBERS);
-  const playable = interest.existingMission;
+  // The mission's own story, so the preview and the game cannot disagree.
+  const theme = getTheme(interest.mission.themeId);
+  const story = fillStory(theme.story, DEMO_NUMBERS);
   return (
     <div
       className={`${interest.className} scene-enter`}
@@ -429,48 +424,18 @@ function Preview({
             data-testid="availability"
           >
             <h2 id="status" className="text-lg font-bold">
-              {playable === null
-                ? "Preview only: not playable yet"
-                : "A draft mission is ready to play"}
+              A draft mission is ready to play
             </h2>
-            {playable === null ? (
-              <>
-                <p className="mt-1">
-                  This is a picture of the idea. There is no playable{" "}
-                  {interest.title.toLowerCase()} adventure yet, so there is
-                  nothing to start. The same math will sit inside every story.
-                </p>
-                <p className="mt-2">
-                  You can play a draft mission in one of the two worlds that
-                  exist today:
-                </p>
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {PLAYABLE.map((p) => (
-                    <Link
-                      key={p.id}
-                      href={p.href}
-                      className="btn btn-secondary"
-                    >
-                      Play {p.title} instead
-                    </Link>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="mt-1">
-                  This opens the real draft {interest.title.toLowerCase()}{" "}
-                  mission. It tells its own story with a grown-up guiding, and
-                  checks answers on the server. The picture above is only a
-                  preview of the theme.
-                </p>
-                <div className="mt-3">
-                  <Link href={playable.href} className="btn btn-primary">
-                    Start the {interest.title.toLowerCase()} mission
-                  </Link>
-                </div>
-              </>
-            )}
+            <p className="mt-1">
+              This opens the real draft {interest.title.toLowerCase()} mission,
+              with a grown-up guiding. Answers are checked on the server, and
+              help is available if you get stuck.
+            </p>
+            <div className="mt-3">
+              <Link href={interest.mission.href} className="btn btn-primary">
+                Start the {interest.title.toLowerCase()} mission
+              </Link>
+            </div>
           </section>
 
           <div className="mt-6 flex flex-wrap gap-3">

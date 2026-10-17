@@ -136,37 +136,14 @@ describe("Welcome: adventure previews", () => {
     },
   );
 
-  it("labels unbuilt interests as preview-only, with no Start button or mission link", async () => {
-    const user = await toChooser();
-    for (const title of ["Cricket", "Basketball", "Soccer"]) {
-      await user.click(screen.getByRole("radio", { name: new RegExp(title) }));
-      await user.click(
-        screen.getByRole("button", { name: /adventure preview/i }),
-      );
-      const box = screen.getByTestId("availability");
-      expect(box).toHaveTextContent(/Preview only: not playable yet/);
-      // Unbuilt interests offer no Start; they point to the two real worlds.
-      expect(
-        within(box)
-          .getAllByRole("link")
-          .map((l) => [l.textContent, l.getAttribute("href")]),
-      ).toEqual([
-        ["Play Building instead", "/block-builder"],
-        ["Play Space instead", "/space-construction"],
-      ]);
-      expect(screen.queryByRole("button", { name: /start|play/i })).toBeNull();
-      expect(
-        screen.queryAllByRole("link", { name: /start the .* mission/i }),
-      ).toHaveLength(0);
-      await user.click(screen.getByRole("button", { name: "Change interest" }));
-    }
-  });
-
-  it("links Building and Space only to their own real missions", async () => {
+  it("offers a real Start link for every one of the five interests, and never says 'not playable'", async () => {
     const user = await toChooser();
     for (const [title, href] of [
+      ["Cricket", "/cricket"],
       ["Building", "/block-builder"],
       ["Space", "/space-construction"],
+      ["Basketball", "/basketball"],
+      ["Soccer", "/soccer"],
     ]) {
       await user.click(screen.getByRole("radio", { name: new RegExp(title) }));
       await user.click(
@@ -179,7 +156,7 @@ describe("Welcome: adventure previews", () => {
         }),
       ).toHaveAttribute("href", href);
       expect(within(box).getAllByRole("link")).toHaveLength(1);
-      expect(box).toHaveTextContent(/own story/);
+      expect(document.body).not.toHaveTextContent(/not playable|preview only/i);
       await user.click(screen.getByRole("button", { name: "Change interest" }));
     }
   });

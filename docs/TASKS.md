@@ -84,3 +84,6 @@ Plan: [MVP-5-DAY-PLAN.md](MVP-5-DAY-PLAN.md). Issues: https://github.com/imjarvi
 **Blocked on external review:** #16, #17, #19, #20, #22 (suggestions).
 
 **Next (Day 2) top priorities:** #6 shared theme contract, #7 Cricket, #5 session lifecycle, #11 Surprise me, #4 prototype decision.
+
+## Milestone 2 (Oct 17, 2026): five playable worlds
+Branch `milestone2/five-worlds` (draft PR; not merged). Done and verified locally: three new worlds on the shared engine (#6, #7, #8, #9), Surprise me (#11), previews use the mission story (#10), hint framing, replay and switching tests. Open: premium art and animation (#12, #13), educator review (#16 to #20), accessibility pass (#24, #29, #32), deployment (#26). Day 3 priorities: visual identity and guide characters (#12), tactile animation with reduced-motion equivalents (#13), parent copy (#21), accessibility (#24).
