@@ -168,3 +168,26 @@ npm as package manager. System font stack instead of Google-hosted fonts (no ext
 - The remainder is drawn only after the server confirms a correct answer, and only from the learner's actual selection.
 - No new dependencies, no 3D engine, no audio, no storage.
 - Art is code-drawn SVG. It is not premium. A real art pass needs: a designed coach character with expressions, a ball-bowling/batting animation set, a station prop set, sound (optional), and a tuned phone composition (#12, #15, #35).
+
+## Learning Experience 2.1 decisions (2026-10-18) — all provisional, none educator-approved
+- **The lab asks; it does not tell.** Each step ends with a learner decision (extras, still needed, left). The remainder and the recap appear only after the learner gives it. Defect A9 (the old lab counted and printed the result) is fixed.
+- **Checks read the picture, not a key.** A lab answer is right when it matches the objects on screen. No answer is stored; moving an object clears the answer about it. This keeps one authoritative evaluator (the server).
+- **Choice set 0 to the starting amount** in the lab (0–13, 0–11) so the likely confusions (5, 10, 13) can be chosen and get specific feedback. The mission keeps 0–20 (RC1).
+- **One unguided try (11 − 4) in the lab, not evidence.** Chosen because no bank item starts at 11; it is never saved or summarised.
+- **Small theme abstraction only.** `LabWords` + art id; no registry entries, no other world wired, no tutor change.
+- **Production unchanged:** mission, hints, ladder, warm-up, check, summary, sessions, rate limit, other worlds.
+- **PR #39 not merged by the agent.** The merge was blocked by the session's permission policy; this work is stacked on its head `3c3f9dc`.
+
+## Learning Experience 2.2 decisions (2026-10-18) — all provisional, none educator-approved
+- **PR #41 was rebased, not replaced.** PR #39 was squash-merged and main's tree equalled #39's old head, so `git rebase --onto origin/main 3c3f9dc` carried exactly one lab commit; the force-push used a lease against the known remote head. History and comments of PR #41 are kept.
+- **Pin the board, but only when the question fits below it.** Pinning is chosen at run time from the board's height against the screen (in rem, so text size counts); a board too tall for that scrolls normally. No fixed viewport-height rule.
+- **No visible status card.** Moves are announced once in a hidden live region; sighted learners see the objects and the counts in the panel titles. Step 4 does not show a count at the nets, to avoid echoing "5".
+- **The lab shows the Cricket palette.** It had none (a 2.1 defect: empty spots had no border). Only the lab page wrapper changed.
+- **Step 3 no longer says how many to take.** Hypothesis H6; educator question P3.
+- **Counting aid is local and silent.** Marks never show a number and are cleared by any move; absent in the unguided step.
+- **Support after repeated wrong numbers points to careful counting, then to a grown-up; it never states a number and does not limit retries.** Hypothesis H8; question P2. Not wired to the tutor's attempt thresholds, which are untouched.
+- **One travel system.** Each change records where objects look to be and moves them from there; it is visual only, never blocks input, and is skipped under reduced motion. Final state is identical either way (tested).
+- **The educator kit is the single entry point for a reviewer**; packet section 6C holds the detail and section 8 the record. Nothing was sent to anyone. The educator gate stays open.
+- **The lab route is not access-gated** (an independent review noted this). It relies on its wording and `noindex`; it must stay adult-operated and must not be deployed for children without a separate decision.
+- **Two shared-picker defects fixed because the lab uses the picker:** (1) a chosen number showed white text on a pale chip (contrast 1.05:1) because an unlayered `.answer-chip` background beat the selected-state utility; (2) at 200% text on a phone the five columns made each number about 25 px wide and broke two-digit numbers. Both also affected the mission in all five worlds; the fixes restore the intended look and add no behaviour. A container query changes the grid only when five 44 px cells cannot fit.
+- **Production tutoring unchanged:** tutor, hints, evaluator, banks, check, summary, sessions, rate limit, server.

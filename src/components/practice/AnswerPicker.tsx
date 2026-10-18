@@ -24,23 +24,25 @@ export function AnswerPicker({
   return (
     <fieldset className="min-w-0">
       <legend className="mb-2 text-lg font-semibold">{legend}</legend>
-      <div className="answer-grid">
-        {numbers.map((n) => (
-          <label key={n} className="relative min-w-0">
-            <input
-              type="radio"
-              name="answer"
-              value={n}
-              checked={value === n}
-              disabled={disabled}
-              onChange={() => onChange(n)}
-              className="peer sr-only"
-            />
-            <span className="answer-chip flex min-h-12 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-border text-xl font-bold peer-checked:border-(--accent) peer-checked:bg-(--accent) peer-checked:text-(--accent-fg) peer-disabled:cursor-not-allowed peer-disabled:opacity-60 peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--focus)">
-              {n}
-            </span>
-          </label>
-        ))}
+      <div className="answer-box">
+        <div className="answer-grid">
+          {numbers.map((n) => (
+            <label key={n} className="relative min-w-0">
+              <input
+                type="radio"
+                name="answer"
+                value={n}
+                checked={value === n}
+                disabled={disabled}
+                onChange={() => onChange(n)}
+                className="peer sr-only"
+              />
+              <span className="answer-chip flex min-h-12 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-border bg-(--surface) text-xl font-bold peer-checked:border-(--accent) peer-checked:bg-(--accent) peer-checked:text-(--accent-fg) peer-disabled:cursor-not-allowed peer-disabled:opacity-60 peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--focus)">
+                {n}
+              </span>
+            </label>
+          ))}
+        </div>
       </div>
     </fieldset>
   );
